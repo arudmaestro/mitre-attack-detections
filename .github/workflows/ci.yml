@@ -22,8 +22,8 @@ jobs:
     name: Sigma rules, queries and structure
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.9"
           cache: pip
@@ -47,7 +47,7 @@ jobs:
     name: Shell test scripts (ShellCheck)
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: bash -n and ShellCheck
         run: |
           mapfile -t files < <(find detections -path '*/tests/*.sh' | sort)
@@ -59,7 +59,7 @@ jobs:
     name: PowerShell test scripts (parser + PSScriptAnalyzer)
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Install PSScriptAnalyzer
         shell: pwsh
         run: Install-Module PSScriptAnalyzer -RequiredVersion 1.23.0 -Scope CurrentUser -Force

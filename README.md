@@ -1,5 +1,7 @@
 # MITRE ATT&CK Detection Library
 
+[![CI](https://github.com/arudmaestro/mitre-attack-detections/actions/workflows/ci.yml/badge.svg)](https://github.com/arudmaestro/mitre-attack-detections/actions/workflows/ci.yml) [![License: DRL 1.1](https://img.shields.io/badge/license-DRL%201.1-blue)](LICENSE)
+
 Community detection content for every MITRE ATT&CK technique and sub-technique, written for:
 
 - **Sigma** (vendor-neutral source of truth)
