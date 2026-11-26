@@ -1,0 +1,22 @@
+title: 'Kernel Module Loaded with insmod'
+id: 203462c8-50b2-4656-98e7-a4a5cceac94b
+status: experimental
+description: 'Detects insmod, which loads a kernel module from any file path (modprobe, used by the system and DKMS, loads from the module tree).'
+references:
+  - https://attack.mitre.org/techniques/T1547/006/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.persistence
+  - attack.privilege-escalation
+  - attack.t1547.006
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection:
+    Image|endswith: '/insmod'
+  condition: selection
+falsepositives:
+  - 'Driver developers and vendor installers loading out-of-tree modules'
+level: medium

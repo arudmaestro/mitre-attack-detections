@@ -1,0 +1,22 @@
+title: 'LD_PRELOAD Set on the Command Line on Linux'
+id: 7ed8bc89-dcd9-4698-8e48-b629ab448858
+status: experimental
+description: 'Detects LD_PRELOAD in a command line (env LD_PRELOAD=..., sudo LD_PRELOAD=...), which loads a library into the started program before its own libraries.'
+references:
+  - https://attack.mitre.org/techniques/T1574/006/
+author: Detection Engineering Team
+date: 2026-11-25
+tags:
+  - attack.stealth
+  - attack.execution
+  - attack.t1574.006
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection:
+    CommandLine|contains: 'LD_PRELOAD='
+  condition: selection
+falsepositives:
+  - 'Developers and profiling tools (e.g. jemalloc, libfaketime) preloading libraries'
+level: medium

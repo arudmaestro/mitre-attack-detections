@@ -1,0 +1,38 @@
+title: 'Security Agent Service Stopped or Disabled on Linux'
+id: 2eed82c4-6c9e-46f0-b875-d73d411ab7e4
+status: experimental
+description: 'Detects systemctl or service stopping, disabling or masking EDR and monitoring agents (CrowdStrike falcon-sensor, Defender mdatp, SentinelOne, osquery, Sysmon for Linux, Wazuh, Elastic Agent).'
+references:
+  - https://attack.mitre.org/techniques/T1685/
+author: Detection Engineering Team
+date: 2026-11-25
+tags:
+  - attack.defense-impairment
+  - attack.t1685
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection_tool:
+    Image|endswith:
+      - '/systemctl'
+      - '/service'
+  selection_action:
+    CommandLine|contains:
+      - ' stop'
+      - ' disable'
+      - ' mask'
+      - ' kill'
+  selection_name:
+    CommandLine|contains:
+      - 'falcon-sensor'
+      - 'mdatp'
+      - 'sentinelone'
+      - 'osqueryd'
+      - 'sysmon'
+      - 'wazuh-agent'
+      - 'elastic-agent'
+  condition: all of selection_*
+falsepositives:
+  - 'Agent upgrades and maintenance by IT'
+level: high

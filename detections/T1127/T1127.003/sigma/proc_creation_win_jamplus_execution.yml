@@ -1,0 +1,22 @@
+title: 'JamPlus Build Tool Executed'
+id: bda15fa1-2998-4215-a95f-cf03152de91f
+status: experimental
+description: 'Detects jam.exe (JamPlus) running, a build tool that can execute arbitrary commands from a Jamfile.'
+references:
+  - https://attack.mitre.org/techniques/T1127/003/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.stealth
+  - attack.execution
+  - attack.t1127.003
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    Image|endswith: '\jam.exe'
+  condition: selection
+falsepositives:
+  - 'Developers using JamPlus builds'
+level: low

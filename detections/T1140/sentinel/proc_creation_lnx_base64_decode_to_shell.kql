@@ -1,0 +1,12 @@
+// Title: Base64 Decoded and Piped to a Shell
+// ATT&CK: T1140 | Tactic: Stealth | Sigma id: 70eda598-f99d-487d-b0d5-a1335ab00a0c
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: High
+// False positives: Installers that ship encoded scripts
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where (ProcessCommandLine contains "base64 -d" or ProcessCommandLine contains "base64 --decode") and (ProcessCommandLine contains "| sh" or ProcessCommandLine contains "|sh" or ProcessCommandLine contains "| bash" or ProcessCommandLine contains "|bash")
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

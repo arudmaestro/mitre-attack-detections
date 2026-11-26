@@ -1,0 +1,29 @@
+title: 'Suspicious Command Typed in the Run Dialog'
+id: 1fabd6b3-adfd-460d-9bc3-ef0624108f10
+status: experimental
+description: 'Detects a Run dialog (Win+R) history entry (RunMRU) that starts PowerShell, mshta, curl, certutil, bitsadmin or msiexec, the pattern of fake CAPTCHA / ClickFix lures that make users paste a command.'
+references:
+  - https://attack.mitre.org/techniques/T1204/004/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.execution
+  - attack.t1204.004
+logsource:
+  category: registry_set
+  product: windows
+detection:
+  selection:
+    TargetObject|contains: '\Explorer\RunMRU\'
+    Details|contains:
+      - 'powershell'
+      - 'pwsh'
+      - 'mshta'
+      - 'curl'
+      - 'certutil'
+      - 'bitsadmin'
+      - 'msiexec'
+  condition: selection
+falsepositives:
+  - 'Administrators who start PowerShell from the Run dialog'
+level: medium

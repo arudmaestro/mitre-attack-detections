@@ -1,0 +1,13 @@
+// Title: Remote Access Tool Executed on Windows
+// ATT&CK: T1219.002 | Tactic: CommandAndControl | Sigma id: 3dc648fb-8e5f-453e-b0e7-d68cb7a9fde9
+// Data source: SecurityEvent 4688 (Windows Security Events connector; needs process creation and command-line auditing enabled)
+// Severity: Medium
+// False positives: Approved remote support and RMM tools (allowlist the tools and hosts you use)
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = Computer, Account = SubjectUserName
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+SecurityEvent
+| where TimeGenerated > ago(1d)
+| where EventID == 4688
+| where NewProcessName endswith "\\AnyDesk.exe" or NewProcessName endswith "\\TeamViewer.exe" or NewProcessName endswith "\\TeamViewer_Service.exe" or NewProcessName endswith "\\ScreenConnect.ClientService.exe" or NewProcessName endswith "\\ScreenConnect.WindowsClient.exe" or NewProcessName endswith "\\rustdesk.exe" or NewProcessName endswith "\\AteraAgent.exe" or NewProcessName endswith "\\SRService.exe" or NewProcessName endswith "\\client32.exe" or NewProcessName endswith "\\rutserv.exe" or NewProcessName endswith "\\MeshAgent.exe" or NewProcessName endswith "\\Supremo.exe" or NewProcessName endswith "\\AA_v3.exe"
+| project TimeGenerated, Computer, SubjectUserName, ParentProcessName, NewProcessName, CommandLine

@@ -1,0 +1,8 @@
+```Title: MSBuild Running a Project from a User-Writable Path or Script Host (raw Sysmon events)```
+```ATT&CK: T1127.001 | Severity: medium | Sigma id: 1a1222a0-958f-4301-97d6-b4916793c323```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Build agents and developers building projects from temp folders```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(Image="*\\MSBuild.exe" CommandLine IN ("*\\AppData\\*", "*\\Temp\\*", "*\\Users\\Public\\*", "*\\ProgramData\\*") OR ParentImage IN ("*\\wscript.exe", "*\\cscript.exe", "*\\mshta.exe", "*\\winword.exe", "*\\excel.exe", "*\\powerpnt.exe", "*\\outlook.exe"))
+| table _time host User ParentImage Image CommandLine

@@ -1,0 +1,45 @@
+title: 'Security Product Service Stopped, Disabled or Deleted'
+id: baff6b95-d346-4dfb-ae70-fe941b05b481
+status: experimental
+description: 'Detects sc, net or taskkill stopping, disabling or deleting Microsoft Defender, Defender for Endpoint, Symantec, CrowdStrike, SentinelOne, Carbon Black or Sysmon, and fltMC unloading a file system filter driver (e.g. SysmonDrv).'
+references:
+  - https://attack.mitre.org/techniques/T1685/
+author: Detection Engineering Team
+date: 2026-11-25
+tags:
+  - attack.defense-impairment
+  - attack.t1685
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_tool:
+    Image|endswith:
+      - '\sc.exe'
+      - '\net.exe'
+      - '\net1.exe'
+      - '\taskkill.exe'
+  selection_action:
+    CommandLine|contains:
+      - ' stop '
+      - ' delete '
+      - ' config '
+      - '/im '
+  selection_name:
+    CommandLine|contains:
+      - 'WinDefend'
+      - 'WdNisSvc'
+      - 'MsMpEng'
+      - ' Sense'
+      - 'SepMasterService'
+      - 'CSFalconService'
+      - 'SentinelAgent'
+      - 'cbdefense'
+      - 'Sysmon'
+  selection_fltmc:
+    Image|endswith: '\fltMC.exe'
+    CommandLine|contains: 'unload'
+  condition: (selection_tool and selection_action and selection_name) or selection_fltmc
+falsepositives:
+  - 'Product upgrades and uninstallers run by IT'
+level: high

@@ -1,0 +1,33 @@
+title: 'PAM Configuration or Module Written from the Command Line'
+id: 6105b01b-ff91-41a3-b4ac-a9eb738629ef
+status: experimental
+description: 'Detects cp, mv, tee, ln, install or sed writing to /etc/pam.d or to a pam_*.so module in a security library folder, used to add a backdoor password or to log passwords.'
+references:
+  - https://attack.mitre.org/techniques/T1556/003/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.defense-impairment
+  - attack.persistence
+  - attack.credential-access
+  - attack.t1556.003
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection_img:
+    Image|endswith:
+      - '/cp'
+      - '/mv'
+      - '/tee'
+      - '/ln'
+      - '/install'
+      - '/sed'
+  selection_path:
+    CommandLine|contains:
+      - '/etc/pam.d/'
+      - '/security/pam_'
+  condition: all of selection_*
+falsepositives:
+  - 'Configuration management, authconfig/authselect and package scripts changing PAM'
+level: medium

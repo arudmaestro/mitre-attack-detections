@@ -1,0 +1,12 @@
+// Title: Impacket or NetExec Authentication with an NTLM Hash
+// ATT&CK: T1550.002 | Tactic: LateralMovement | Sigma id: c787704f-e83d-4829-b962-17af88b2931d
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: High
+// False positives: Penetration tests and red-team exercises
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where ((ProcessCommandLine contains "psexec" or ProcessCommandLine contains "wmiexec" or ProcessCommandLine contains "smbexec" or ProcessCommandLine contains "atexec" or ProcessCommandLine contains "dcomexec" or ProcessCommandLine contains "secretsdump") and ProcessCommandLine contains "-hashes") or ((ProcessCommandLine contains "nxc" or ProcessCommandLine contains "netexec" or ProcessCommandLine contains "crackmapexec") and ProcessCommandLine contains " -H ")
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

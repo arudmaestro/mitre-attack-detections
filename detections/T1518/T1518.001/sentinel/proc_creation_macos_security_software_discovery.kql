@@ -1,0 +1,12 @@
+// Title: Security Agent Searched for in Process or File Listings on macOS
+// ATT&CK: T1518.001 | Tactic: Discovery | Sigma id: 1a2110e2-7862-48bb-abe9-4ab048a421fe
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Low
+// False positives: Administrators and monitoring scripts checking agent health
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where (FolderPath endswith "/grep" or FolderPath endswith "/pgrep") and (ProcessCommandLine contains "falcon" or ProcessCommandLine contains "crowdstrike" or ProcessCommandLine contains "sentinelone" or ProcessCommandLine contains "sentinelagent" or ProcessCommandLine contains "mdatp" or ProcessCommandLine contains "cbagent" or ProcessCommandLine contains "carbonblack" or ProcessCommandLine contains "osquery" or ProcessCommandLine contains "wazuh" or ProcessCommandLine contains "ossec" or ProcessCommandLine contains "sophos")
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

@@ -1,0 +1,25 @@
+title: 'AWS Lambda Function URL Created Without Authentication'
+id: ef64c21e-8b6a-408c-b4d4-3ac1d95c8fc5
+status: experimental
+description: 'Detects a Lambda function URL created or changed with AuthType NONE, which makes the function callable by anyone on the internet; attackers use it for persistence, C2 relays and running code in the victim''s account.'
+references:
+  - https://attack.mitre.org/techniques/T1648/
+author: Detection Engineering Team
+date: 2026-11-25
+tags:
+  - attack.execution
+  - attack.t1648
+logsource:
+  product: aws
+  service: cloudtrail
+detection:
+  selection:
+    eventSource: 'lambda.amazonaws.com'
+    eventName:
+      - 'CreateFunctionUrlConfig20211031'
+      - 'UpdateFunctionUrlConfig20211031'
+    requestParameters.authType|contains: 'NONE'
+  condition: selection
+falsepositives:
+  - 'Public webhooks and APIs deliberately built on Lambda function URLs'
+level: medium

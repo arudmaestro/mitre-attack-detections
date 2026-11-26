@@ -1,0 +1,25 @@
+title: 'Bind Mount over a /proc Entry'
+id: 5647588c-3614-46ea-b10d-f3958ba6cce6
+status: experimental
+description: 'Detects mount --bind (or -o bind) with a /proc path, used to mount an empty or decoy directory over /proc/<pid> so ps, top and other tools no longer show a process.'
+references:
+  - https://attack.mitre.org/techniques/T1564/013/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.stealth
+  - attack.t1564.013
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection_img:
+    Image|endswith: '/mount'
+  selection_bind:
+    CommandLine|contains: 'bind'
+  selection_proc:
+    CommandLine|contains: '/proc/'
+  condition: all of selection_*
+falsepositives:
+  - 'Container runtimes and sandboxes that bind-mount /proc entries'
+level: high

@@ -1,0 +1,22 @@
+title: 'User Account Created with a Name Ending in $'
+id: c8ac9e48-1988-41d5-a9d0-92cbdaea2c93
+status: experimental
+description: 'Detects creation of a user account whose name ends with $, imitating a computer account so it is overlooked.'
+references:
+  - https://attack.mitre.org/techniques/T1036/010/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.stealth
+  - attack.t1036.010
+logsource:
+  product: windows
+  service: security
+detection:
+  selection:
+    EventID: 4720
+    TargetUserName|endswith: '$'
+  condition: selection
+falsepositives:
+  - 'Rare legacy tooling that creates service accounts ending in $'
+level: high

@@ -1,0 +1,8 @@
+```Title: IDE or Dev Tunnel Started on Windows (raw Sysmon events)```
+```ATT&CK: T1219.001 | Severity: medium | Sigma id: 908b19cf-3768-48a7-a3a6-1fdeabf1b12b```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Developers using VS Code Remote Tunnels or Dev Tunnels with approval```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(Image="*\\code-tunnel.exe" OR (Image="*\\code.exe" CommandLine="* tunnel*") OR (Image="*\\devtunnel.exe" CommandLine="* host*"))
+| table _time host User ParentImage Image CommandLine

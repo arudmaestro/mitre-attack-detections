@@ -1,0 +1,29 @@
+title: 'Debugger Set for an Accessibility Program'
+id: 43e1705a-be2b-4384-b359-5c87f996393d
+status: experimental
+description: 'Detects an Image File Execution Options Debugger value for sethc, utilman, osk, Magnify, Narrator, DisplaySwitch or AtBroker, which replaces the program at the logon screen (e.g. with cmd.exe).'
+references:
+  - https://attack.mitre.org/techniques/T1546/008/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.privilege-escalation
+  - attack.persistence
+  - attack.t1546.008
+logsource:
+  category: registry_set
+  product: windows
+detection:
+  selection:
+    TargetObject|endswith:
+      - '\sethc.exe\Debugger'
+      - '\utilman.exe\Debugger'
+      - '\osk.exe\Debugger'
+      - '\Magnify.exe\Debugger'
+      - '\Narrator.exe\Debugger'
+      - '\DisplaySwitch.exe\Debugger'
+      - '\AtBroker.exe\Debugger'
+  condition: selection
+falsepositives:
+  - 'None expected'
+level: high

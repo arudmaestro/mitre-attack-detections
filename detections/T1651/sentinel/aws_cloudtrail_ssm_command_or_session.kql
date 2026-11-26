@@ -1,0 +1,13 @@
+// Title: AWS Systems Manager Command or Session Started
+// ATT&CK: T1651 | Tactic: Execution | Sigma id: 6d1487ae-add5-43f6-8ae7-352baea3114f
+// Data source: AWSCloudTrail (Amazon Web Services connector)
+// Severity: Low
+// False positives: Operations teams and automation (patching, Ansible / SSM documents) using Systems Manager
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Account = UserIdentityArn, IP = SourceIpAddress
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+AWSCloudTrail
+| where TimeGenerated > ago(1d)
+| where EventSource == "ssm.amazonaws.com"
+| where EventName in ("SendCommand", "StartSession")
+| project TimeGenerated, EventSource, EventName, UserIdentityArn, SourceIpAddress, AWSRegion, ErrorCode, RequestParameters

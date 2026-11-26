@@ -1,0 +1,8 @@
+```Title: Suspicious Command Typed in the Run Dialog (raw Sysmon events)```
+```ATT&CK: T1204.004 | Severity: medium | Sigma id: 1fabd6b3-adfd-460d-9bc3-ef0624108f10```
+```Data source: Sysmon EventCode 13 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Administrators who start PowerShell from the Run dialog```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=13
+(TargetObject="*\\Explorer\\RunMRU\\*" Details IN ("*powershell*", "*pwsh*", "*mshta*", "*curl*", "*certutil*", "*bitsadmin*", "*msiexec*"))
+| table _time host User Image EventType TargetObject Details

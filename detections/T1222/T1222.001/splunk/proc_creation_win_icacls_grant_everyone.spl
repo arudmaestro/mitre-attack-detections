@@ -1,0 +1,8 @@
+```Title: Permissions Granted to Everyone with icacls or cacls (raw Sysmon events)```
+```ATT&CK: T1222.001 | Severity: medium | Sigma id: b0c56a31-b2bc-49ac-a048-51391e692013```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Software installers and admins opening shared folders```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(Image IN ("*\\icacls.exe", "*\\cacls.exe") CommandLine="*/grant*" CommandLine IN ("*Everyone:*", "*S-1-1-0:*"))
+| table _time host User ParentImage Image CommandLine

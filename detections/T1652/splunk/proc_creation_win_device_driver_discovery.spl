@@ -1,0 +1,8 @@
+```Title: Device Drivers Enumerated on Windows (raw Sysmon events)```
+```ATT&CK: T1652 | Severity: low | Sigma id: 5bee8e95-4eb4-46a6-bb80-e0d31a5018e1```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Inventory, support and driver update tools```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity low.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(Image="*\\driverquery.exe" OR CommandLine IN ("*Win32_PnPSignedDriver*", "*Win32_SystemDriver*", "*Get-WindowsDriver*"))
+| table _time host User ParentImage Image CommandLine

@@ -1,0 +1,13 @@
+// Title: <Detection title>
+// ATT&CK: Txxxx.xxx | Tactic: <Tactic>
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint connector)
+// Severity: Medium
+// False positives: <benign causes>
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where FileName =~ "example.exe"
+| where ProcessCommandLine contains "<value>"
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, FileName, ProcessCommandLine

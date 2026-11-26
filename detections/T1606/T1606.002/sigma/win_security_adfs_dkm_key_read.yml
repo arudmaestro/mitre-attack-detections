@@ -1,0 +1,22 @@
+title: 'AD FS DKM Key Read from Active Directory (4662)'
+id: 7568592d-cedc-4ac3-ad1b-0e7340a1650c
+status: experimental
+description: 'Detects a directory service access event (4662) for the thumbnailPhoto attribute, where AD FS stores the Distributed Key Manager (DKM) key that decrypts the token-signing certificate; reading it is the first step of a Golden SAML attack.'
+references:
+  - https://attack.mitre.org/techniques/T1606/002/
+author: Detection Engineering Team
+date: 2026-11-25
+tags:
+  - attack.credential-access
+  - attack.t1606.002
+logsource:
+  product: windows
+  service: security
+detection:
+  selection:
+    EventID: 4662
+    Properties|contains: '8d3bca50-1d7e-11d0-a081-00aa006c33ed'
+  condition: selection
+falsepositives:
+  - 'The AD FS service account reading its own key (exclude it by SubjectUserName)'
+level: medium

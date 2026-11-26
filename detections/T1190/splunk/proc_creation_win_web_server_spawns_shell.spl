@@ -1,0 +1,8 @@
+```Title: Web Server Process Spawning a Shell on Windows (raw Sysmon events)```
+```ATT&CK: T1190 | Severity: high | Sigma id: 7e69f172-7228-438e-84c0-0c2b8b89f96b```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Web applications that legitimately call command-line tools```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(ParentImage IN ("*\\w3wp.exe", "*\\httpd.exe", "*\\nginx.exe", "*\\php-cgi.exe", "*\\tomcat.exe", "*\\tomcat8.exe", "*\\tomcat9.exe") Image IN ("*\\cmd.exe", "*\\powershell.exe", "*\\pwsh.exe", "*\\whoami.exe"))
+| table _time host User ParentImage Image CommandLine

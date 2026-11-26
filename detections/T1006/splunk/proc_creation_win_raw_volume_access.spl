@@ -1,0 +1,8 @@
+```Title: Raw Disk or Volume Device Access in Command Line (raw Sysmon events)```
+```ATT&CK: T1006 | Severity: medium | Sigma id: e47ffc0c-2032-445b-a02a-845b2df2b053```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Disk imaging, backup and forensic tools; Disk management scripts```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(CommandLine IN ("*\\.\\PhysicalDrive*", "*\\.\\HarddiskVolume*", "*\\.\\C:*"))
+| table _time host User ParentImage Image CommandLine

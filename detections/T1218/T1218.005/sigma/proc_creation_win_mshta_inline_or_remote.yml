@@ -1,0 +1,26 @@
+title: 'Mshta Running Inline Script or a Remote HTA'
+id: 39367e0f-a00e-43ef-b87c-65db84c8868a
+status: experimental
+description: 'Detects mshta.exe started with inline javascript:/vbscript: code or an http(s) URL.'
+references:
+  - https://attack.mitre.org/techniques/T1218/005/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.stealth
+  - attack.t1218.005
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    Image|endswith: '\mshta.exe'
+    CommandLine|contains:
+      - 'javascript:'
+      - 'vbscript:'
+      - 'http://'
+      - 'https://'
+  condition: selection
+falsepositives:
+  - 'Legacy intranet applications delivered as remote HTA files'
+level: high

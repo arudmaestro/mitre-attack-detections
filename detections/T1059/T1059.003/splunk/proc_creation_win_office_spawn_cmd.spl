@@ -1,0 +1,8 @@
+```Title: Windows Command Shell Spawned by Office Application (raw Sysmon events)```
+```ATT&CK: T1059.003 | Severity: high | Sigma id: 78aa7281-55f4-4240-b97f-62bb2bd70ddb```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Legitimate Office macros or add-ins that call cmd.exe```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(ParentImage IN ("*\\winword.exe", "*\\excel.exe", "*\\powerpnt.exe", "*\\outlook.exe", "*\\msaccess.exe") Image="*\\cmd.exe")
+| table _time host User ParentImage Image CommandLine

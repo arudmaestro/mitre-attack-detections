@@ -1,0 +1,13 @@
+// Title: AWS VPC Traffic Mirroring Configured
+// ATT&CK: T1020.001 | Tactic: Exfiltration | Sigma id: 34eea066-cf25-4cab-8fa4-ff798ca2a91e
+// Data source: AWSCloudTrail (Amazon Web Services connector)
+// Severity: Medium
+// False positives: Network or security teams configuring traffic mirroring for monitoring
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Account = UserIdentityArn, IP = SourceIpAddress
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+AWSCloudTrail
+| where TimeGenerated > ago(1d)
+| where EventSource == "ec2.amazonaws.com"
+| where EventName in ("CreateTrafficMirrorSession", "CreateTrafficMirrorTarget", "CreateTrafficMirrorFilter", "CreateTrafficMirrorFilterRule")
+| project TimeGenerated, EventSource, EventName, UserIdentityArn, SourceIpAddress, AWSRegion, ErrorCode, RequestParameters

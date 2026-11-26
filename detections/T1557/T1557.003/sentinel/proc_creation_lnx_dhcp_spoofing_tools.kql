@@ -1,0 +1,12 @@
+// Title: DHCP or DHCPv6 Spoofing Tool Executed
+// ATT&CK: T1557.003 | Tactic: CredentialAccess, Collection | Sigma id: 0a862d7a-4082-445f-affc-1134f8de5948
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: High
+// False positives: Penetration tests and red-team exercises
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where (FolderPath endswith "/mitm6" or FolderPath endswith "/yersinia" or FolderPath endswith "/dhcpstarv") or ProcessCommandLine contains "mitm6"
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

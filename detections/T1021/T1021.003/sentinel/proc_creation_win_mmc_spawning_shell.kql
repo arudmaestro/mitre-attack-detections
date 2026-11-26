@@ -1,0 +1,12 @@
+// Title: MMC Spawning a Shell (MMC20.Application DCOM)
+// ATT&CK: T1021.003 | Tactic: LateralMovement | Sigma id: 4b6460b5-a9a0-4c15-93b6-3f728b84531c
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Medium
+// False positives: Administrators starting a shell from an MMC snap-in
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where InitiatingProcessFolderPath endswith "\\mmc.exe" and (FolderPath endswith "\\cmd.exe" or FolderPath endswith "\\powershell.exe" or FolderPath endswith "\\pwsh.exe" or FolderPath endswith "\\wscript.exe" or FolderPath endswith "\\cscript.exe" or FolderPath endswith "\\mshta.exe")
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

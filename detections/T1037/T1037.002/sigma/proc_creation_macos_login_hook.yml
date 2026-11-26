@@ -1,0 +1,25 @@
+title: 'macOS Login or Logout Hook Configured'
+id: 0ad60e3d-4a50-4025-8207-686a48f6ff8a
+status: experimental
+description: 'Detects defaults commands setting a LoginHook or LogoutHook, which run a script as root at every login or logout.'
+references:
+  - https://attack.mitre.org/techniques/T1037/002/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.persistence
+  - attack.privilege-escalation
+  - attack.t1037.002
+logsource:
+  category: process_creation
+  product: macos
+detection:
+  selection:
+    Image|endswith: '/defaults'
+    CommandLine|contains:
+      - 'LoginHook'
+      - 'LogoutHook'
+  condition: selection
+falsepositives:
+  - 'Legacy management scripts (login hooks are deprecated)'
+level: high

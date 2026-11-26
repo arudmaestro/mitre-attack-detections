@@ -1,0 +1,8 @@
+```Title: Silver Ticket Forging Command on Windows (raw Sysmon events)```
+```ATT&CK: T1558.002 | Severity: high | Sigma id: c458ddb4-8f87-4efd-86a1-3acf4aacd3b8```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Penetration tests and red-team exercises```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+((CommandLine="*kerberos::golden*" CommandLine="*/service:*") OR CommandLine="* silver /*")
+| table _time host User ParentImage Image CommandLine

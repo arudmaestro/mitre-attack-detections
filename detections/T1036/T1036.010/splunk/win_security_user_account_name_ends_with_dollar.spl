@@ -1,0 +1,8 @@
+```Title: User Account Created with a Name Ending in $ (raw Windows Security events)```
+```ATT&CK: T1036.010 | Severity: high | Sigma id: c8ac9e48-1988-41d5-a9d0-92cbdaea2c93```
+```Data source: Windows Security EventCode 4720 (Splunk Add-on for Microsoft Windows). Change index to where your Security logs live.```
+```False positives: Rare legacy tooling that creates service accounts ending in $```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+index=wineventlog source IN ("XmlWinEventLog:Security", "WinEventLog:Security")
+(EventCode=4720 TargetUserName="*$")
+| table _time host SubjectUserName SubjectDomainName TargetUserName TargetDomainName

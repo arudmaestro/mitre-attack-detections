@@ -1,0 +1,13 @@
+// Title: Many Accounts Reset, Disabled or Deleted by One Account
+// ATT&CK: T1531 | Tactic: Impact | Sigma id: b883a878-5f44-41fd-972a-df23732e8cbb
+// Data source: SecurityEvent 4724, 4725, 4726 (Windows Security Events connector)
+// Severity: High
+// False positives: Bulk offboarding and identity-management synchronisation (exclude their service accounts)
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: map the group-by fields: SubjectUserName
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+SecurityEvent
+| where TimeGenerated > ago(1d)
+| where EventID in (4724, 4725, 4726)
+| summarize event_count = count() by bin(TimeGenerated, 10m), SubjectUserName
+| where event_count >= 5

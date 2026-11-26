@@ -1,0 +1,24 @@
+title: 'Scripted SSH Login via sshpass or Disabled Host Key Checking'
+id: 4f16364e-6ffc-4766-ba23-ae2d5d47d26e
+status: experimental
+description: 'Detects sshpass execution or ssh with StrictHostKeyChecking=no, patterns used by scripts and attackers to log in to many hosts non-interactively.'
+references:
+  - https://attack.mitre.org/techniques/T1021/004/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.lateral-movement
+  - attack.t1021.004
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection_sshpass:
+    Image|endswith: '/sshpass'
+  selection_nocheck:
+    Image|endswith: '/ssh'
+    CommandLine|contains: 'StrictHostKeyChecking=no'
+  condition: 1 of selection_*
+falsepositives:
+  - Automation, CI/CD and configuration management jobs
+level: low

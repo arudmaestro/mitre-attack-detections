@@ -1,0 +1,13 @@
+// Title: Registry Query of Sensitive Keys via reg.exe
+// ATT&CK: T1012 | Tactic: Discovery | Sigma id: 33f9cd73-adcf-4ca7-b1be-17c696a20a6a
+// Data source: SecurityEvent 4688 (Windows Security Events connector; needs process creation and command-line auditing enabled)
+// Severity: Low
+// False positives: Administrators, installers and inventory scripts
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = Computer, Account = SubjectUserName
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+SecurityEvent
+| where TimeGenerated > ago(1d)
+| where EventID == 4688
+| where NewProcessName endswith "\\reg.exe" and CommandLine contains " query " and (CommandLine contains "currentversion\\run" or CommandLine contains "currentversion\\winlogon" or CommandLine contains "currentversion\\policies" or CommandLine contains "currentcontrolset\\services" or CommandLine contains "terminal server client" or CommandLine contains "/f password")
+| project TimeGenerated, Computer, SubjectUserName, ParentProcessName, NewProcessName, CommandLine

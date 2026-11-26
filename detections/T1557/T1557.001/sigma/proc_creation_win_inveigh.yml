@@ -1,0 +1,22 @@
+title: 'Inveigh Name-Resolution Poisoner Executed'
+id: 05222b37-fa26-4ca5-8a4c-ac75d7699d72
+status: experimental
+description: 'Detects Inveigh (PowerShell Invoke-Inveigh or the .NET Inveigh.exe), which answers LLMNR, NBT-NS and mDNS requests to capture NTLM hashes or relay them.'
+references:
+  - https://attack.mitre.org/techniques/T1557/001/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.credential-access
+  - attack.collection
+  - attack.t1557.001
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains: 'Inveigh'
+  condition: selection
+falsepositives:
+  - 'Penetration tests and red-team exercises'
+level: high

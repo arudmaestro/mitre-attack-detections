@@ -1,0 +1,8 @@
+```Title: Tunneling Tool Executed on Windows (raw Sysmon events)```
+```ATT&CK: T1572 | Severity: high | Sigma id: 20be19cd-6e99-49e0-b30c-2194fe850b91```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Developers using ngrok or Cloudflare Tunnel for testing; IT using sanctioned tunnels```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(Image IN ("*\\ngrok.exe", "*\\chisel.exe", "*\\frpc.exe") OR (Image="*\\cloudflared.exe" CommandLine="*tunnel*") OR (Image="*\\plink.exe" CommandLine IN ("* -R *", "* -D *")))
+| table _time host User ParentImage Image CommandLine

@@ -1,0 +1,12 @@
+// Title: Backup, Database or Security Service Stopped
+// ATT&CK: T1489 | Tactic: Impact | Sigma id: 5132afa2-5987-479b-a58a-1c9d2949cd14
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Medium
+// False positives: Database and backup maintenance scripts that stop services for patching
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where (((FolderPath endswith "\\net.exe" or FolderPath endswith "\\net1.exe" or FolderPath endswith "\\sc.exe") and ProcessCommandLine contains " stop ") or FolderPath endswith "\\taskkill.exe" or ProcessCommandLine contains "Stop-Service") and (ProcessCommandLine contains "MSSQL" or ProcessCommandLine contains "SQLWriter" or ProcessCommandLine contains "SQLAgent" or ProcessCommandLine contains "sqlservr" or ProcessCommandLine contains "MSExchange" or ProcessCommandLine contains "VSS" or ProcessCommandLine contains "wbengine" or ProcessCommandLine contains "Veeam" or ProcessCommandLine contains "BackupExec" or ProcessCommandLine contains "Acronis" or ProcessCommandLine contains "Sophos")
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

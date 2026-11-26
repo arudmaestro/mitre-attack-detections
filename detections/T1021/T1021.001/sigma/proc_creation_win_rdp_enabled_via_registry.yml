@@ -1,0 +1,25 @@
+title: 'Remote Desktop Enabled via fDenyTSConnections'
+id: db88029b-0a72-4a0c-849f-b0def7bbce0e
+status: experimental
+description: 'Detects command lines setting fDenyTSConnections to 0 (reg.exe or PowerShell), which enables inbound RDP for lateral movement.'
+references:
+  - https://attack.mitre.org/techniques/T1021/001/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.lateral-movement
+  - attack.t1021.001
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_value:
+    CommandLine|contains: 'fDenyTSConnections'
+  selection_enable:
+    CommandLine|contains:
+      - '/d 0'
+      - '-Value 0'
+  condition: all of selection_*
+falsepositives:
+  - Administrators enabling RDP via scripts or deployment tools
+level: medium

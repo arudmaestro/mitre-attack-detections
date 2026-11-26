@@ -1,0 +1,11 @@
+```Title: Netsh Helper DLL Registered from a User-Writable Folder (CIM Endpoint.Registry)```
+```ATT&CK: T1546.007 | Severity: high | Sigma id: cc92459d-467a-420c-8154-c1b1108d356d```
+```Data source: CIM Endpoint.Registry data model. summariesonly=false works without acceleration; set true once the data model is accelerated.```
+```False positives: None expected```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+| tstats summariesonly=false allow_old_summaries=true fillnull_value="null" count min(_time) as firstTime max(_time) as lastTime
+    from datamodel=Endpoint.Registry
+    where Registry.registry_path="*\\Microsoft\\NetSh\\*" Registry.registry_value_data IN ("*\\AppData\\Local\\Temp\\*", "*\\AppData\\Roaming\\*", "*\\Users\\Public\\*", "*\\Downloads\\*")
+    by Registry.dest Registry.user Registry.process_guid Registry.process_id Registry.registry_path Registry.registry_value_name Registry.registry_value_data Registry.action
+| rename Registry.* as *
+| convert timeformat="%Y-%m-%dT%H:%M:%S" ctime(firstTime) ctime(lastTime)

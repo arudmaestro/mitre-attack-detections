@@ -1,0 +1,23 @@
+title: 'Access to /etc/shadow or unshadow Execution'
+id: 79955a12-5ae1-4358-87da-7cf8b1a19be3
+status: experimental
+description: 'Detects command lines referencing /etc/shadow or execution of John the Ripper''s unshadow utility.'
+references:
+  - https://attack.mitre.org/techniques/T1003/008/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.credential-access
+  - attack.t1003.008
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection_shadow:
+    CommandLine|contains: '/etc/shadow'
+  selection_unshadow:
+    Image|endswith: '/unshadow'
+  condition: 1 of selection_*
+falsepositives:
+  - Administrators and configuration management (permission checks, backups)
+level: medium

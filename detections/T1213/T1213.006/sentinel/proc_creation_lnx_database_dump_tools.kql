@@ -1,0 +1,12 @@
+// Title: Database Dump Tool Executed on Linux
+// ATT&CK: T1213.006 | Tactic: Collection | Sigma id: 4b903ef4-a799-4c3f-9018-5fb2a5f45c43
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Low
+// False positives: Scheduled database backups and ETL jobs (allowlist by host and account)
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where FolderPath endswith "/mysqldump" or FolderPath endswith "/mariadb-dump" or FolderPath endswith "/pg_dump" or FolderPath endswith "/pg_dumpall" or FolderPath endswith "/mongodump" or FolderPath endswith "/mongoexport"
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

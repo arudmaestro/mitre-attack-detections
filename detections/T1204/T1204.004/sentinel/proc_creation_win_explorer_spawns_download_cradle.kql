@@ -1,0 +1,12 @@
+// Title: Download Command Started Directly by Explorer
+// ATT&CK: T1204.004 | Tactic: Execution | Sigma id: 8c28d2bd-381f-42f2-91e4-85902c0c0a99
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: High
+// False positives: Administrators running install one-liners (e.g. irm ... | iex) from the Run dialog
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where InitiatingProcessFolderPath endswith "\\explorer.exe" and ((FolderPath endswith "\\mshta.exe" and ProcessCommandLine contains "http") or ((FolderPath endswith "\\powershell.exe" or FolderPath endswith "\\pwsh.exe") and (ProcessCommandLine contains "iwr " or ProcessCommandLine contains "irm " or ProcessCommandLine contains "Invoke-WebRequest" or ProcessCommandLine contains "Invoke-RestMethod" or ProcessCommandLine contains "DownloadString" or ProcessCommandLine contains "Net.WebClient" or ProcessCommandLine contains "Start-BitsTransfer")))
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

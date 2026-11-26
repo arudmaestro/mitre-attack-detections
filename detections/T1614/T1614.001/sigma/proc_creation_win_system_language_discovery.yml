@@ -1,0 +1,26 @@
+title: 'System Language or Keyboard Layout Queried from the Command Line'
+id: c3901b00-bb7c-4aa2-b433-1c5adcc4a52f
+status: experimental
+description: 'Detects PowerShell locale cmdlets (Get-WinSystemLocale, Get-WinUserLanguageList, Get-UICulture) and registry queries of the Nls\Language or keyboard layout keys; ransomware and loaders check the language to avoid infecting some countries.'
+references:
+  - https://attack.mitre.org/techniques/T1614/001/
+author: Detection Engineering Team
+date: 2026-11-25
+tags:
+  - attack.discovery
+  - attack.t1614.001
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'Get-WinSystemLocale'
+      - 'Get-WinUserLanguageList'
+      - 'Get-UICulture'
+      - '\Control\Nls\Language'
+      - '\Keyboard Layout\Preload'
+  condition: selection
+falsepositives:
+  - 'Inventory and localisation scripts'
+level: low

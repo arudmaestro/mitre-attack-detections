@@ -1,0 +1,28 @@
+title: 'RDP Connection History Cleared'
+id: 02d01e17-c139-4edd-a214-1e4ef3bdfd81
+status: experimental
+description: 'Detects deletion of the Terminal Server Client registry history or Default.rdp, used to hide outbound RDP connections.'
+references:
+  - https://attack.mitre.org/techniques/T1070/007/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.stealth
+  - attack.t1070.007
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_target:
+    CommandLine|contains:
+      - 'Terminal Server Client'
+      - 'Default.rdp'
+  selection_delete:
+    CommandLine|contains:
+      - ' delete '
+      - ' del '
+      - 'Remove-Item'
+  condition: all of selection_*
+falsepositives:
+  - 'Privacy cleanup tools and administrators'
+level: medium

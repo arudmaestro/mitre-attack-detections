@@ -1,0 +1,12 @@
+// Title: SNMP Walk or Community Brute-Force Tool Executed
+// ATT&CK: T1602.001 | Tactic: Collection | Sigma id: 373bb35f-de30-43e1-9f9d-4315e75b50c1
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Low
+// False positives: Network monitoring servers and administrators troubleshooting SNMP
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where FolderPath endswith "/snmpwalk" or FolderPath endswith "/snmpbulkwalk" or FolderPath endswith "/onesixtyone" or FolderPath endswith "/snmp-check"
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

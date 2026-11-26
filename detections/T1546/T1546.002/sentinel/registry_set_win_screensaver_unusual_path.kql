@@ -1,0 +1,14 @@
+// Title: Screensaver Set to a Program Outside Windows or Program Files
+// ATT&CK: T1546.002 | Tactic: PrivilegeEscalation, Persistence | Sigma id: 22e1d805-6cc9-4cd3-86fb-b39cd8ef6754
+// Data source: DeviceRegistryEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Medium
+// False positives: Third-party screensavers installed in user folders
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = InitiatingProcessAccountName, RegistryKey = RegistryKey, RegistryValue = RegistryValueName
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceRegistryEvents
+| where TimeGenerated > ago(1d)
+| where ActionType == "RegistryValueSet"
+| extend TargetObject = strcat(RegistryKey, "\\", RegistryValueName)
+| where TargetObject endswith "\\Control Panel\\Desktop\\SCRNSAVE.EXE" and (not((RegistryValueData contains "\\System32\\" or RegistryValueData contains "\\SysWOW64\\" or RegistryValueData contains "\\Program Files\\" or RegistryValueData contains "\\Program Files (x86)\\")))
+| project TimeGenerated, DeviceName, ActionType, InitiatingProcessAccountName, InitiatingProcessFolderPath, InitiatingProcessCommandLine, RegistryKey, RegistryValueName, RegistryValueType, RegistryValueData

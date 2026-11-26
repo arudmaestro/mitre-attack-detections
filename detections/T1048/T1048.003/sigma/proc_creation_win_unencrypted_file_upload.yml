@@ -1,0 +1,32 @@
+title: 'File Upload over FTP or TFTP from the Command Line'
+id: 81d2d5f8-0e50-420f-af15-54e8ee87a6eb
+status: experimental
+description: 'Detects scripted FTP (ftp -s:), TFTP put, or curl uploads to ftp:// URLs, used to exfiltrate data over unencrypted protocols.'
+references:
+  - https://attack.mitre.org/techniques/T1048/003/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.exfiltration
+  - attack.t1048.003
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_ftp:
+    Image|endswith: '\ftp.exe'
+    CommandLine|contains: '-s:'
+  selection_tftp:
+    Image|endswith: '\tftp.exe'
+    CommandLine|contains: ' put '
+  selection_curl:
+    Image|endswith: '\curl.exe'
+    CommandLine|contains: 'ftp://'
+  selection_curl_upload:
+    CommandLine|contains:
+      - ' -T '
+      - '--upload-file'
+  condition: selection_ftp or selection_tftp or (selection_curl and selection_curl_upload)
+falsepositives:
+  - 'Legacy file-transfer scripts'
+level: medium

@@ -1,0 +1,28 @@
+title: 'MMC Spawning a Shell (MMC20.Application DCOM)'
+id: 4b6460b5-a9a0-4c15-93b6-3f728b84531c
+status: experimental
+description: 'Detects mmc.exe launching a command or script interpreter, the behaviour of lateral movement through the MMC20.Application DCOM object.'
+references:
+  - https://attack.mitre.org/techniques/T1021/003/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.lateral-movement
+  - attack.t1021.003
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    ParentImage|endswith: '\mmc.exe'
+    Image|endswith:
+      - '\cmd.exe'
+      - '\powershell.exe'
+      - '\pwsh.exe'
+      - '\wscript.exe'
+      - '\cscript.exe'
+      - '\mshta.exe'
+  condition: selection
+falsepositives:
+  - Administrators starting a shell from an MMC snap-in
+level: medium

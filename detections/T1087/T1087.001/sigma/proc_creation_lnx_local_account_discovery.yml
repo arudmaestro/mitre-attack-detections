@@ -1,0 +1,26 @@
+title: 'Local Account Discovery on Linux'
+id: 00041804-0153-405c-bd49-3581e12570e8
+status: experimental
+description: 'Detects reading /etc/passwd, getent passwd, or lastlog.'
+references:
+  - https://attack.mitre.org/techniques/T1087/001/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.discovery
+  - attack.t1087.001
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection_passwd:
+    CommandLine|contains: '/etc/passwd'
+  selection_getent:
+    Image|endswith: '/getent'
+    CommandLine|contains: 'passwd'
+  selection_lastlog:
+    Image|endswith: '/lastlog'
+  condition: 1 of selection_*
+falsepositives:
+  - 'Administrators and configuration management'
+level: low

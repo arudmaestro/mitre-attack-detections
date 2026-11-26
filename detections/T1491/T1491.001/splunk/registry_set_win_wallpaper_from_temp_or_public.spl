@@ -1,0 +1,8 @@
+```Title: Desktop Wallpaper Set to an Image in Temp, ProgramData or Public (raw Sysmon events)```
+```ATT&CK: T1491.001 | Severity: medium | Sigma id: d5b470b9-3141-4058-93b9-155de87416f6```
+```Data source: Sysmon EventCode 13 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Desktop customisation tools that store wallpapers in ProgramData```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=13
+(TargetObject IN ("*\\Control Panel\\Desktop\\Wallpaper", "*\\Policies\\System\\Wallpaper") Details IN ("*\\AppData\\Local\\Temp\\*", "*\\ProgramData\\*", "*\\Users\\Public\\*") NOT (Image IN ("*\\Bginfo.exe", "*\\Bginfo64.exe")))
+| table _time host User Image EventType TargetObject Details

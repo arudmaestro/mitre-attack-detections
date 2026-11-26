@@ -1,0 +1,23 @@
+title: 'IDE Extension Installed from a VSIX File'
+id: fa0053c3-f55a-41cd-b87e-2e43b8c6429b
+status: experimental
+description: 'Detects Visual Studio Code (or compatible editors) installing an extension from a local .vsix file with --install-extension.'
+references:
+  - https://attack.mitre.org/techniques/T1176/002/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.persistence
+  - attack.t1176.002
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains|all:
+      - '--install-extension'
+      - '.vsix'
+  condition: selection
+falsepositives:
+  - 'Developers installing internal or offline extensions'
+level: medium

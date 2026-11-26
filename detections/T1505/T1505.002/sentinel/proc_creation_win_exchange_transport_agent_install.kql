@@ -1,0 +1,12 @@
+// Title: Exchange Transport Agent Installed or Enabled
+// ATT&CK: T1505.002 | Tactic: Persistence | Sigma id: 887d60ae-6268-4741-a7ac-31f32e85d702
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Medium
+// False positives: Exchange administrators installing anti-spam, archiving or signature agents
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where ProcessCommandLine contains "Install-TransportAgent" or ProcessCommandLine contains "Enable-TransportAgent"
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

@@ -1,0 +1,8 @@
+```Title: Control Panel Item Loaded from a User-Writable Folder (raw Sysmon events)```
+```ATT&CK: T1218.002 | Severity: medium | Sigma id: b55a0044-d2d1-494c-9895-94cc617afa39```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Software installers that open their own Control Panel item from a temporary folder```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(Image="*\\control.exe" OR CommandLine="*Control_RunDLL*" CommandLine="*.cpl*" CommandLine IN ("*\\AppData\\Local\\Temp\\*", "*\\AppData\\Roaming\\*", "*\\Downloads\\*", "*\\Users\\Public\\*"))
+| table _time host User ParentImage Image CommandLine

@@ -1,0 +1,30 @@
+title: 'Debugger or Tracer Attached to a Running Process'
+id: 6ecb315b-9fc9-4bcd-b648-20d491b1867d
+status: experimental
+description: 'Detects gdb, strace or ltrace attaching to an existing process (-p / --pid / attach), which uses ptrace and can be abused to inject code or read memory.'
+references:
+  - https://attack.mitre.org/techniques/T1055/008/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.stealth
+  - attack.privilege-escalation
+  - attack.t1055.008
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection_img:
+    Image|endswith:
+      - '/gdb'
+      - '/strace'
+      - '/ltrace'
+  selection_attach:
+    CommandLine|contains:
+      - ' -p '
+      - '--pid'
+      - ' attach '
+  condition: all of selection_*
+falsepositives:
+  - 'Developers and administrators debugging live processes'
+level: low

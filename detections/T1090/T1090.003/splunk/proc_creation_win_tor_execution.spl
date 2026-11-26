@@ -1,0 +1,8 @@
+```Title: Tor Executed on Windows (raw Sysmon events)```
+```ATT&CK: T1090.003 | Severity: medium | Sigma id: 27d2dd92-84e8-4e4b-bcd9-bc0ba1928a74```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Users or researchers with approved Tor use```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(Image IN ("*\\tor.exe", "*\\Tor Browser\\*"))
+| table _time host User ParentImage Image CommandLine

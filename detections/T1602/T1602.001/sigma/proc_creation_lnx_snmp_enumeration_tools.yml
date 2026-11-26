@@ -1,0 +1,25 @@
+title: 'SNMP Walk or Community Brute-Force Tool Executed'
+id: 373bb35f-de30-43e1-9f9d-4315e75b50c1
+status: experimental
+description: 'Detects snmpwalk, snmpbulkwalk, onesixtyone and snmp-check, used to dump the MIB of network devices and servers (interfaces, routes, ARP tables, accounts, configurations) or to guess community strings.'
+references:
+  - https://attack.mitre.org/techniques/T1602/001/
+author: Detection Engineering Team
+date: 2026-11-25
+tags:
+  - attack.collection
+  - attack.t1602.001
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection:
+    Image|endswith:
+      - '/snmpwalk'
+      - '/snmpbulkwalk'
+      - '/onesixtyone'
+      - '/snmp-check'
+  condition: selection
+falsepositives:
+  - 'Network monitoring servers and administrators troubleshooting SNMP'
+level: low

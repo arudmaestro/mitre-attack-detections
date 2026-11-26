@@ -1,0 +1,26 @@
+title: 'System Information Discovery on Linux'
+id: 1624459f-f0e4-439e-bcaf-7c881a7db058
+status: experimental
+description: 'Detects uname -a and reads of /etc/os-release or /proc/version.'
+references:
+  - https://attack.mitre.org/techniques/T1082/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.discovery
+  - attack.t1082
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection_uname:
+    Image|endswith: '/uname'
+    CommandLine|contains: '-a'
+  selection_files:
+    CommandLine|contains:
+      - '/etc/os-release'
+      - '/proc/version'
+  condition: 1 of selection_*
+falsepositives:
+  - 'Installers, package managers and monitoring agents'
+level: low

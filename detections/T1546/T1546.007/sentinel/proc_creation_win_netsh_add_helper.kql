@@ -1,0 +1,12 @@
+// Title: Netsh Helper DLL Added
+// ATT&CK: T1546.007 | Tactic: PrivilegeEscalation, Persistence | Sigma id: feff39cc-af20-4abb-8b24-5eb3c52fb177
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: High
+// False positives: Rare: VPN or network software registering a helper
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where FolderPath endswith "\\netsh.exe" and ProcessCommandLine contains "add helper"
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

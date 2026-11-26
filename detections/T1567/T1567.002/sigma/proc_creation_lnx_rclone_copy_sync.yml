@@ -1,0 +1,27 @@
+title: 'Rclone Copy or Sync Run on Linux'
+id: d1e25a91-890a-4b0e-851b-5c64db8bda10
+status: experimental
+description: 'Detects rclone copy, sync, move or copyto, a tool widely used to upload stolen data to cloud storage (MEGA, S3, Dropbox, FTP/SFTP).'
+references:
+  - https://attack.mitre.org/techniques/T1567/002/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.exfiltration
+  - attack.t1567.002
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection_tool:
+    CommandLine|contains: 'rclone'
+  selection_action:
+    CommandLine|contains:
+      - ' copy '
+      - ' sync '
+      - ' move '
+      - ' copyto '
+  condition: all of selection_*
+falsepositives:
+  - 'Backup jobs that use rclone (allowlist their host, user and remote)'
+level: medium

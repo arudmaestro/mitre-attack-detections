@@ -1,0 +1,8 @@
+```Title: Guest Account Enabled via net user (raw Sysmon events)```
+```ATT&CK: T1078.001 | Severity: high | Sigma id: 0f479594-8424-46d8-983b-5a8118c36c74```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Rare: legacy kiosk configuration```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(Image IN ("*\\net.exe", "*\\net1.exe") CommandLine="*guest*" CommandLine="*/active:yes*")
+| table _time host User ParentImage Image CommandLine

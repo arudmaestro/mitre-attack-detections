@@ -1,0 +1,8 @@
+```Title: Browser Started with --load-extension (raw Sysmon events)```
+```ATT&CK: T1176.001 | Severity: high | Sigma id: d50affd1-a7f8-45eb-a467-05b0626d6872```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Extension developers and browser automation (Selenium, Puppeteer)```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(Image IN ("*\\msedge.exe", "*\\chrome.exe", "*\\brave.exe") CommandLine="*--load-extension*")
+| table _time host User ParentImage Image CommandLine

@@ -1,0 +1,8 @@
+```Title: IDE Extension Installed from a VSIX File (raw Sysmon events)```
+```ATT&CK: T1176.002 | Severity: medium | Sigma id: fa0053c3-f55a-41cd-b87e-2e43b8c6429b```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Developers installing internal or offline extensions```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(CommandLine="*--install-extension*" CommandLine="*.vsix*")
+| table _time host User ParentImage Image CommandLine

@@ -1,0 +1,12 @@
+// Title: File Written to the Startup Folder from the Command Line
+// ATT&CK: T1547.001 | Tactic: Persistence, PrivilegeEscalation | Sigma id: 61cd67b8-a2e4-425c-b46b-4174fa9cd1da
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Medium
+// False positives: Login scripts and installers that place shortcuts in the Startup folder
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where (FolderPath endswith "\\cmd.exe" or FolderPath endswith "\\powershell.exe" or FolderPath endswith "\\pwsh.exe" or FolderPath endswith "\\wscript.exe" or FolderPath endswith "\\cscript.exe" or FolderPath endswith "\\xcopy.exe" or FolderPath endswith "\\robocopy.exe" or FolderPath endswith "\\certutil.exe" or FolderPath endswith "\\bitsadmin.exe" or FolderPath endswith "\\curl.exe") and ProcessCommandLine contains "\\Start Menu\\Programs\\Startup"
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

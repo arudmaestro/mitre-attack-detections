@@ -1,0 +1,12 @@
+// Title: Local Account Created from the Command Line
+// ATT&CK: T1136.001 | Tactic: Persistence | Sigma id: 7a996bc4-f01c-4d79-9f44-da75ad049fda
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Medium
+// False positives: Administrators and provisioning scripts
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where (((FolderPath endswith "\\net.exe" or FolderPath endswith "\\net1.exe") and (ProcessCommandLine contains "user" and ProcessCommandLine contains "/add")) and (not(ProcessCommandLine contains "/domain"))) or ProcessCommandLine contains "New-LocalUser"
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

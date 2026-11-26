@@ -1,0 +1,25 @@
+title: 'AWS Bedrock Model Access Requested or Enabled'
+id: d3086da2-f172-4b15-af44-cd0e44c21020
+status: experimental
+description: 'Detects requests to enable access to Amazon Bedrock foundation models (use-case submission, model agreement, entitlement), seen when stolen AWS keys are used for LLM hijacking.'
+references:
+  - https://attack.mitre.org/techniques/T1496/004/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.impact
+  - attack.t1496.004
+logsource:
+  product: aws
+  service: cloudtrail
+detection:
+  selection:
+    eventSource: 'bedrock.amazonaws.com'
+    eventName:
+      - 'PutUseCaseForModelAccess'
+      - 'CreateFoundationModelAgreement'
+      - 'PutFoundationModelEntitlement'
+  condition: selection
+falsepositives:
+  - 'Administrators enabling Bedrock models for approved projects'
+level: medium

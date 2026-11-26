@@ -1,0 +1,22 @@
+title: 'macOS StartupItems Folder Referenced'
+id: cb7825fd-aebb-4a36-b351-dffccef581e5
+status: experimental
+description: 'Detects command lines referencing /Library/StartupItems, a legacy location for scripts run at boot.'
+references:
+  - https://attack.mitre.org/techniques/T1037/005/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.persistence
+  - attack.privilege-escalation
+  - attack.t1037.005
+logsource:
+  category: process_creation
+  product: macos
+detection:
+  selection:
+    CommandLine|contains: '/Library/StartupItems'
+  condition: selection
+falsepositives:
+  - 'Legacy software installers'
+level: medium

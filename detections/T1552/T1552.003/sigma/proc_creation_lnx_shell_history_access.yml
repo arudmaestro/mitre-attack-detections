@@ -1,0 +1,25 @@
+title: 'Shell History File Accessed on Linux'
+id: 7b50efa9-e25c-45af-b3f2-7a8e7cebc8ed
+status: experimental
+description: 'Detects a command line that references a shell or client history file (.bash_history, .zsh_history, .sh_history, .mysql_history), which can contain passwords typed on the command line.'
+references:
+  - https://attack.mitre.org/techniques/T1552/003/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.credential-access
+  - attack.t1552.003
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection:
+    CommandLine|contains:
+      - '.bash_history'
+      - '.zsh_history'
+      - '.sh_history'
+      - '.mysql_history'
+  condition: selection
+falsepositives:
+  - 'Administrators reviewing history files; backup tools'
+level: low

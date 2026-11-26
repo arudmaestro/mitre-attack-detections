@@ -1,0 +1,13 @@
+// Title: AWS Bedrock Model Access Requested or Enabled
+// ATT&CK: T1496.004 | Tactic: Impact | Sigma id: d3086da2-f172-4b15-af44-cd0e44c21020
+// Data source: AWSCloudTrail (Amazon Web Services connector)
+// Severity: Medium
+// False positives: Administrators enabling Bedrock models for approved projects
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Account = UserIdentityArn, IP = SourceIpAddress
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+AWSCloudTrail
+| where TimeGenerated > ago(1d)
+| where EventSource == "bedrock.amazonaws.com"
+| where EventName in ("PutUseCaseForModelAccess", "CreateFoundationModelAgreement", "PutFoundationModelEntitlement")
+| project TimeGenerated, EventSource, EventName, UserIdentityArn, SourceIpAddress, AWSRegion, ErrorCode, RequestParameters

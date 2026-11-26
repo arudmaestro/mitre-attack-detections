@@ -1,0 +1,37 @@
+title: 'MSBuild Running a Project from a User-Writable Path or Script Host'
+id: 1a1222a0-958f-4301-97d6-b4916793c323
+status: experimental
+description: 'Detects MSBuild.exe building a project from AppData, Temp, Public or ProgramData, or started by a script host or Office application, a common way to run inline C# tasks.'
+references:
+  - https://attack.mitre.org/techniques/T1127/001/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.stealth
+  - attack.execution
+  - attack.t1127.001
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_img:
+    Image|endswith: '\MSBuild.exe'
+  selection_path:
+    CommandLine|contains:
+      - '\AppData\'
+      - '\Temp\'
+      - '\Users\Public\'
+      - '\ProgramData\'
+  selection_parent:
+    ParentImage|endswith:
+      - '\wscript.exe'
+      - '\cscript.exe'
+      - '\mshta.exe'
+      - '\winword.exe'
+      - '\excel.exe'
+      - '\powerpnt.exe'
+      - '\outlook.exe'
+  condition: selection_img and (selection_path or selection_parent)
+falsepositives:
+  - 'Build agents and developers building projects from temp folders'
+level: medium

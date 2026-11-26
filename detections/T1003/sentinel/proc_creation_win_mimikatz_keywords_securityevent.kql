@@ -1,0 +1,13 @@
+// Title: Mimikatz Module Keywords in Command Line
+// ATT&CK: T1003 | Tactic: CredentialAccess | Sigma id: 34c4da1b-540f-4f9e-956c-9cc1a65d66ba
+// Data source: SecurityEvent 4688 (Windows Security Events connector; needs process creation and command-line auditing enabled)
+// Severity: High
+// False positives: Authorised red team or penetration testing
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = Computer, Account = SubjectUserName
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+SecurityEvent
+| where TimeGenerated > ago(1d)
+| where EventID == 4688
+| where CommandLine contains "sekurlsa::" or CommandLine contains "lsadump::" or CommandLine contains "kerberos::" or CommandLine contains "crypto::" or CommandLine contains "dpapi::" or CommandLine contains "vault::" or CommandLine contains "token::elevate" or CommandLine contains "privilege::debug"
+| project TimeGenerated, Computer, SubjectUserName, ParentProcessName, NewProcessName, CommandLine

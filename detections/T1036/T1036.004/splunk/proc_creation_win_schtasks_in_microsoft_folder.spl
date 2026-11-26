@@ -1,0 +1,8 @@
+```Title: Scheduled Task Created in the Microsoft\Windows Task Folder via schtasks (raw Sysmon events)```
+```ATT&CK: T1036.004 | Severity: medium | Sigma id: c7f3ad61-3a0f-4b4f-b26e-18ef295ea2cf```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Rare: vendor installers that register tasks under \Microsoft\Windows\ with schtasks```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(Image="*\\schtasks.exe" CommandLine="*/create*" CommandLine="*Microsoft\\Windows\\*")
+| table _time host User ParentImage Image CommandLine

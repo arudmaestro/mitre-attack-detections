@@ -1,0 +1,13 @@
+// Title: LSASS Memory Dump via Comsvcs MiniDump or ProcDump
+// ATT&CK: T1003.001 | Tactic: CredentialAccess | Sigma id: 87c20870-1627-4277-9953-8530f1f2c6e3
+// Data source: SecurityEvent 4688 (Windows Security Events connector; needs process creation and command-line auditing enabled)
+// Severity: High
+// False positives: Troubleshooting LSASS crashes with ProcDump under change control
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = Computer, Account = SubjectUserName
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+SecurityEvent
+| where TimeGenerated > ago(1d)
+| where EventID == 4688
+| where ((NewProcessName endswith "\\rundll32.exe" and CommandLine contains "comsvcs") and (CommandLine contains "minidump" or CommandLine contains "#24")) or (CommandLine contains " -ma " and CommandLine contains "lsass")
+| project TimeGenerated, Computer, SubjectUserName, ParentProcessName, NewProcessName, CommandLine

@@ -1,0 +1,8 @@
+```Title: C# or VB.NET Compiler Launched by Script Host or Office (raw Sysmon events)```
+```ATT&CK: T1027.004 | Severity: high | Sigma id: 67700421-f39c-4452-ba3a-73684da018b2```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Office add-ins or legacy scripts that compile code at run time```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(Image IN ("*\\csc.exe", "*\\vbc.exe") ParentImage IN ("*\\wscript.exe", "*\\cscript.exe", "*\\mshta.exe", "*\\winword.exe", "*\\excel.exe", "*\\powerpnt.exe", "*\\outlook.exe"))
+| table _time host User ParentImage Image CommandLine

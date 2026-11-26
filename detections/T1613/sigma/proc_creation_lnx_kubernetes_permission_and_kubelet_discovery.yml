@@ -1,0 +1,25 @@
+title: 'Kubernetes Permission or Kubelet Discovery'
+id: 5c26fd68-fede-45d0-85d5-08fbf374afd2
+status: experimental
+description: 'Detects kubectl auth can-i (listing what the current identity may do), and command lines that query the in-cluster API (kubernetes.default.svc) or the kubelet API on port 10250 for pods; typical for attackers inside a compromised pod.'
+references:
+  - https://attack.mitre.org/techniques/T1613/
+author: Detection Engineering Team
+date: 2026-11-25
+tags:
+  - attack.discovery
+  - attack.t1613
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection:
+    CommandLine|contains:
+      - 'auth can-i'
+      - 'kubernetes.default.svc'
+      - ':10250/pods'
+      - ':10250/runningpods'
+  condition: selection
+falsepositives:
+  - 'Administrators and CI checking permissions; operators debugging the kubelet'
+level: medium

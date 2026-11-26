@@ -1,0 +1,12 @@
+// Title: Web Server Process Running Discovery or Download Tools on Linux
+// ATT&CK: T1505.003 | Tactic: Persistence | Sigma id: afe8a1d7-ac74-4bbd-ab20-37106fdf3a9d
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: High
+// False positives: Web applications that call these tools by design (allowlist by command line)
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where ((InitiatingProcessFolderPath endswith "/httpd" or InitiatingProcessFolderPath endswith "/apache2" or InitiatingProcessFolderPath endswith "/nginx" or InitiatingProcessFolderPath endswith "/lighttpd") or InitiatingProcessFolderPath contains "/php-fpm") and (FolderPath endswith "/curl" or FolderPath endswith "/wget" or FolderPath endswith "/nc" or FolderPath endswith "/ncat" or FolderPath endswith "/netcat" or FolderPath endswith "/python" or FolderPath endswith "/python3" or FolderPath endswith "/perl" or FolderPath endswith "/id" or FolderPath endswith "/uname" or FolderPath endswith "/whoami")
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

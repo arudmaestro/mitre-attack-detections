@@ -1,0 +1,12 @@
+// Title: Kerberos Credential Cache File Accessed on Linux
+// ATT&CK: T1558.005 | Tactic: CredentialAccess | Sigma id: d494f56c-cb1b-47e6-84f4-088536c36f89
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Medium
+// False positives: Scripts that set KRB5CCNAME for service accounts; backup tools
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where ProcessCommandLine contains "/tmp/krb5cc_" and (not((FolderPath endswith "/klist" or FolderPath endswith "/kinit" or FolderPath endswith "/kdestroy")))
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

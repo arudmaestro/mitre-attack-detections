@@ -1,0 +1,28 @@
+title: 'Outlook Data File (.pst/.ost) Accessed Outside Outlook'
+id: e613d3e0-fdce-4903-8bd4-238d3418774f
+status: experimental
+description: 'Detects command lines referencing .pst or .ost mailbox files from processes other than Outlook, such as copy, archive or upload tools.'
+references:
+  - https://attack.mitre.org/techniques/T1114/001/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.collection
+  - attack.t1114.001
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - '.pst'
+      - '.ost'
+  filter_outlook:
+    Image|endswith:
+      - '\outlook.exe'
+      - '\scanpst.exe'
+  condition: selection and not filter_outlook
+falsepositives:
+  - 'Mailbox migration or backup tools'
+  - 'Users moving their own PST archives'
+level: low

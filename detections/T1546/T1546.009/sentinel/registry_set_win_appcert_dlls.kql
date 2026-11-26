@@ -1,0 +1,14 @@
+// Title: AppCert DLL Registered
+// ATT&CK: T1546.009 | Tactic: PrivilegeEscalation, Persistence | Sigma id: da177fb9-3891-4014-94f4-a8dade326c6d
+// Data source: DeviceRegistryEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: High
+// False positives: Rare: application-control or security products using AppCertDlls
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = InitiatingProcessAccountName, RegistryKey = RegistryKey, RegistryValue = RegistryValueName
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceRegistryEvents
+| where TimeGenerated > ago(1d)
+| where ActionType == "RegistryValueSet"
+| extend TargetObject = strcat(RegistryKey, "\\", RegistryValueName)
+| where TargetObject contains "\\Session Manager\\AppCertDlls\\"
+| project TimeGenerated, DeviceName, ActionType, InitiatingProcessAccountName, InitiatingProcessFolderPath, InitiatingProcessCommandLine, RegistryKey, RegistryValueName, RegistryValueType, RegistryValueData

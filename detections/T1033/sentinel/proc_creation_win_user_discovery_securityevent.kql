@@ -1,0 +1,13 @@
+// Title: System Owner/User Discovery via whoami or quser
+// ATT&CK: T1033 | Tactic: Discovery | Sigma id: b4e2da18-2995-4e1c-86bd-3011e7492558
+// Data source: SecurityEvent 4688 (Windows Security Events connector; needs process creation and command-line auditing enabled)
+// Severity: Low
+// False positives: Administrators, login scripts and IT tools
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = Computer, Account = SubjectUserName
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+SecurityEvent
+| where TimeGenerated > ago(1d)
+| where EventID == 4688
+| where NewProcessName endswith "\\whoami.exe" or NewProcessName endswith "\\quser.exe" or (NewProcessName endswith "\\query.exe" and CommandLine contains "user")
+| project TimeGenerated, Computer, SubjectUserName, ParentProcessName, NewProcessName, CommandLine

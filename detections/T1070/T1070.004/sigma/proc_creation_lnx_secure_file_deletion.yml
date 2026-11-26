@@ -1,0 +1,24 @@
+title: 'Secure File Deletion Tool Executed on Linux'
+id: 43cb7b49-0c01-4733-9d2d-728f0c1b16e6
+status: experimental
+description: 'Detects shred, srm or wipe, used to overwrite files before deletion.'
+references:
+  - https://attack.mitre.org/techniques/T1070/004/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.stealth
+  - attack.t1070.004
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection:
+    Image|endswith:
+      - '/shred'
+      - '/srm'
+      - '/wipe'
+  condition: selection
+falsepositives:
+  - 'Administrators securely removing sensitive files'
+level: low

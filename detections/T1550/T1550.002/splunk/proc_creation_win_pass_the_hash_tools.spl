@@ -1,0 +1,8 @@
+```Title: Pass-the-Hash Tool Command Line on Windows (raw Sysmon events)```
+```ATT&CK: T1550.002 | Severity: high | Sigma id: 3a4bf8d0-a118-4502-a145-b8c0fb40eea7```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Penetration tests and red-team exercises```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(CommandLine IN ("*sekurlsa::pth*", "*Invoke-TheHash*", "*Invoke-SMBExec*", "*Invoke-WMIExec*", "*Invoke-SMBClient*"))
+| table _time host User ParentImage Image CommandLine

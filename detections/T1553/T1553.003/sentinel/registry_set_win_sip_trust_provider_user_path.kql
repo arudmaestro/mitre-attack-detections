@@ -1,0 +1,14 @@
+// Title: SIP or Trust Provider DLL Registered from a User-Writable Folder
+// ATT&CK: T1553.003 | Tactic: DefenseImpairment | Sigma id: f16fc65f-4f27-4591-be8d-bba8495adaf5
+// Data source: DeviceRegistryEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: High
+// False positives: None expected
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = InitiatingProcessAccountName, RegistryKey = RegistryKey, RegistryValue = RegistryValueName
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceRegistryEvents
+| where TimeGenerated > ago(1d)
+| where ActionType == "RegistryValueSet"
+| extend TargetObject = strcat(RegistryKey, "\\", RegistryValueName)
+| where ((TargetObject contains "\\CryptSIPDll" and TargetObject endswith "\\Dll") or (TargetObject contains "\\Cryptography\\Providers\\Trust\\" and TargetObject endswith "\\$DLL")) and (RegistryValueData contains "\\AppData\\Local\\Temp\\" or RegistryValueData contains "\\AppData\\Roaming\\" or RegistryValueData contains "\\Users\\Public\\" or RegistryValueData contains "\\Downloads\\")
+| project TimeGenerated, DeviceName, ActionType, InitiatingProcessAccountName, InitiatingProcessFolderPath, InitiatingProcessCommandLine, RegistryKey, RegistryValueName, RegistryValueType, RegistryValueData

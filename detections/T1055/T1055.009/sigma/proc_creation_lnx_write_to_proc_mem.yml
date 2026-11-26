@@ -1,0 +1,24 @@
+title: 'Write to Process Memory via /proc/<pid>/mem with dd'
+id: f7e44853-ce1f-4260-8399-bdf58fcc9fa4
+status: experimental
+description: 'Detects dd writing to /proc/<pid>/mem, used to inject shellcode into a running process without ptrace.'
+references:
+  - https://attack.mitre.org/techniques/T1055/009/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.stealth
+  - attack.privilege-escalation
+  - attack.t1055.009
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection_write:
+    CommandLine|contains: 'of=/proc/'
+  selection_mem:
+    CommandLine|contains: '/mem'
+  condition: all of selection_*
+falsepositives:
+  - 'None expected'
+level: high

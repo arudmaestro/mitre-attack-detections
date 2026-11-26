@@ -1,0 +1,12 @@
+// Title: Browser Opening a Local SVG File from Mail or Download Folders
+// ATT&CK: T1027.017 | Tactic: Stealth | Sigma id: 8233c4e4-b3c2-4e40-b0df-db5310f16012
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Medium
+// False positives: Users opening legitimate SVG images received by email
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where (FolderPath endswith "\\msedge.exe" or FolderPath endswith "\\chrome.exe" or FolderPath endswith "\\firefox.exe" or FolderPath endswith "\\brave.exe" or FolderPath endswith "\\opera.exe") and ProcessCommandLine contains ".svg" and (ProcessCommandLine contains "\\Content.Outlook\\" or ProcessCommandLine contains "\\Olk\\" or ProcessCommandLine contains "\\INetCache\\" or ProcessCommandLine contains "\\Downloads\\" or ProcessCommandLine contains "\\Temp\\")
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

@@ -1,0 +1,33 @@
+title: 'Web Server Process Spawning a Shell on Linux'
+id: d2f03aeb-6cec-4f1c-99be-9bb0d6b05261
+status: experimental
+description: 'Detects Apache, nginx, lighttpd or PHP-FPM processes starting a shell, a sign of exploitation or a web shell.'
+references:
+  - https://attack.mitre.org/techniques/T1190/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.initial-access
+  - attack.t1190
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection_parent:
+    ParentImage|endswith:
+      - '/httpd'
+      - '/apache2'
+      - '/nginx'
+      - '/lighttpd'
+  selection_php:
+    ParentImage|contains: '/php-fpm'
+  selection_child:
+    Image|endswith:
+      - '/sh'
+      - '/bash'
+      - '/dash'
+      - '/zsh'
+  condition: (selection_parent or selection_php) and selection_child
+falsepositives:
+  - 'CGI scripts and web applications that run shell commands by design'
+level: high

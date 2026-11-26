@@ -1,0 +1,24 @@
+title: 'Browser Bookmarks or History Read from the Command Line on Windows'
+id: c1b5a0c4-455e-4d47-ab77-255cae402761
+status: experimental
+description: 'Detects a command line that references Chromium-based browser Bookmarks/History files or the Firefox places.sqlite database.'
+references:
+  - https://attack.mitre.org/techniques/T1217/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.discovery
+  - attack.t1217
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - '\User Data\Default\Bookmarks'
+      - '\User Data\Default\History'
+      - '\places.sqlite'
+  condition: selection
+falsepositives:
+  - 'Backup and browser-migration tools'
+level: low

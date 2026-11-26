@@ -1,0 +1,14 @@
+// Title: Active Setup StubPath Set to a Script Host or a File in Temp or Public
+// ATT&CK: T1547.014 | Tactic: Persistence, PrivilegeEscalation | Sigma id: 18a87ff0-2ba4-488a-8f50-a3fc32864f74
+// Data source: DeviceRegistryEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Medium
+// False positives: Enterprise software deployment that uses Active Setup scripts per user
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = InitiatingProcessAccountName, RegistryKey = RegistryKey, RegistryValue = RegistryValueName
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceRegistryEvents
+| where TimeGenerated > ago(1d)
+| where ActionType == "RegistryValueSet"
+| extend TargetObject = strcat(RegistryKey, "\\", RegistryValueName)
+| where TargetObject contains "\\Active Setup\\Installed Components\\" and TargetObject endswith "\\StubPath" and (RegistryValueData contains "powershell" or RegistryValueData contains "pwsh" or RegistryValueData contains "mshta" or RegistryValueData contains "wscript" or RegistryValueData contains "cscript" or RegistryValueData contains "regsvr32" or RegistryValueData contains "cmd.exe /c" or RegistryValueData contains "cmd /c" or RegistryValueData contains "%COMSPEC%" or RegistryValueData contains "\\AppData\\Local\\Temp\\" or RegistryValueData contains "\\Users\\Public\\")
+| project TimeGenerated, DeviceName, ActionType, InitiatingProcessAccountName, InitiatingProcessFolderPath, InitiatingProcessCommandLine, RegistryKey, RegistryValueName, RegistryValueType, RegistryValueData

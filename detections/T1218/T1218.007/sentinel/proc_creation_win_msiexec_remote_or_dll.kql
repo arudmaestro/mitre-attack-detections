@@ -1,0 +1,12 @@
+// Title: Msiexec Installing from a URL or Registering a DLL
+// ATT&CK: T1218.007 | Tactic: Stealth | Sigma id: bbd745e6-1a7c-47b7-931b-f42dbfb0046a
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Medium
+// False positives: Software deployment that installs MSI packages from an internal web server
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where FolderPath endswith "\\msiexec.exe" and ((ProcessCommandLine contains "http://" or ProcessCommandLine contains "https://") or (ProcessCommandLine contains " /y" or ProcessCommandLine contains " -y" or ProcessCommandLine contains " /z" or ProcessCommandLine contains " -z"))
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

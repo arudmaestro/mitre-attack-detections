@@ -1,0 +1,13 @@
+// Title: AWS IAM MFA Device Deactivated or Deleted
+// ATT&CK: T1556.006 | Tactic: DefenseImpairment, Persistence, CredentialAccess | Sigma id: 9895673e-0462-4369-9b91-78237a70dcf1
+// Data source: AWSCloudTrail (Amazon Web Services connector)
+// Severity: Medium
+// False positives: Users replacing a lost or new MFA device (followed by EnableMFADevice)
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Account = UserIdentityArn, IP = SourceIpAddress
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+AWSCloudTrail
+| where TimeGenerated > ago(1d)
+| where EventSource == "iam.amazonaws.com"
+| where EventName in ("DeactivateMFADevice", "DeleteVirtualMFADevice")
+| project TimeGenerated, EventSource, EventName, UserIdentityArn, SourceIpAddress, AWSRegion, ErrorCode, RequestParameters

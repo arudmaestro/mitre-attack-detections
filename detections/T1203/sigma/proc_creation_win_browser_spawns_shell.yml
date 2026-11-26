@@ -1,0 +1,39 @@
+title: 'Web Browser Spawning a Shell or Script Host'
+id: ac422a4d-2cdf-4fe1-9257-1789f0e4c30d
+status: experimental
+description: 'Detects Chrome, Edge, Firefox, Brave or Internet Explorer starting a shell or script host, a sign of a browser exploit. Native-messaging hosts started through cmd.exe (command line with chrome-extension://) are excluded.'
+references:
+  - https://attack.mitre.org/techniques/T1203/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.execution
+  - attack.t1203
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_parent:
+    ParentImage|endswith:
+      - '\chrome.exe'
+      - '\msedge.exe'
+      - '\firefox.exe'
+      - '\brave.exe'
+      - '\iexplore.exe'
+  selection_child:
+    Image|endswith:
+      - '\cmd.exe'
+      - '\powershell.exe'
+      - '\pwsh.exe'
+      - '\wscript.exe'
+      - '\cscript.exe'
+      - '\mshta.exe'
+      - '\rundll32.exe'
+      - '\regsvr32.exe'
+  filter_native_messaging:
+    CommandLine|contains: 'chrome-extension://'
+  condition: all of selection_* and not filter_native_messaging
+falsepositives:
+  - 'Browser extensions with native-messaging hosts that are scripts'
+  - 'Users opening downloaded .bat/.cmd/.hta files directly from the browser''s download bar'
+level: medium

@@ -1,0 +1,46 @@
+title: 'Shell or Script Host Connected to an Uncommon Port'
+id: 26deebc2-c2f4-43f6-bbe2-7baa496e905c
+status: experimental
+description: 'Detects PowerShell, cmd, mshta, script hosts, rundll32, regsvr32 or MSBuild opening an outbound connection to a port other than common web, DNS, Kerberos, LDAP, SMB, RPC and WinRM ports; reverse shells and loaders often use ports such as 4444, 1337 or 8888.'
+references:
+  - https://attack.mitre.org/techniques/T1571/
+author: Detection Engineering Team
+date: 2026-11-25
+tags:
+  - attack.command-and-control
+  - attack.t1571
+logsource:
+  category: network_connection
+  product: windows
+detection:
+  selection:
+    Initiated: 'true'
+    Image|endswith:
+      - '\powershell.exe'
+      - '\pwsh.exe'
+      - '\cmd.exe'
+      - '\mshta.exe'
+      - '\wscript.exe'
+      - '\cscript.exe'
+      - '\rundll32.exe'
+      - '\regsvr32.exe'
+      - '\MSBuild.exe'
+  filter_common_ports:
+    DestinationPort:
+      - 53
+      - 80
+      - 88
+      - 135
+      - 389
+      - 443
+      - 445
+      - 636
+      - 3268
+      - 5985
+      - 5986
+      - 8080
+      - 8443
+  condition: selection and not filter_common_ports
+falsepositives:
+  - 'Administration scripts that connect to databases, SSH or custom application ports'
+level: low

@@ -1,0 +1,24 @@
+title: 'Browser Cookie Store Accessed from the Command Line on Linux'
+id: a7bdfa6b-68fe-45af-a8c6-52b11ec60ce8
+status: experimental
+description: 'Detects a command line that references browser cookie stores (Chromium Cookies databases, Firefox cookies.sqlite), typical of cookie-theft scripts and tools.'
+references:
+  - https://attack.mitre.org/techniques/T1539/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.credential-access
+  - attack.t1539
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection:
+    CommandLine|contains:
+      - '/Default/Cookies'
+      - '/Network/Cookies'
+      - '/cookies.sqlite'
+  condition: selection
+falsepositives:
+  - 'Backup and browser-migration scripts'
+level: medium

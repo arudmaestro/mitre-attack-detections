@@ -1,0 +1,13 @@
+// Title: Volumes or Disks Enumerated with PowerShell or mountvol
+// ATT&CK: T1680 | Tactic: Discovery | Sigma id: 626e085d-0ba2-4f98-a42f-629663fed557
+// Data source: SecurityEvent 4688 (Windows Security Events connector; needs process creation and command-line auditing enabled)
+// Severity: Low
+// False positives: Inventory, backup and disk management scripts
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = Computer, Account = SubjectUserName
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+SecurityEvent
+| where TimeGenerated > ago(1d)
+| where EventID == 4688
+| where (CommandLine contains "Get-Volume" or CommandLine contains "Get-Disk" or CommandLine contains "Get-Partition" or CommandLine contains "Get-PSDrive" or CommandLine contains "Win32_Volume" or CommandLine contains "Win32_LogicalDisk") or NewProcessName endswith "\\mountvol.exe"
+| project TimeGenerated, Computer, SubjectUserName, ParentProcessName, NewProcessName, CommandLine

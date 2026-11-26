@@ -1,0 +1,8 @@
+```Title: Browser Started with Remote Debugging Enabled (raw Sysmon events)```
+```ATT&CK: T1185 | Severity: high | Sigma id: e04f102a-056b-4c33-ad7a-9979ee96f893```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Developers and test automation (Puppeteer, Playwright, Selenium)```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(Image IN ("*\\msedge.exe", "*\\chrome.exe", "*\\brave.exe") CommandLine IN ("*--remote-debugging-port*", "*--remote-debugging-pipe*"))
+| table _time host User ParentImage Image CommandLine

@@ -1,0 +1,8 @@
+```Title: Shadow Copies, Backups or Boot Recovery Deleted or Disabled (raw Sysmon events)```
+```ATT&CK: T1490 | Severity: high | Sigma id: deaf2c80-edd5-481a-9bd8-da0ace14640c```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Backup software rotating its own shadow copies (check the parent process); Administrators freeing disk space```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+((Image="*\\vssadmin.exe" CommandLine IN ("*delete shadows*", "*resize shadowstorage*")) OR (Image="*\\wmic.exe" CommandLine="*shadowcopy*" CommandLine="*delete*") OR (Image="*\\wbadmin.exe" CommandLine IN ("*delete catalog*", "*delete systemstatebackup*", "*delete backup*")) OR (Image="*\\bcdedit.exe" CommandLine IN ("*recoveryenabled*", "*ignoreallfailures*")) OR (CommandLine="*Win32_Shadowcopy*" CommandLine IN ("*Delete*", "*Remove-WmiObject*", "*Remove-CimInstance*")))
+| table _time host User ParentImage Image CommandLine

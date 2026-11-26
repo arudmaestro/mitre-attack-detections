@@ -1,0 +1,8 @@
+```Title: Security Software Discovery on Windows (raw Sysmon events)```
+```ATT&CK: T1518.001 | Severity: low | Sigma id: a1109a39-c8b5-4397-a9c3-4f4fbaeb60bc```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Inventory, compliance and support tools checking antivirus status```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity low.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(CommandLine IN ("*SecurityCenter2*", "*AntiVirusProduct*", "*FirewallProduct*", "*Get-MpComputerStatus*", "*Get-MpPreference*") OR Image="*\\fltMC.exe")
+| table _time host User ParentImage Image CommandLine

@@ -1,0 +1,12 @@
+```Title: VMware Tools Started a Shell or Script Host (CIM Endpoint.Processes)```
+```ATT&CK: T1675 | Severity: medium | Sigma id: 8f4ac52d-a6f3-4584-b761-2393f9e3469a```
+```Data source: CIM Endpoint.Processes data model. summariesonly=false works without acceleration; set true once the data model is accelerated.```
+```False positives: VMware administrators running guest scripts with PowerCLI Invoke-VMScript```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+| tstats summariesonly=false allow_old_summaries=true fillnull_value="null" count min(_time) as firstTime max(_time) as lastTime
+    from datamodel=Endpoint.Processes
+    where Processes.parent_process_name="vmtoolsd.exe" Processes.process_name IN ("cmd.exe", "powershell.exe", "pwsh.exe", "wscript.exe", "cscript.exe", "mshta.exe") NOT (Processes.process IN ("*poweron-vm-default*", "*poweroff-vm-default*", "*resume-vm-default*", "*suspend-vm-default*"))
+    by Processes.process Processes.dest Processes.process_current_directory Processes.process_path Processes.process_integrity_level Processes.original_file_name Processes.parent_process Processes.parent_process_path Processes.parent_process_guid Processes.parent_process_id Processes.process_guid Processes.process_id Processes.user
+| rename Processes.* as *
+| convert timeformat="%Y-%m-%dT%H:%M:%S" ctime(firstTime)
+| convert timeformat="%Y-%m-%dT%H:%M:%S" ctime(lastTime)

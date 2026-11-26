@@ -1,0 +1,27 @@
+title: 'Print Processor Registered'
+id: 2c596d37-4285-4b78-a1f4-a85952b26d99
+status: experimental
+description: 'Detects a print processor Driver value other than the default winprint.dll; print processor DLLs are loaded by the print spooler as SYSTEM.'
+references:
+  - https://attack.mitre.org/techniques/T1547/012/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.persistence
+  - attack.privilege-escalation
+  - attack.t1547.012
+logsource:
+  category: registry_set
+  product: windows
+detection:
+  selection_env:
+    TargetObject|contains: '\Control\Print\Environments\'
+  selection_processor:
+    TargetObject|contains: '\Print Processors\'
+    TargetObject|endswith: '\Driver'
+  filter_default:
+    Details: 'winprint.dll'
+  condition: selection_env and selection_processor and not filter_default
+falsepositives:
+  - 'Printer drivers that install vendor print processors'
+level: medium

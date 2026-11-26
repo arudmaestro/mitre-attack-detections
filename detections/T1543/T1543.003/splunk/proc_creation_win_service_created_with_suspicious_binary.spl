@@ -1,0 +1,8 @@
+```Title: Service Created or Changed to Run a Script Host or a File in a User Folder (raw Sysmon events)```
+```ATT&CK: T1543.003 | Severity: high | Sigma id: 913cef8b-9412-4d5b-b27f-5b8410e796cd```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Software installers that wrap services in a script (rare)```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+((Image="*\\sc.exe" CommandLine IN ("*create*", "*config*")) OR CommandLine="*New-Service*" CommandLine IN ("*powershell*", "*pwsh*", "*mshta*", "*wscript*", "*cscript*", "*regsvr32*", "*cmd.exe /c*", "*cmd /c*", "*%COMSPEC%*", "*\\AppData\\Local\\Temp\\*", "*\\Users\\Public\\*"))
+| table _time host User ParentImage Image CommandLine

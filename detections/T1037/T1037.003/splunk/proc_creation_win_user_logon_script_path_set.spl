@@ -1,0 +1,8 @@
+```Title: User Logon Script Path Set via net user or Set-ADUser (raw Sysmon events)```
+```ATT&CK: T1037.003 | Severity: medium | Sigma id: 32f0d9cc-d444-4855-ba7b-7285c6ce0038```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Administrators assigning logon scripts```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+((Image IN ("*\\net.exe", "*\\net1.exe") CommandLine="*/scriptpath:*") OR (CommandLine="*Set-ADUser*" CommandLine="*-ScriptPath*"))
+| table _time host User ParentImage Image CommandLine

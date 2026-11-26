@@ -1,0 +1,25 @@
+title: 'Application Window Discovery via PowerShell MainWindowTitle'
+id: 10b9d3e0-fbfa-4a37-a4ad-b827f250cb1c
+status: experimental
+description: 'Detects PowerShell command lines reading MainWindowTitle to list open application windows.'
+references:
+  - https://attack.mitre.org/techniques/T1010/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.discovery
+  - attack.t1010
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_img:
+    Image|endswith:
+      - '\powershell.exe'
+      - '\pwsh.exe'
+  selection_cli:
+    CommandLine|contains: 'MainWindowTitle'
+  condition: all of selection_*
+falsepositives:
+  - Administrative and monitoring scripts
+level: low

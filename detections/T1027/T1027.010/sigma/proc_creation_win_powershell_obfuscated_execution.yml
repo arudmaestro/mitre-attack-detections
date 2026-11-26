@@ -1,0 +1,33 @@
+title: 'Obfuscated PowerShell Execution (Base64 + IEX or Char Join)'
+id: 6e81c18d-629d-487d-9023-82af41a1cfea
+status: experimental
+description: 'Detects PowerShell command lines that decode Base64 and execute it with Invoke-Expression, or build commands from [char] arrays with -join.'
+references:
+  - https://attack.mitre.org/techniques/T1027/010/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.stealth
+  - attack.t1027.010
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_img:
+    Image|endswith:
+      - '\powershell.exe'
+      - '\pwsh.exe'
+  selection_b64:
+    CommandLine|contains: 'FromBase64String'
+  selection_iex:
+    CommandLine|contains:
+      - 'IEX'
+      - 'Invoke-Expression'
+  selection_charjoin:
+    CommandLine|contains|all:
+      - '[char]'
+      - '-join'
+  condition: selection_img and ((selection_b64 and selection_iex) or selection_charjoin)
+falsepositives:
+  - Some legitimate deployment or management scripts
+level: medium

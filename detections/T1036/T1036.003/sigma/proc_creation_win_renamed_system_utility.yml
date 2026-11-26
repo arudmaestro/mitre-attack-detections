@@ -1,0 +1,43 @@
+title: 'Renamed Windows Utility (OriginalFileName Mismatch)'
+id: 088f58e3-432d-4b45-a4dd-1ea178e58172
+status: experimental
+description: 'Detects common Windows utilities (cmd, PowerShell, certutil, rundll32, mshta, regsvr32) running under a different file name, based on the PE OriginalFileName.'
+references:
+  - https://attack.mitre.org/techniques/T1036/003/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.stealth
+  - attack.t1036.003
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_cmd:
+    OriginalFileName: 'Cmd.Exe'
+  filter_cmd:
+    Image|endswith: '\cmd.exe'
+  selection_powershell:
+    OriginalFileName: 'PowerShell.EXE'
+  filter_powershell:
+    Image|endswith: '\powershell.exe'
+  selection_certutil:
+    OriginalFileName: 'CertUtil.exe'
+  filter_certutil:
+    Image|endswith: '\certutil.exe'
+  selection_rundll32:
+    OriginalFileName: 'RUNDLL32.EXE'
+  filter_rundll32:
+    Image|endswith: '\rundll32.exe'
+  selection_mshta:
+    OriginalFileName: 'MSHTA.EXE'
+  filter_mshta:
+    Image|endswith: '\mshta.exe'
+  selection_regsvr32:
+    OriginalFileName: 'REGSVR32.EXE'
+  filter_regsvr32:
+    Image|endswith: '\regsvr32.exe'
+  condition: (selection_cmd and not filter_cmd) or (selection_powershell and not filter_powershell) or (selection_certutil and not filter_certutil) or (selection_rundll32 and not filter_rundll32) or (selection_mshta and not filter_mshta) or (selection_regsvr32 and not filter_regsvr32)
+falsepositives:
+  - 'Software that ships a renamed copy of a Windows utility'
+level: high

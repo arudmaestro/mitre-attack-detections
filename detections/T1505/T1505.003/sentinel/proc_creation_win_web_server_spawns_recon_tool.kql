@@ -1,0 +1,12 @@
+// Title: Web Server Process Running Discovery or Download Tools on Windows
+// ATT&CK: T1505.003 | Tactic: Persistence | Sigma id: 6a1bebc4-1f25-4a85-8307-2149fc13bd6c
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: High
+// False positives: Web applications that query system information through command-line tools by design
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where (InitiatingProcessFolderPath endswith "\\w3wp.exe" or InitiatingProcessFolderPath endswith "\\httpd.exe" or InitiatingProcessFolderPath endswith "\\nginx.exe" or InitiatingProcessFolderPath endswith "\\php-cgi.exe" or InitiatingProcessFolderPath endswith "\\tomcat.exe" or InitiatingProcessFolderPath endswith "\\tomcat8.exe" or InitiatingProcessFolderPath endswith "\\tomcat9.exe") and (FolderPath endswith "\\net.exe" or FolderPath endswith "\\net1.exe" or FolderPath endswith "\\ipconfig.exe" or FolderPath endswith "\\systeminfo.exe" or FolderPath endswith "\\nltest.exe" or FolderPath endswith "\\quser.exe" or FolderPath endswith "\\query.exe" or FolderPath endswith "\\tasklist.exe" or FolderPath endswith "\\hostname.exe" or FolderPath endswith "\\certutil.exe" or FolderPath endswith "\\curl.exe" or FolderPath endswith "\\bitsadmin.exe" or FolderPath endswith "\\reg.exe")
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

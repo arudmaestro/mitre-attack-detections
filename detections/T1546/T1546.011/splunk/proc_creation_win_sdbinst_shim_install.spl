@@ -1,0 +1,8 @@
+```Title: Application Compatibility Shim Database Installed (raw Sysmon events)```
+```ATT&CK: T1546.011 | Severity: medium | Sigma id: c810e881-99c2-4d1e-9c1b-c4c3b10333b9```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Software installers that ship compatibility fixes```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(Image="*\\sdbinst.exe")
+| table _time host User ParentImage Image CommandLine

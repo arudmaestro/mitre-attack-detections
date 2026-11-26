@@ -1,0 +1,30 @@
+title: 'Cron Job Created or Modified'
+id: d073bd19-0a1f-4c5f-8c0b-a12e3ef958d7
+status: experimental
+description: 'Detects crontab used to install or edit a crontab (anything except -l), or command lines referencing system cron files.'
+references:
+  - https://attack.mitre.org/techniques/T1053/003/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.execution
+  - attack.persistence
+  - attack.privilege-escalation
+  - attack.t1053.003
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection_crontab:
+    Image|endswith: '/crontab'
+  filter_list:
+    CommandLine|contains: ' -l'
+  selection_files:
+    CommandLine|contains:
+      - '/etc/crontab'
+      - '/etc/cron.d/'
+      - '/var/spool/cron'
+  condition: (selection_crontab and not filter_list) or selection_files
+falsepositives:
+  - 'Administrators and configuration management maintaining cron jobs'
+level: low

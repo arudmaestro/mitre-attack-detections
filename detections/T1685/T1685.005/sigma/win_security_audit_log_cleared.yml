@@ -1,0 +1,21 @@
+title: 'Security Audit Log Cleared (1102)'
+id: b6f5fdf5-bb6b-4d0e-a999-24d54d4860a3
+status: experimental
+description: 'Detects Security event 1102, written when the Security log is cleared by any method.'
+references:
+  - https://attack.mitre.org/techniques/T1685/005/
+author: Detection Engineering Team
+date: 2026-11-25
+tags:
+  - attack.defense-impairment
+  - attack.t1685.005
+logsource:
+  product: windows
+  service: security
+detection:
+  selection:
+    EventID: 1102
+  condition: selection
+falsepositives:
+  - 'Administrators clearing the Security log on test machines'
+level: high

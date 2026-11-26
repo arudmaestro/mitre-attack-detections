@@ -1,0 +1,14 @@
+// Title: Debugger Set for an Accessibility Program
+// ATT&CK: T1546.008 | Tactic: PrivilegeEscalation, Persistence | Sigma id: 43e1705a-be2b-4384-b359-5c87f996393d
+// Data source: DeviceRegistryEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: High
+// False positives: None expected
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = InitiatingProcessAccountName, RegistryKey = RegistryKey, RegistryValue = RegistryValueName
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceRegistryEvents
+| where TimeGenerated > ago(1d)
+| where ActionType == "RegistryValueSet"
+| extend TargetObject = strcat(RegistryKey, "\\", RegistryValueName)
+| where TargetObject endswith "\\sethc.exe\\Debugger" or TargetObject endswith "\\utilman.exe\\Debugger" or TargetObject endswith "\\osk.exe\\Debugger" or TargetObject endswith "\\Magnify.exe\\Debugger" or TargetObject endswith "\\Narrator.exe\\Debugger" or TargetObject endswith "\\DisplaySwitch.exe\\Debugger" or TargetObject endswith "\\AtBroker.exe\\Debugger"
+| project TimeGenerated, DeviceName, ActionType, InitiatingProcessAccountName, InitiatingProcessFolderPath, InitiatingProcessCommandLine, RegistryKey, RegistryValueName, RegistryValueType, RegistryValueData

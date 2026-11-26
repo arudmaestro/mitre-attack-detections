@@ -1,0 +1,12 @@
+```Title: Network Scanner or Port Sweep on Linux (CIM Endpoint.Processes)```
+```ATT&CK: T1046 | Severity: medium | Sigma id: 7d448c49-38c6-4554-b52a-9e8732c162bd```
+```Data source: CIM Endpoint.Processes data model. summariesonly=false works without acceleration; set true once the data model is accelerated.```
+```False positives: Authorised network administrators and vulnerability scanning```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+| tstats summariesonly=false allow_old_summaries=true fillnull_value="null" count min(_time) as firstTime max(_time) as lastTime
+    from datamodel=Endpoint.Processes
+    where Processes.process_name IN ("nmap", "masscan", "zmap", "rustscan", "naabu") OR (Processes.process_name IN ("nc", "ncat", "netcat") Processes.process="* -z*")
+    by Processes.process Processes.dest Processes.process_current_directory Processes.process_path Processes.process_integrity_level Processes.original_file_name Processes.parent_process Processes.parent_process_path Processes.parent_process_guid Processes.parent_process_id Processes.process_guid Processes.process_id Processes.user
+| rename Processes.* as *
+| convert timeformat="%Y-%m-%dT%H:%M:%S" ctime(firstTime)
+| convert timeformat="%Y-%m-%dT%H:%M:%S" ctime(lastTime)

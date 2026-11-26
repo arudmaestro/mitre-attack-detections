@@ -1,0 +1,12 @@
+// Title: Video Device Accessed from the Command Line on Linux
+// ATT&CK: T1125 | Tactic: Collection | Sigma id: 01034fac-ccec-4eb3-8426-7020ea5973e0
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Low
+// False positives: Users testing webcams or recording video
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where ProcessCommandLine contains "/dev/video"
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

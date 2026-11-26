@@ -1,0 +1,12 @@
+// Title: Logon by a Built-in Default Account (Guest, DefaultAccount, WDAGUtilityAccount)
+// ATT&CK: T1078.001 | Tactic: Stealth, Persistence, PrivilegeEscalation, InitialAccess | Sigma id: 4450bab8-3af5-4dfc-b09b-d1ac39b1a3c7
+// Data source: SecurityEvent 4624 (Windows Security Events connector)
+// Severity: High
+// False positives: Kiosk or legacy systems that deliberately use the Guest account; Microsoft Defender Application Guard, which uses WDAGUtilityAccount on hosts where it is enabled
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = Computer, Account = SubjectUserName
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+SecurityEvent
+| where TimeGenerated > ago(1d)
+| where EventID == 4624 and (TargetUserName in~ ("Guest", "DefaultAccount", "WDAGUtilityAccount"))
+| project TimeGenerated, Computer, TargetUserName, TargetDomainName, LogonType, IpAddress, WorkstationName

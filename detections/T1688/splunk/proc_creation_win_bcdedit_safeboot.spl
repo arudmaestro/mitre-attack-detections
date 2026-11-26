@@ -1,0 +1,8 @@
+```Title: Safe Mode Boot Configured with bcdedit (raw Sysmon events)```
+```ATT&CK: T1688 | Severity: high | Sigma id: 1dae887a-b192-4e5f-a3db-2dde202571fc```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Administrators troubleshooting drivers```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(Image="*\\bcdedit.exe" CommandLine="*safeboot*")
+| table _time host User ParentImage Image CommandLine

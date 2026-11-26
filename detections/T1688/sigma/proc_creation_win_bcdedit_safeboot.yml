@@ -1,0 +1,22 @@
+title: 'Safe Mode Boot Configured with bcdedit'
+id: 1dae887a-b192-4e5f-a3db-2dde202571fc
+status: experimental
+description: 'Detects bcdedit /set ... safeboot (minimal or network), used by ransomware to reboot into safe mode where most EDR agents do not run.'
+references:
+  - https://attack.mitre.org/techniques/T1688/
+author: Detection Engineering Team
+date: 2026-11-25
+tags:
+  - attack.defense-impairment
+  - attack.t1688
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    Image|endswith: '\bcdedit.exe'
+    CommandLine|contains: 'safeboot'
+  condition: selection
+falsepositives:
+  - 'Administrators troubleshooting drivers'
+level: high

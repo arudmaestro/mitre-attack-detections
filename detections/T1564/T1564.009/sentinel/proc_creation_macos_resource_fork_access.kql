@@ -1,0 +1,12 @@
+// Title: Resource Fork Accessed from the Command Line
+// ATT&CK: T1564.009 | Tactic: Stealth | Sigma id: 25a1647d-7e26-4633-8ee4-c185a01f14da
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Medium
+// False positives: Legacy software and file conversion tools
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where ProcessCommandLine contains "..namedfork/rsrc"
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

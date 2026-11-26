@@ -1,0 +1,13 @@
+// Title: ClickOnce Application Launched via dfshim or dfsvc
+// ATT&CK: T1127.002 | Tactic: Stealth, Execution | Sigma id: c955ed70-a56d-4d37-b7a5-f1fc861791d6
+// Data source: SecurityEvent 4688 (Windows Security Events connector; needs process creation and command-line auditing enabled)
+// Severity: Low
+// False positives: Legitimate ClickOnce business applications
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = Computer, Account = SubjectUserName
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+SecurityEvent
+| where TimeGenerated > ago(1d)
+| where EventID == 4688
+| where (NewProcessName endswith "\\rundll32.exe" and (CommandLine contains "dfshim" and CommandLine contains "ShOpenVerbApplication")) or ParentProcessName endswith "\\dfsvc.exe"
+| project TimeGenerated, Computer, SubjectUserName, ParentProcessName, NewProcessName, CommandLine

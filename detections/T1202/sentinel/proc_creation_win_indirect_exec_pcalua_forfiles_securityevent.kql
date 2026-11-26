@@ -1,0 +1,13 @@
+// Title: Indirect Command Execution through pcalua or forfiles
+// ATT&CK: T1202 | Tactic: Stealth | Sigma id: 67f6c58f-d169-4a9a-8247-06fcee862ece
+// Data source: SecurityEvent 4688 (Windows Security Events connector; needs process creation and command-line auditing enabled)
+// Severity: Medium
+// False positives: Windows program compatibility prompts started by pcalua; Maintenance scripts that use forfiles to run a program per file
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = Computer, Account = SubjectUserName
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+SecurityEvent
+| where TimeGenerated > ago(1d)
+| where EventID == 4688
+| where ParentProcessName endswith "\\pcalua.exe" or (ParentProcessName endswith "\\forfiles.exe" and (not(NewProcessName endswith "\\cmd.exe")))
+| project TimeGenerated, Computer, SubjectUserName, ParentProcessName, NewProcessName, CommandLine

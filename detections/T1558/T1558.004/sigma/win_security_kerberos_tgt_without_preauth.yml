@@ -1,0 +1,23 @@
+title: 'Kerberos TGT Issued Without Pre-Authentication (4768)'
+id: 909267c6-a422-46bc-a8b0-18b7fc99e83d
+status: experimental
+description: 'Detects a successful TGT request (4768) with pre-authentication type 0, i.e. for an account with ''Do not require Kerberos preauthentication''. Anyone can request such a ticket and crack it offline (AS-REP roasting).'
+references:
+  - https://attack.mitre.org/techniques/T1558/004/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.credential-access
+  - attack.t1558.004
+logsource:
+  product: windows
+  service: security
+detection:
+  selection:
+    EventID: 4768
+    PreAuthType: 0
+    Status: '0x0'
+  condition: selection
+falsepositives:
+  - 'Accounts that legitimately have pre-authentication disabled (some Unix/Kerberos interoperability setups); list and remove them'
+level: medium

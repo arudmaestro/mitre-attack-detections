@@ -1,0 +1,12 @@
+// Title: LSASS Memory Dump via Comsvcs MiniDump or ProcDump
+// ATT&CK: T1003.001 | Tactic: CredentialAccess | Sigma id: 87c20870-1627-4277-9953-8530f1f2c6e3
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: High
+// False positives: Troubleshooting LSASS crashes with ProcDump under change control
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where ((FolderPath endswith "\\rundll32.exe" and ProcessCommandLine contains "comsvcs") and (ProcessCommandLine contains "minidump" or ProcessCommandLine contains "#24")) or (ProcessCommandLine contains " -ma " and ProcessCommandLine contains "lsass")
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

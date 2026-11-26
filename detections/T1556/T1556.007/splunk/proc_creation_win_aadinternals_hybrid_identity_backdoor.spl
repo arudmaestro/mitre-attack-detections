@@ -1,0 +1,8 @@
+```Title: AADInternals Hybrid Identity Backdoor Command (raw Sysmon events)```
+```ATT&CK: T1556.007 | Severity: high | Sigma id: becbac53-6c27-4eb2-b0cb-0687feaa5379```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Penetration tests and red-team exercises```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(CommandLine IN ("*Install-AADIntPTASpy*", "*Register-AADIntPTAAgent*", "*Set-AADIntPassThroughAuthentication*", "*Set-AADIntDesktopSSO*"))
+| table _time host User ParentImage Image CommandLine

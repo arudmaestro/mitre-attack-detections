@@ -1,0 +1,24 @@
+title: 'Port Forwarding Added with netsh portproxy'
+id: faaa5a3c-f601-4746-95ba-5608584d8f6d
+status: experimental
+description: 'Detects netsh interface portproxy add, which turns a host into an internal proxy that forwards traffic to other systems.'
+references:
+  - https://attack.mitre.org/techniques/T1090/001/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.command-and-control
+  - attack.t1090.001
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    Image|endswith: '\netsh.exe'
+    CommandLine|contains|all:
+      - 'portproxy'
+      - 'add'
+  condition: selection
+falsepositives:
+  - 'Administrators setting up legitimate port forwarding (e.g. WSL or lab access)'
+level: medium

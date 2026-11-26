@@ -1,0 +1,22 @@
+title: 'AppCert DLL Registered'
+id: da177fb9-3891-4014-94f4-a8dade326c6d
+status: experimental
+description: 'Detects a value written under Session Manager\AppCertDlls; listed DLLs are loaded into every process that calls CreateProcess.'
+references:
+  - https://attack.mitre.org/techniques/T1546/009/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.privilege-escalation
+  - attack.persistence
+  - attack.t1546.009
+logsource:
+  category: registry_set
+  product: windows
+detection:
+  selection:
+    TargetObject|contains: '\Session Manager\AppCertDlls\'
+  condition: selection
+falsepositives:
+  - 'Rare: application-control or security products using AppCertDlls'
+level: high

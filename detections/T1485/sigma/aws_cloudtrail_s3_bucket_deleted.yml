@@ -1,0 +1,22 @@
+title: 'AWS S3 Bucket Deleted'
+id: f4ebc3f3-8eff-4a66-be35-4203a10ae50e
+status: experimental
+description: 'Detects deletion of an S3 bucket.'
+references:
+  - https://attack.mitre.org/techniques/T1485/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.impact
+  - attack.t1485
+logsource:
+  product: aws
+  service: cloudtrail
+detection:
+  selection:
+    eventSource: 's3.amazonaws.com'
+    eventName: 'DeleteBucket'
+  condition: selection
+falsepositives:
+  - 'Infrastructure-as-code pipelines tearing down environments'
+level: medium

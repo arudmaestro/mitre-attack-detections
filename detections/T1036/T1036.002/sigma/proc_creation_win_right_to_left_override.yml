@@ -1,0 +1,21 @@
+title: 'Right-to-Left Override Character in Command Line'
+id: 48b3fee5-b2fe-4131-bb04-b5e1ea92a8e8
+status: experimental
+description: 'Detects the Unicode right-to-left override character (U+202E) in a command line, used to disguise file extensions (e.g. invoice[RLO]fdp.exe shows as invoiceexe.pdf).'
+references:
+  - https://attack.mitre.org/techniques/T1036/002/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.stealth
+  - attack.t1036.002
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains: "\u202E"
+  condition: selection
+falsepositives:
+  - 'Rare: files legitimately named with bidirectional text'
+level: high

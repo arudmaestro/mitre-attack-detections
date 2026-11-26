@@ -1,0 +1,21 @@
+title: 'Msxsl.exe Executed'
+id: efee7474-ec6c-4b87-86ad-f94a5a427aa6
+status: experimental
+description: 'Detects msxsl.exe, a Microsoft command-line XSL transformer that is not part of Windows and is used to run script embedded in XSL files.'
+references:
+  - https://attack.mitre.org/techniques/T1220/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.stealth
+  - attack.t1220
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    Image|endswith: '\msxsl.exe'
+  condition: selection
+falsepositives:
+  - 'Developers using msxsl for XML transformations'
+level: high

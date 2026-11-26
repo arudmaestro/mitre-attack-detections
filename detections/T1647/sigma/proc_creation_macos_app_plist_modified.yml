@@ -1,0 +1,29 @@
+title: 'Application Info.plist or Launch Environment Changed from the Command Line'
+id: f5c91c72-a9ec-408f-a397-11c09f22f285
+status: experimental
+description: 'Detects defaults, plutil or PlistBuddy changing an application''s Info.plist, LSUIElement (hide the Dock icon) or LSEnvironment (environment variables such as DYLD_INSERT_LIBRARIES); malware uses this to hide apps or inject libraries.'
+references:
+  - https://attack.mitre.org/techniques/T1647/
+author: Detection Engineering Team
+date: 2026-11-25
+tags:
+  - attack.defense-impairment
+  - attack.t1647
+logsource:
+  category: process_creation
+  product: macos
+detection:
+  selection_img:
+    Image|endswith:
+      - '/defaults'
+      - '/plutil'
+      - '/PlistBuddy'
+  selection_target:
+    CommandLine|contains:
+      - 'Info.plist'
+      - 'LSUIElement'
+      - 'LSEnvironment'
+  condition: all of selection_*
+falsepositives:
+  - 'Developers and build scripts editing their own app bundles'
+level: medium

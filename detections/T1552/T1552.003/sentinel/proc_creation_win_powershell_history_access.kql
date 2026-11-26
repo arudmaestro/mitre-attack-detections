@@ -1,0 +1,12 @@
+// Title: PowerShell History File Accessed
+// ATT&CK: T1552.003 | Tactic: CredentialAccess | Sigma id: b56244d6-13db-483c-a427-97b26af8cde2
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Low
+// False positives: Administrators reviewing or clearing their history
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where ProcessCommandLine contains "ConsoleHost_history" or ProcessCommandLine contains "HistorySavePath"
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

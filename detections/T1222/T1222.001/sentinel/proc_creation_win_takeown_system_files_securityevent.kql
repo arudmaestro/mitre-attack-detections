@@ -1,0 +1,13 @@
+// Title: Ownership of System Files Taken with takeown
+// ATT&CK: T1222.001 | Tactic: DefenseImpairment | Sigma id: 2c74427b-3804-44f6-a3e3-9251864f3705
+// Data source: SecurityEvent 4688 (Windows Security Events connector; needs process creation and command-line auditing enabled)
+// Severity: Medium
+// False positives: Administrators repairing or customising system files
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = Computer, Account = SubjectUserName
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+SecurityEvent
+| where TimeGenerated > ago(1d)
+| where EventID == 4688
+| where NewProcessName endswith "\\takeown.exe" and (CommandLine contains "\\System32\\" or CommandLine contains "\\SysWOW64\\")
+| project TimeGenerated, Computer, SubjectUserName, ParentProcessName, NewProcessName, CommandLine

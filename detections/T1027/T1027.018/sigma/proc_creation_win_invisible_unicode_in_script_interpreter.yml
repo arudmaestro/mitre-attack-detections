@@ -1,0 +1,33 @@
+title: 'Invisible Unicode Characters in Script Interpreter Command Line'
+id: 7879736f-4774-4c34-abf7-76bb4c9097ba
+status: experimental
+description: 'Detects zero-width Unicode characters (U+200B, U+200C, U+200D, U+2060) in command lines of script interpreters, used to hide or break up keywords.'
+references:
+  - https://attack.mitre.org/techniques/T1027/018/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.stealth
+  - attack.t1027.018
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_img:
+    Image|endswith:
+      - '\powershell.exe'
+      - '\pwsh.exe'
+      - '\cmd.exe'
+      - '\wscript.exe'
+      - '\cscript.exe'
+      - '\mshta.exe'
+  selection_chars:
+    CommandLine|contains:
+      - "\u200B"
+      - "\u200C"
+      - "\u200D"
+      - "\u2060"
+  condition: all of selection_*
+falsepositives:
+  - 'Scripts handling text in languages that use zero-width joiners (e.g. Persian, Indic scripts) or emoji'
+level: medium

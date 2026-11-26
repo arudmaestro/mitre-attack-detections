@@ -1,0 +1,30 @@
+title: 'Local Account Created from the Command Line'
+id: 7a996bc4-f01c-4d79-9f44-da75ad049fda
+status: experimental
+description: 'Detects net user /add (without /domain) and New-LocalUser.'
+references:
+  - https://attack.mitre.org/techniques/T1136/001/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.persistence
+  - attack.t1136.001
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_net:
+    Image|endswith:
+      - '\net.exe'
+      - '\net1.exe'
+    CommandLine|contains|all:
+      - 'user'
+      - '/add'
+  filter_domain:
+    CommandLine|contains: '/domain'
+  selection_ps:
+    CommandLine|contains: 'New-LocalUser'
+  condition: (selection_net and not filter_domain) or selection_ps
+falsepositives:
+  - 'Administrators and provisioning scripts'
+level: medium

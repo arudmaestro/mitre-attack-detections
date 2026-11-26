@@ -1,0 +1,14 @@
+// Title: Terminal Services ServiceDll Changed
+// ATT&CK: T1505.005 | Tactic: Persistence | Sigma id: fc8a5f1f-f361-4a6f-a563-e1e585196a95
+// Data source: DeviceRegistryEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: High
+// False positives: Third-party RDP enhancement products that replace termsrv.dll (rare)
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = InitiatingProcessAccountName, RegistryKey = RegistryKey, RegistryValue = RegistryValueName
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceRegistryEvents
+| where TimeGenerated > ago(1d)
+| where ActionType == "RegistryValueSet"
+| extend TargetObject = strcat(RegistryKey, "\\", RegistryValueName)
+| where TargetObject endswith "\\Services\\TermService\\Parameters\\ServiceDll" and (not(RegistryValueData endswith "\\System32\\termsrv.dll"))
+| project TimeGenerated, DeviceName, ActionType, InitiatingProcessAccountName, InitiatingProcessFolderPath, InitiatingProcessCommandLine, RegistryKey, RegistryValueName, RegistryValueType, RegistryValueData

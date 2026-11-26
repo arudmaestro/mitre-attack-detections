@@ -1,0 +1,12 @@
+// Title: SSH Private Key Accessed by a Non-SSH Program on macOS
+// ATT&CK: T1552.004 | Tactic: CredentialAccess | Sigma id: 28cc36b2-64f5-4f22-bf7e-f46a1be33445
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Medium
+// False positives: Administrators copying their own keys
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where (ProcessCommandLine contains "/.ssh/id_rsa" or ProcessCommandLine contains "/.ssh/id_ed25519" or ProcessCommandLine contains "/.ssh/id_ecdsa" or ProcessCommandLine contains "/.ssh/id_dsa") and (not((FolderPath endswith "/ssh" or FolderPath endswith "/ssh-add" or FolderPath endswith "/ssh-keygen"))) and (not(ProcessCommandLine contains ".pub"))
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

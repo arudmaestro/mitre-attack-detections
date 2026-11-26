@@ -1,0 +1,27 @@
+title: 'AppInit DLLs Set or Enabled'
+id: 9e874477-870f-4642-b172-e8957ef4cf19
+status: experimental
+description: 'Detects a non-empty AppInit_DLLs value or LoadAppInit_DLLs set to 1; AppInit DLLs are loaded into every process that loads user32.dll.'
+references:
+  - https://attack.mitre.org/techniques/T1546/010/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.privilege-escalation
+  - attack.persistence
+  - attack.t1546.010
+logsource:
+  category: registry_set
+  product: windows
+detection:
+  selection_dlls:
+    TargetObject|endswith: '\Windows NT\CurrentVersion\Windows\AppInit_DLLs'
+  filter_empty:
+    Details: '(Empty)'
+  selection_load:
+    TargetObject|endswith: '\Windows NT\CurrentVersion\Windows\LoadAppInit_DLLs'
+    Details: 'DWORD (0x00000001)'
+  condition: (selection_dlls and not filter_empty) or selection_load
+falsepositives:
+  - 'Legacy software that still uses AppInit DLLs'
+level: high

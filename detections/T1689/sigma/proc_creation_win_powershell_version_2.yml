@@ -1,0 +1,26 @@
+title: 'PowerShell Version 2 Engine Started'
+id: 6d0bf0ed-b060-41c7-9fd9-c515476eab0c
+status: experimental
+description: 'Detects powershell -version 2, which starts the old PowerShell 2.0 engine that has no script block logging, AMSI or constrained language mode.'
+references:
+  - https://attack.mitre.org/techniques/T1689/
+author: Detection Engineering Team
+date: 2026-11-25
+tags:
+  - attack.defense-impairment
+  - attack.t1689
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_img:
+    Image|endswith: '\powershell.exe'
+  selection_version:
+    CommandLine|contains:
+      - ' -version 2'
+      - ' -ver 2'
+      - ' -v 2'
+  condition: all of selection_*
+falsepositives:
+  - 'Legacy scripts that require PowerShell 2.0'
+level: high

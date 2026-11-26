@@ -1,0 +1,8 @@
+```Title: Cryptocurrency Miner Command Line on Windows (raw Sysmon events)```
+```ATT&CK: T1496.001 | Severity: high | Sigma id: fcb6d625-2448-4672-b224-fa12ddc79906```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Authorised mining or miner research systems```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(CommandLine IN ("*stratum+tcp://*", "*stratum+ssl://*", "*stratum2+tcp://*", "*--donate-level*", "*xmrig*"))
+| table _time host User ParentImage Image CommandLine

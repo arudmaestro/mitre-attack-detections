@@ -1,0 +1,8 @@
+```Title: Backup Software Discovery on Windows (raw Sysmon events)```
+```ATT&CK: T1518.002 | Severity: low | Sigma id: 51f34752-ecb7-4808-a74d-8877e907fda5```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Backup product installers and health checks; Administrators troubleshooting backup services```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity low.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(Image IN ("*\\findstr.exe", "*\\sc.exe", "*\\tasklist.exe", "*\\wmic.exe", "*\\reg.exe") CommandLine IN ("*veeam*", "*backupexec*", "*acronis*", "*commvault*", "*veritas*", "*arcserve*", "*cohesity*", "*rubrik*"))
+| table _time host User ParentImage Image CommandLine

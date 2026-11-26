@@ -1,0 +1,12 @@
+// Title: WMIC Loading a Remote XSL Stylesheet
+// ATT&CK: T1220 | Tactic: Stealth | Sigma id: fd90b1e0-4182-4fae-87f2-f5780cf342cd
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: High
+// False positives: None expected
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where FolderPath endswith "\\wmic.exe" and ProcessCommandLine contains "format:http"
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

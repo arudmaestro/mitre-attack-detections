@@ -1,0 +1,25 @@
+title: 'Network Connection on VNC Ports'
+id: 91a9d91b-5582-4345-b632-69aec1ebc4ec
+status: experimental
+description: 'Detects network connections to the standard VNC ports 5900-5903.'
+references:
+  - https://attack.mitre.org/techniques/T1021/005/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.lateral-movement
+  - attack.t1021.005
+logsource:
+  category: network_connection
+  product: windows
+detection:
+  selection:
+    DestinationPort:
+      - 5900
+      - 5901
+      - 5902
+      - 5903
+  condition: selection
+falsepositives:
+  - Approved VNC remote support tools and jump hosts
+level: low

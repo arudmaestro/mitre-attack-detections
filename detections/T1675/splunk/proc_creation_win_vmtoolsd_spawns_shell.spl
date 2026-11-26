@@ -1,0 +1,8 @@
+```Title: VMware Tools Started a Shell or Script Host (raw Sysmon events)```
+```ATT&CK: T1675 | Severity: medium | Sigma id: 8f4ac52d-a6f3-4584-b761-2393f9e3469a```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: VMware administrators running guest scripts with PowerCLI Invoke-VMScript```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(ParentImage="*\\vmtoolsd.exe" Image IN ("*\\cmd.exe", "*\\powershell.exe", "*\\pwsh.exe", "*\\wscript.exe", "*\\cscript.exe", "*\\mshta.exe") NOT (CommandLine IN ("*poweron-vm-default*", "*poweroff-vm-default*", "*resume-vm-default*", "*suspend-vm-default*")))
+| table _time host User ParentImage Image CommandLine

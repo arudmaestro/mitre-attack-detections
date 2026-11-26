@@ -1,0 +1,12 @@
+// Title: Rclone Copy or Sync Run on Windows
+// ATT&CK: T1567.002 | Tactic: Exfiltration | Sigma id: 28380e1f-b23d-400d-b63c-2018c3f15bce
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: High
+// False positives: Backup jobs that use rclone (allowlist their host, user and remote)
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where ProcessCommandLine contains "rclone" and (ProcessCommandLine contains " copy " or ProcessCommandLine contains " sync " or ProcessCommandLine contains " move " or ProcessCommandLine contains " copyto ")
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

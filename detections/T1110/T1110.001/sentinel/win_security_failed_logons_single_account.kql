@@ -1,0 +1,13 @@
+// Title: Many Failed Logons for One Account
+// ATT&CK: T1110.001 | Tactic: CredentialAccess | Sigma id: ea8a0a2b-0486-4175-b285-bd5df74e3f5f
+// Data source: SecurityEvent 4625 (Windows Security Events connector)
+// Severity: Medium
+// False positives: Users with a stale password on a phone or mapped drive; Misconfigured services or scheduled tasks
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: map the group-by fields: TargetUserName
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+SecurityEvent
+| where TimeGenerated > ago(1d)
+| where EventID == 4625
+| summarize event_count = count() by bin(TimeGenerated, 10m), TargetUserName
+| where event_count >= 10

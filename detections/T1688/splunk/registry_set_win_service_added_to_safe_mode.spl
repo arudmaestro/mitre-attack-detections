@@ -1,0 +1,8 @@
+```Title: Service Registered to Start in Safe Mode (raw Sysmon events)```
+```ATT&CK: T1688 | Severity: medium | Sigma id: c4f7a840-f32b-45aa-9801-daac904c902a```
+```Data source: Sysmon EventCode 13 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Security products and drivers that register themselves for safe mode```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=13
+(TargetObject IN ("*\\Control\\SafeBoot\\Minimal\\*", "*\\Control\\SafeBoot\\Network\\*"))
+| table _time host User Image EventType TargetObject Details

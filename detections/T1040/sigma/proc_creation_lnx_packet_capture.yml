@@ -1,0 +1,27 @@
+title: 'Packet Capture Tool Executed on Linux'
+id: aaa55eb1-86b7-401c-a93b-1cdc90f5940b
+status: experimental
+description: 'Detects execution of packet capture tools (tcpdump, tshark, dumpcap, tcpflow, ngrep).'
+references:
+  - https://attack.mitre.org/techniques/T1040/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.credential-access
+  - attack.discovery
+  - attack.t1040
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection:
+    Image|endswith:
+      - '/tcpdump'
+      - '/tshark'
+      - '/dumpcap'
+      - '/tcpflow'
+      - '/ngrep'
+  condition: selection
+falsepositives:
+  - 'Administrators troubleshooting network issues'
+level: low

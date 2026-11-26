@@ -1,0 +1,8 @@
+```Title: BITS Job Created or Configured with bitsadmin (raw Sysmon events)```
+```ATT&CK: T1197 | Severity: medium | Sigma id: 61e0acb6-5746-4d8d-bb2b-0fb42dfceb64```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Legacy software deployment scripts using bitsadmin```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(Image="*\\bitsadmin.exe" CommandLine IN ("*/create*", "*/addfile*", "*/SetNotifyCmdLine*", "*/resume*"))
+| table _time host User ParentImage Image CommandLine

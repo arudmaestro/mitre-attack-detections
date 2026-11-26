@@ -1,0 +1,26 @@
+title: 'System Owner/User Discovery via whoami or quser'
+id: b4e2da18-2995-4e1c-86bd-3011e7492558
+status: experimental
+description: 'Detects whoami, quser and query user, used to learn the current user, privileges and logged-on sessions.'
+references:
+  - https://attack.mitre.org/techniques/T1033/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.discovery
+  - attack.t1033
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_whoami:
+    Image|endswith: '\whoami.exe'
+  selection_quser:
+    Image|endswith: '\quser.exe'
+  selection_query:
+    Image|endswith: '\query.exe'
+    CommandLine|contains: 'user'
+  condition: 1 of selection_*
+falsepositives:
+  - 'Administrators, login scripts and IT tools'
+level: low

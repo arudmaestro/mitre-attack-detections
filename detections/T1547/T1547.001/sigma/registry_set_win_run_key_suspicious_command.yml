@@ -1,0 +1,39 @@
+title: 'Run Key Set to a Script Host or a File in Temp or Public'
+id: d7fc5b74-b156-4945-8594-06413d95008b
+status: experimental
+description: 'Detects Run, RunOnce, RunOnceEx or policy Run values that start PowerShell, cmd /c, mshta, script hosts, regsvr32 or a file in Temp or the public profile.'
+references:
+  - https://attack.mitre.org/techniques/T1547/001/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.persistence
+  - attack.privilege-escalation
+  - attack.t1547.001
+logsource:
+  category: registry_set
+  product: windows
+detection:
+  selection_key:
+    TargetObject|contains:
+      - '\CurrentVersion\Run\'
+      - '\CurrentVersion\RunOnce\'
+      - '\CurrentVersion\RunOnceEx\'
+      - '\Policies\Explorer\Run\'
+  selection_value:
+    Details|contains:
+      - 'powershell'
+      - 'pwsh'
+      - 'mshta'
+      - 'wscript'
+      - 'cscript'
+      - 'regsvr32'
+      - 'cmd.exe /c'
+      - 'cmd /c'
+      - '%COMSPEC%'
+      - '\AppData\Local\Temp\'
+      - '\Users\Public\'
+  condition: all of selection_*
+falsepositives:
+  - 'Installers using RunOnce to finish setup with a script after reboot'
+level: medium

@@ -1,0 +1,28 @@
+title: PowerShell Encoded Command Execution
+id: cffa3ab8-6350-4422-bbdf-0239eaeb5510
+status: experimental
+description: Detects PowerShell launched with an encoded command argument.
+references:
+  - https://attack.mitre.org/techniques/T1059/001/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.execution
+  - attack.t1059.001
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_img:
+    Image|endswith:
+      - '\powershell.exe'
+      - '\pwsh.exe'
+  selection_cli:
+    CommandLine|contains:
+      - ' -enc '
+      - ' -EncodedCommand '
+      - ' -ec '
+  condition: all of selection_*
+falsepositives:
+  - Software deployment and administration tools
+level: medium

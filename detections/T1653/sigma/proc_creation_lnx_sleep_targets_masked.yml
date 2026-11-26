@@ -1,0 +1,28 @@
+title: 'Sleep or Hibernate Targets Masked with systemctl'
+id: b33037b1-c062-4aa1-b551-fd0daef5967c
+status: experimental
+description: 'Detects systemctl mask on sleep.target, suspend.target, hibernate.target or hybrid-sleep.target, which prevents the system from sleeping.'
+references:
+  - https://attack.mitre.org/techniques/T1653/
+author: Detection Engineering Team
+date: 2026-11-25
+tags:
+  - attack.persistence
+  - attack.t1653
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection_img:
+    Image|endswith: '/systemctl'
+  selection_mask:
+    CommandLine|contains: 'mask'
+  selection_target:
+    CommandLine|contains:
+      - 'sleep.target'
+      - 'suspend.target'
+      - 'hibernate.target'
+  condition: all of selection_*
+falsepositives:
+  - 'Server and kiosk builds that disable sleep on purpose'
+level: low

@@ -1,0 +1,13 @@
+// Title: Recursive Search for Documents and Data Files
+// ATT&CK: T1005 | Tactic: Collection | Sigma id: 535b5844-c3af-45c6-9eb4-5f297969c1af
+// Data source: SecurityEvent 4688 (Windows Security Events connector; needs process creation and command-line auditing enabled)
+// Severity: Low
+// False positives: Users and administrators searching for files; Backup and inventory scripts
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = Computer, Account = SubjectUserName
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+SecurityEvent
+| where TimeGenerated > ago(1d)
+| where EventID == 4688
+| where ((CommandLine contains "dir " and CommandLine contains " /s") or (CommandLine contains "Get-ChildItem" and CommandLine contains "-Recurse")) and (CommandLine contains ".doc" or CommandLine contains ".xls" or CommandLine contains ".pdf" or CommandLine contains ".kdbx" or CommandLine contains ".pst" or CommandLine contains ".sqlite")
+| project TimeGenerated, Computer, SubjectUserName, ParentProcessName, NewProcessName, CommandLine

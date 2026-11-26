@@ -1,0 +1,8 @@
+```Title: File Decoded with certutil (raw Sysmon events)```
+```ATT&CK: T1140 | Severity: medium | Sigma id: 50c5dbda-88a4-49e5-90ea-0e856826a510```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Administrators decoding certificates or files```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(Image="*\\certutil.exe" CommandLine IN ("*-decode*", "*/decode*"))
+| table _time host User ParentImage Image CommandLine

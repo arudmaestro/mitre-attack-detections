@@ -1,0 +1,29 @@
+title: 'Volumes or Disks Enumerated with PowerShell or mountvol'
+id: 626e085d-0ba2-4f98-a42f-629663fed557
+status: experimental
+description: 'Detects Get-Volume, Get-Disk, Get-Partition, Get-PSDrive and WMI Win32_Volume / Win32_LogicalDisk queries, and mountvol, used by ransomware to find drives (including unmounted ones) to encrypt.'
+references:
+  - https://attack.mitre.org/techniques/T1680/
+author: Detection Engineering Team
+date: 2026-11-25
+tags:
+  - attack.discovery
+  - attack.t1680
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_ps:
+    CommandLine|contains:
+      - 'Get-Volume'
+      - 'Get-Disk'
+      - 'Get-Partition'
+      - 'Get-PSDrive'
+      - 'Win32_Volume'
+      - 'Win32_LogicalDisk'
+  selection_mountvol:
+    Image|endswith: '\mountvol.exe'
+  condition: 1 of selection_*
+falsepositives:
+  - 'Inventory, backup and disk management scripts'
+level: low

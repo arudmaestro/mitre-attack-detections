@@ -1,0 +1,21 @@
+title: 'Video Device Accessed from the Command Line on Linux'
+id: 01034fac-ccec-4eb3-8426-7020ea5973e0
+status: experimental
+description: 'Detects command lines reading a video capture device (/dev/video*).'
+references:
+  - https://attack.mitre.org/techniques/T1125/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.collection
+  - attack.t1125
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection:
+    CommandLine|contains: '/dev/video'
+  condition: selection
+falsepositives:
+  - 'Users testing webcams or recording video'
+level: low

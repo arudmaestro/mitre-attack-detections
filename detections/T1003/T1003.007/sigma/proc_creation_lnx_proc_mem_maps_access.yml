@@ -1,0 +1,28 @@
+title: 'Process Memory Access via /proc maps or mem'
+id: d8f475ba-2a18-4f06-ab58-248cad79f10f
+status: experimental
+description: 'Detects command lines reading /proc/<pid>/maps or /proc/<pid>/mem, used to locate and dump credentials from process memory.'
+references:
+  - https://attack.mitre.org/techniques/T1003/007/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.credential-access
+  - attack.t1003.007
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection_proc:
+    CommandLine|contains: '/proc/'
+  selection_target:
+    CommandLine|contains:
+      - '/maps'
+      - '/mem'
+  filter_meminfo:
+    CommandLine|contains: '/proc/meminfo'
+  condition: all of selection_* and not filter_meminfo
+falsepositives:
+  - Debugging and performance tools
+  - Developers inspecting process memory maps
+level: medium

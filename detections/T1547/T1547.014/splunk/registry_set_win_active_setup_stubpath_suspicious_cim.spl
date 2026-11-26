@@ -1,0 +1,11 @@
+```Title: Active Setup StubPath Set to a Script Host or a File in Temp or Public (CIM Endpoint.Registry)```
+```ATT&CK: T1547.014 | Severity: medium | Sigma id: 18a87ff0-2ba4-488a-8f50-a3fc32864f74```
+```Data source: CIM Endpoint.Registry data model. summariesonly=false works without acceleration; set true once the data model is accelerated.```
+```False positives: Enterprise software deployment that uses Active Setup scripts per user```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+| tstats summariesonly=false allow_old_summaries=true fillnull_value="null" count min(_time) as firstTime max(_time) as lastTime
+    from datamodel=Endpoint.Registry
+    where Registry.registry_path="*\\Active Setup\\Installed Components\\*" Registry.registry_path="*\\StubPath" Registry.registry_value_data IN ("*powershell*", "*pwsh*", "*mshta*", "*wscript*", "*cscript*", "*regsvr32*", "*cmd.exe /c*", "*cmd /c*", "*%COMSPEC%*", "*\\AppData\\Local\\Temp\\*", "*\\Users\\Public\\*")
+    by Registry.dest Registry.user Registry.process_guid Registry.process_id Registry.registry_path Registry.registry_value_name Registry.registry_value_data Registry.action
+| rename Registry.* as *
+| convert timeformat="%Y-%m-%dT%H:%M:%S" ctime(firstTime) ctime(lastTime)

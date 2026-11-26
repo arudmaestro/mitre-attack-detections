@@ -1,0 +1,21 @@
+title: 'User Account Created (Windows Security 4720)'
+id: 48b471e6-f2a5-41db-874d-77428cb58fbf
+status: experimental
+description: 'Detects creation of any local or domain user account (4720).'
+references:
+  - https://attack.mitre.org/techniques/T1136/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.persistence
+  - attack.t1136
+logsource:
+  product: windows
+  service: security
+detection:
+  selection:
+    EventID: 4720
+  condition: selection
+falsepositives:
+  - 'Normal account provisioning by administrators and identity management systems'
+level: low

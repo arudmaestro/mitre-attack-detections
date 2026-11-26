@@ -1,0 +1,12 @@
+// Title: Shell History Cleared or Disabled on Linux
+// ATT&CK: T1070.003 | Tactic: Stealth | Sigma id: 38e387fc-7d45-4b6a-9fb1-564f7875c4b0
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Medium
+// False positives: Users viewing their own history file; Hardening scripts
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where ProcessCommandLine contains ".bash_history" or ProcessCommandLine contains ".zsh_history" or ProcessCommandLine contains "HISTFILE" or ProcessCommandLine contains "HISTSIZE=0" or ProcessCommandLine contains "HISTFILESIZE=0" or ProcessCommandLine contains "history -c"
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

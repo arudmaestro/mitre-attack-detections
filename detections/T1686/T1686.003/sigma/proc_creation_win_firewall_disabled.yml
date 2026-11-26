@@ -1,0 +1,32 @@
+title: 'Windows Firewall Disabled from the Command Line'
+id: b7c8be69-d815-4821-9b12-9bf9b187d8b6
+status: experimental
+description: 'Detects netsh advfirewall ... state off, netsh firewall set opmode disable and Set-NetFirewallProfile -Enabled False.'
+references:
+  - https://attack.mitre.org/techniques/T1686/003/
+author: Detection Engineering Team
+date: 2026-11-25
+tags:
+  - attack.defense-impairment
+  - attack.t1686.003
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_netsh_img:
+    Image|endswith: '\netsh.exe'
+  selection_netsh_off:
+    CommandLine|contains:
+      - 'state off'
+      - 'opmode disable'
+      - 'opmode mode=disable'
+  selection_ps:
+    CommandLine|contains: 'Set-NetFirewallProfile'
+  selection_ps_off:
+    CommandLine|contains:
+      - '-Enabled False'
+      - '-Enabled 0'
+  condition: (selection_netsh_img and selection_netsh_off) or (selection_ps and selection_ps_off)
+falsepositives:
+  - 'Administrators troubleshooting connectivity'
+level: high

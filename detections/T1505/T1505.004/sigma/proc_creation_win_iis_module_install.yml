@@ -1,0 +1,29 @@
+title: 'IIS Native or Managed Module Installed'
+id: 8f346254-6b2d-41ed-9416-c8a0af5f3a0f
+status: experimental
+description: 'Detects appcmd installing or adding an IIS module, or the WebAdministration cmdlets New-WebGlobalModule / Enable-WebGlobalModule; malicious IIS modules intercept requests and act as stealthy backdoors.'
+references:
+  - https://attack.mitre.org/techniques/T1505/004/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.persistence
+  - attack.t1505.004
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_appcmd:
+    Image|endswith: '\appcmd.exe'
+    CommandLine|contains:
+      - 'install module'
+      - 'add module'
+      - 'globalModules'
+  selection_ps:
+    CommandLine|contains:
+      - 'New-WebGlobalModule'
+      - 'Enable-WebGlobalModule'
+  condition: 1 of selection_*
+falsepositives:
+  - 'IIS administrators and application installers adding modules'
+level: medium

@@ -1,0 +1,31 @@
+title: 'User Added to sudo, wheel or root Group'
+id: 763fa30d-bc3b-4527-bd91-434ca09c0b60
+status: experimental
+description: 'Detects usermod, gpasswd or adduser adding a user to an administrative group (sudo, wheel, adm, root).'
+references:
+  - https://attack.mitre.org/techniques/T1098/007/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.persistence
+  - attack.privilege-escalation
+  - attack.t1098.007
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection_img:
+    Image|endswith:
+      - '/usermod'
+      - '/gpasswd'
+      - '/adduser'
+  selection_group:
+    CommandLine|contains:
+      - ' sudo'
+      - ' wheel'
+      - ' adm '
+      - ' root'
+  condition: all of selection_*
+falsepositives:
+  - 'Administrators and provisioning tools'
+level: medium

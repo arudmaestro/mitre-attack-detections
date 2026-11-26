@@ -1,0 +1,13 @@
+// Title: Virtual Machine Started Headless on a Windows Host
+// ATT&CK: T1564.006 | Tactic: Stealth | Sigma id: a7d2e0e4-97b3-4731-9e0e-56c405fd48c5
+// Data source: SecurityEvent 4688 (Windows Security Events connector; needs process creation and command-line auditing enabled)
+// Severity: Medium
+// False positives: Developers and testers who run virtual machines
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = Computer, Account = SubjectUserName
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+SecurityEvent
+| where TimeGenerated > ago(1d)
+| where EventID == 4688
+| where NewProcessName endswith "\\VBoxHeadless.exe" or (NewProcessName endswith "\\VBoxManage.exe" and CommandLine contains "startvm" and CommandLine contains "headless") or (NewProcessName endswith "\\qemu-system-x86_64.exe" or NewProcessName endswith "\\qemu-system-x86_64w.exe" or NewProcessName endswith "\\qemu-system-i386.exe")
+| project TimeGenerated, Computer, SubjectUserName, ParentProcessName, NewProcessName, CommandLine

@@ -1,0 +1,8 @@
+```Title: Volumes or Disks Enumerated with PowerShell or mountvol (raw Sysmon events)```
+```ATT&CK: T1680 | Severity: low | Sigma id: 626e085d-0ba2-4f98-a42f-629663fed557```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Inventory, backup and disk management scripts```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity low.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(CommandLine IN ("*Get-Volume*", "*Get-Disk*", "*Get-Partition*", "*Get-PSDrive*", "*Win32_Volume*", "*Win32_LogicalDisk*") OR Image="*\\mountvol.exe")
+| table _time host User ParentImage Image CommandLine

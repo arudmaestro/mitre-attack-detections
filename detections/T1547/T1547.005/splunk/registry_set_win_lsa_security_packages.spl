@@ -1,0 +1,8 @@
+```Title: LSA Security Support Providers Changed (raw Sysmon events)```
+```ATT&CK: T1547.005 | Severity: high | Sigma id: 8032985f-bc9e-476a-a5d6-f01c8fa88409```
+```Data source: Sysmon EventCode 13 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Security or authentication software installing an SSP```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=13
+(TargetObject IN ("*\\Control\\Lsa\\Security Packages", "*\\Control\\Lsa\\OSConfig\\Security Packages") NOT Image="*\\lsass.exe")
+| table _time host User Image EventType TargetObject Details

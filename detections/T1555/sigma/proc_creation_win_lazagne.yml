@@ -1,0 +1,21 @@
+title: 'LaZagne Credential Dumper Executed'
+id: 882cde16-5a64-4943-acd0-1cb036a5f334
+status: experimental
+description: 'Detects LaZagne, an open-source tool that extracts saved passwords from browsers, mail clients, Wi-Fi profiles, databases and many other password stores.'
+references:
+  - https://attack.mitre.org/techniques/T1555/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.credential-access
+  - attack.t1555
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains: 'lazagne'
+  condition: selection
+falsepositives:
+  - 'Penetration tests and red-team exercises'
+level: high

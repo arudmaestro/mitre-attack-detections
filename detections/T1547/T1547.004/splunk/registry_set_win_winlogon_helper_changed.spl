@@ -1,0 +1,8 @@
+```Title: Winlogon Shell, Userinit or Notify Value Changed (raw Sysmon events)```
+```ATT&CK: T1547.004 | Severity: high | Sigma id: 5cb6a248-8800-40bc-9d16-520a2dac25c3```
+```Data source: Sysmon EventCode 13 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Kiosk / Shell Launcher configurations that replace the shell```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=13
+((TargetObject="*\\Winlogon\\Shell" NOT Details="explorer.exe") OR (TargetObject="*\\Winlogon\\Userinit" NOT (Details IN ("*\\userinit.exe,", "*\\userinit.exe"))) OR TargetObject="*\\Winlogon\\Notify\\*")
+| table _time host User Image EventType TargetObject Details

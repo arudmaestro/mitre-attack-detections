@@ -1,0 +1,8 @@
+```Title: Print Processor Registered (raw Sysmon events)```
+```ATT&CK: T1547.012 | Severity: medium | Sigma id: 2c596d37-4285-4b78-a1f4-a85952b26d99```
+```Data source: Sysmon EventCode 13 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Printer drivers that install vendor print processors```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=13
+(TargetObject="*\\Control\\Print\\Environments\\*" TargetObject="*\\Print Processors\\*" TargetObject="*\\Driver" NOT Details="winprint.dll")
+| table _time host User Image EventType TargetObject Details

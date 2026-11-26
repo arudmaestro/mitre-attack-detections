@@ -1,0 +1,27 @@
+title: 'Database Dump Tool Executed on Linux'
+id: 4b903ef4-a799-4c3f-9018-5fb2a5f45c43
+status: experimental
+description: 'Detects dump and export tools for MySQL/MariaDB, PostgreSQL and MongoDB.'
+references:
+  - https://attack.mitre.org/techniques/T1213/006/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.collection
+  - attack.t1213.006
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection:
+    Image|endswith:
+      - '/mysqldump'
+      - '/mariadb-dump'
+      - '/pg_dump'
+      - '/pg_dumpall'
+      - '/mongodump'
+      - '/mongoexport'
+  condition: selection
+falsepositives:
+  - 'Scheduled database backups and ETL jobs (allowlist by host and account)'
+level: low

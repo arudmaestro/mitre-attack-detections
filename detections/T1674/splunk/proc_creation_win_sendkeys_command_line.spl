@@ -1,0 +1,8 @@
+```Title: Keystrokes Sent with SendKeys from the Command Line (raw Sysmon events)```
+```ATT&CK: T1674 | Severity: medium | Sigma id: 5ad69823-cfa2-44b3-937c-39751ce37c82```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: UI automation and test scripts```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(CommandLine="*SendKeys*")
+| table _time host User ParentImage Image CommandLine

@@ -1,0 +1,13 @@
+// Title: AWS Account Left, Removed or Moved in the Organization
+// ATT&CK: T1666 | Tactic: DefenseImpairment | Sigma id: 7d04dfbf-7907-4672-93ae-7a0dbd0f2ba9
+// Data source: AWSCloudTrail (Amazon Web Services connector)
+// Severity: High
+// False positives: Cloud platform teams reorganising accounts
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Account = UserIdentityArn, IP = SourceIpAddress
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+AWSCloudTrail
+| where TimeGenerated > ago(1d)
+| where EventSource == "organizations.amazonaws.com"
+| where EventName in ("LeaveOrganization", "RemoveAccountFromOrganization", "MoveAccount")
+| project TimeGenerated, EventSource, EventName, UserIdentityArn, SourceIpAddress, AWSRegion, ErrorCode, RequestParameters

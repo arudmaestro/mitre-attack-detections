@@ -1,0 +1,8 @@
+```Title: Privileged Group Membership Added from the Command Line (raw Sysmon events)```
+```ATT&CK: T1098.007 | Severity: medium | Sigma id: 5056aec4-2cf9-43ae-b397-dc8e24974463```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Administrators and provisioning scripts```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+((Image IN ("*\\net.exe", "*\\net1.exe") CommandLine="*group*" CommandLine="*/add*") OR CommandLine IN ("*Add-LocalGroupMember*", "*Add-ADGroupMember*") CommandLine IN ("*administrators*", "*domain admins*", "*enterprise admins*", "*schema admins*", "*remote desktop users*", "*backup operators*", "*account operators*"))
+| table _time host User ParentImage Image CommandLine

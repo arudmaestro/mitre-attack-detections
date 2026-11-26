@@ -1,0 +1,11 @@
+```Title: Windows Firewall Profile Disabled in the Registry (CIM Endpoint.Registry)```
+```ATT&CK: T1686.003 | Severity: high | Sigma id: 9ddb483d-2b03-4f36-bca7-968dfb9c6276```
+```Data source: CIM Endpoint.Registry data model. summariesonly=false works without acceleration; set true once the data model is accelerated.```
+```False positives: Group Policy deliberately turning off a profile; third-party firewalls replacing Windows Firewall```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+| tstats summariesonly=false allow_old_summaries=true fillnull_value="null" count min(_time) as firstTime max(_time) as lastTime
+    from datamodel=Endpoint.Registry
+    where Registry.registry_path="*\\FirewallPolicy\\*" Registry.registry_path="*\\EnableFirewall" Registry.registry_value_data="0x00000000"
+    by Registry.dest Registry.user Registry.process_guid Registry.process_id Registry.registry_path Registry.registry_value_name Registry.registry_value_data Registry.action
+| rename Registry.* as *
+| convert timeformat="%Y-%m-%dT%H:%M:%S" ctime(firstTime) ctime(lastTime)

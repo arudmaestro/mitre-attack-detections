@@ -1,0 +1,8 @@
+```Title: Recursive Search for Documents and Data Files (raw Sysmon events)```
+```ATT&CK: T1005 | Severity: low | Sigma id: 535b5844-c3af-45c6-9eb4-5f297969c1af```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Users and administrators searching for files; Backup and inventory scripts```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity low.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+((CommandLine="*dir *" CommandLine="* /s*") OR (CommandLine="*Get-ChildItem*" CommandLine="*-Recurse*") CommandLine IN ("*.doc*", "*.xls*", "*.pdf*", "*.kdbx*", "*.pst*", "*.sqlite*"))
+| table _time host User ParentImage Image CommandLine

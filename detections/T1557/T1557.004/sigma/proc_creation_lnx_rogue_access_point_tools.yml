@@ -1,0 +1,26 @@
+title: 'Rogue Wi-Fi Access Point Tool Executed'
+id: 8c875a40-094a-46fd-8c74-95e5a5db29bc
+status: experimental
+description: 'Detects airbase-ng, wifiphisher, eaphammer and hostapd-mana, tools that create a fake access point (evil twin) to capture Wi-Fi credentials or intercept traffic.'
+references:
+  - https://attack.mitre.org/techniques/T1557/004/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.credential-access
+  - attack.collection
+  - attack.t1557.004
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection:
+    Image|endswith:
+      - '/airbase-ng'
+      - '/wifiphisher'
+      - '/eaphammer'
+      - '/hostapd-mana'
+  condition: selection
+falsepositives:
+  - 'Wireless security assessments'
+level: high

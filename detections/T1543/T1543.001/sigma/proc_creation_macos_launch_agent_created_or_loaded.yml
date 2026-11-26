@@ -1,0 +1,31 @@
+title: 'Launch Agent Created or Loaded from the Command Line'
+id: 912be5c4-35f4-458e-8510-17d5669b2631
+status: experimental
+description: 'Detects cp, mv, tee, ln, plutil, defaults or launchctl working on a plist in a LaunchAgents folder, i.e. a launch agent being created or loaded.'
+references:
+  - https://attack.mitre.org/techniques/T1543/001/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.persistence
+  - attack.privilege-escalation
+  - attack.t1543.001
+logsource:
+  category: process_creation
+  product: macos
+detection:
+  selection_img:
+    Image|endswith:
+      - '/cp'
+      - '/mv'
+      - '/tee'
+      - '/ln'
+      - '/plutil'
+      - '/defaults'
+      - '/launchctl'
+  selection_path:
+    CommandLine|contains: '/Library/LaunchAgents/'
+  condition: all of selection_*
+falsepositives:
+  - 'Software installers and Homebrew services registering agents'
+level: low

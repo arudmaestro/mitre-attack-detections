@@ -1,0 +1,8 @@
+```Title: Accessibility Program Overwritten with copy or move (raw Sysmon events)```
+```ATT&CK: T1546.008 | Severity: high | Sigma id: 713e076f-9f85-4e05-82ad-894059f09b1a```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: None expected```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(Image IN ("*\\cmd.exe", "*\\powershell.exe", "*\\pwsh.exe") CommandLine IN ("*copy *", "*move *", "*Copy-Item*", "*Move-Item*") CommandLine IN ("*\\sethc.exe*", "*\\utilman.exe*", "*\\osk.exe*", "*\\Magnify.exe*", "*\\Narrator.exe*", "*\\DisplaySwitch.exe*", "*\\AtBroker.exe*"))
+| table _time host User ParentImage Image CommandLine

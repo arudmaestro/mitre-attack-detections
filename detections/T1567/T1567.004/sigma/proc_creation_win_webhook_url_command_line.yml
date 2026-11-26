@@ -1,0 +1,27 @@
+title: 'Webhook or Bot API URL on the Command Line on Windows'
+id: e1d881bc-7908-41ae-a62a-087ff085d3ce
+status: experimental
+description: 'Detects a command line that contains a Discord, Slack, Microsoft Teams, webhook.site or Telegram bot API URL; stealers and scripts post collected data to these webhooks.'
+references:
+  - https://attack.mitre.org/techniques/T1567/004/
+author: Detection Engineering Team
+date: 2026-11-25
+tags:
+  - attack.exfiltration
+  - attack.t1567.004
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'discord.com/api/webhooks'
+      - 'discordapp.com/api/webhooks'
+      - 'hooks.slack.com/services'
+      - '.webhook.office.com'
+      - 'webhook.site'
+      - 'api.telegram.org/bot'
+  condition: selection
+falsepositives:
+  - 'Monitoring and build scripts that post notifications to chat webhooks (allowlist them)'
+level: medium

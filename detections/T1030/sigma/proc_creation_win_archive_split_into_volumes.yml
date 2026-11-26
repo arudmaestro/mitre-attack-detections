@@ -1,0 +1,28 @@
+title: 'Archive Split into Fixed-Size Volumes with 7-Zip or RAR'
+id: 8022f68e-0eab-4d7e-9647-f693f08474ea
+status: experimental
+description: 'Detects 7-Zip or RAR creating multi-volume archives (-v<size>), used to keep each exfiltrated chunk under size limits.'
+references:
+  - https://attack.mitre.org/techniques/T1030/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.exfiltration
+  - attack.t1030
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_img:
+    Image|endswith:
+      - '\7z.exe'
+      - '\7za.exe'
+      - '\7zr.exe'
+      - '\rar.exe'
+      - '\winrar.exe'
+  selection_volume:
+    CommandLine|contains: ' -v'
+  condition: all of selection_*
+falsepositives:
+  - 'Users or backup jobs splitting large archives'
+level: low

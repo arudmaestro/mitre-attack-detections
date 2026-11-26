@@ -1,0 +1,28 @@
+title: 'Screensaver Set to a Program Outside Windows or Program Files'
+id: 22e1d805-6cc9-4cd3-86fb-b39cd8ef6754
+status: experimental
+description: 'Detects the screensaver (SCRNSAVE.EXE) being set to a file outside System32, SysWOW64 or Program Files; a screensaver is an executable that Windows runs after inactivity.'
+references:
+  - https://attack.mitre.org/techniques/T1546/002/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.privilege-escalation
+  - attack.persistence
+  - attack.t1546.002
+logsource:
+  category: registry_set
+  product: windows
+detection:
+  selection:
+    TargetObject|endswith: '\Control Panel\Desktop\SCRNSAVE.EXE'
+  filter_known:
+    Details|contains:
+      - '\System32\'
+      - '\SysWOW64\'
+      - '\Program Files\'
+      - '\Program Files (x86)\'
+  condition: selection and not filter_known
+falsepositives:
+  - 'Third-party screensavers installed in user folders'
+level: medium

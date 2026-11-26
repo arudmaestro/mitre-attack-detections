@@ -1,0 +1,13 @@
+// Title: Text Storage Site Referenced on the Command Line on Windows
+// ATT&CK: T1567.003 | Tactic: Exfiltration | Sigma id: 76193ea9-9d58-4fbb-bc92-997dec025dba
+// Data source: SecurityEvent 4688 (Windows Security Events connector; needs process creation and command-line auditing enabled)
+// Severity: Medium
+// False positives: Developers and users opening paste links from the command line or scripts
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = Computer, Account = SubjectUserName
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+SecurityEvent
+| where TimeGenerated > ago(1d)
+| where EventID == 4688
+| where CommandLine contains "pastebin.com" or CommandLine contains "paste.ee" or CommandLine contains "hastebin.com" or CommandLine contains "rentry.co" or CommandLine contains "dpaste.com" or CommandLine contains "paste.rs" or CommandLine contains "ghostbin."
+| project TimeGenerated, Computer, SubjectUserName, ParentProcessName, NewProcessName, CommandLine

@@ -1,0 +1,27 @@
+title: 'KeePass Database or Configuration Accessed by Another Program'
+id: 7ae58f24-a90e-4cbd-811f-e0af85444103
+status: experimental
+description: 'Detects a command line that names a KeePass database (.kdbx) or KeePass.config.xml in a program other than KeePass or KeePassXC, e.g. copying the database out or adding an export trigger (CVE-2023-24055).'
+references:
+  - https://attack.mitre.org/techniques/T1555/005/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.credential-access
+  - attack.t1555.005
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - '.kdbx'
+      - 'KeePass.config.xml'
+  filter_keepass:
+    Image|endswith:
+      - '\KeePass.exe'
+      - '\KeePassXC.exe'
+  condition: selection and not filter_keepass
+falsepositives:
+  - 'Backup scripts and users copying their own database'
+level: medium

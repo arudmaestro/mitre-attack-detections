@@ -1,0 +1,13 @@
+// Title: Domain Federation or Trust Changed from the Command Line
+// ATT&CK: T1484.002 | Tactic: DefenseImpairment, PrivilegeEscalation | Sigma id: 57827ba2-b562-4423-a543-bcdbff67e700
+// Data source: SecurityEvent 4688 (Windows Security Events connector; needs process creation and command-line auditing enabled)
+// Severity: High
+// False positives: Identity administrators setting up federation or trusts
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = Computer, Account = SubjectUserName
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+SecurityEvent
+| where TimeGenerated > ago(1d)
+| where EventID == 4688
+| where (CommandLine contains "Set-MsolDomainAuthentication" or CommandLine contains "New-MgDomainFederationConfiguration" or CommandLine contains "Update-MgDomainFederationConfiguration" or CommandLine contains "New-AADIntBackdoor") or (NewProcessName endswith "\\netdom.exe" and (CommandLine contains "trust" and CommandLine contains "/add"))
+| project TimeGenerated, Computer, SubjectUserName, ParentProcessName, NewProcessName, CommandLine

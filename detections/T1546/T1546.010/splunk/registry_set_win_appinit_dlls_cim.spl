@@ -1,0 +1,11 @@
+```Title: AppInit DLLs Set or Enabled (CIM Endpoint.Registry)```
+```ATT&CK: T1546.010 | Severity: high | Sigma id: 9e874477-870f-4642-b172-e8957ef4cf19```
+```Data source: CIM Endpoint.Registry data model. summariesonly=false works without acceleration; set true once the data model is accelerated.```
+```False positives: Legacy software that still uses AppInit DLLs```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+| tstats summariesonly=false allow_old_summaries=true fillnull_value="null" count min(_time) as firstTime max(_time) as lastTime
+    from datamodel=Endpoint.Registry
+    where (Registry.registry_path="*\\Windows NT\\CurrentVersion\\Windows\\AppInit_DLLs" NOT Registry.registry_value_data="(Empty)") OR (Registry.registry_path="*\\Windows NT\\CurrentVersion\\Windows\\LoadAppInit_DLLs" Registry.registry_value_data="0x00000001")
+    by Registry.dest Registry.user Registry.process_guid Registry.process_id Registry.registry_path Registry.registry_value_name Registry.registry_value_data Registry.action
+| rename Registry.* as *
+| convert timeformat="%Y-%m-%dT%H:%M:%S" ctime(firstTime) ctime(lastTime)

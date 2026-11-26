@@ -1,0 +1,12 @@
+// Title: Bluetooth File Transfer Wizard Execution
+// ATT&CK: T1011.001 | Tactic: Exfiltration | Sigma id: 3af191f2-057d-4089-bd35-e2e253c32a1a
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Low
+// False positives: Legitimate Bluetooth file transfers by users
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where FolderPath endswith "\\fsquirt.exe"
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

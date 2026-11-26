@@ -1,0 +1,11 @@
+```Title: Network Provider DLL Registered (CIM Endpoint.Registry)```
+```ATT&CK: T1556.008 | Severity: high | Sigma id: 859391e9-b773-48be-973b-8d7580f26da4```
+```Data source: CIM Endpoint.Registry data model. summariesonly=false works without acceleration; set true once the data model is accelerated.```
+```False positives: VPN, remote-access and storage clients that install a network provider (e.g. Citrix, VMware, Cisco)```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+| tstats summariesonly=false allow_old_summaries=true fillnull_value="null" count min(_time) as firstTime max(_time) as lastTime
+    from datamodel=Endpoint.Registry
+    where Registry.registry_path="*\\Services\\*" Registry.registry_path="*\\NetworkProvider\\ProviderPath" NOT (Registry.registry_value_data IN ("*\\System32\\ntlanman.dll", "*\\System32\\drprov.dll", "*\\System32\\davclnt.dll", "*\\System32\\p9np.dll"))
+    by Registry.dest Registry.user Registry.process_guid Registry.process_id Registry.registry_path Registry.registry_value_name Registry.registry_value_data Registry.action
+| rename Registry.* as *
+| convert timeformat="%Y-%m-%dT%H:%M:%S" ctime(firstTime) ctime(lastTime)

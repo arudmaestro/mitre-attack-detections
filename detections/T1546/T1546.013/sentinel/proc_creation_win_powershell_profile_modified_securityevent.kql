@@ -1,0 +1,13 @@
+// Title: PowerShell Profile Written from the Command Line
+// ATT&CK: T1546.013 | Tactic: PrivilegeEscalation, Persistence | Sigma id: e4660922-ef5b-4a43-8c58-c34810b1809e
+// Data source: SecurityEvent 4688 (Windows Security Events connector; needs process creation and command-line auditing enabled)
+// Severity: Medium
+// False positives: Users and setup scripts customising their PowerShell profile
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = Computer, Account = SubjectUserName
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+SecurityEvent
+| where TimeGenerated > ago(1d)
+| where EventID == 4688
+| where (CommandLine contains "$PROFILE" or CommandLine contains "Microsoft.PowerShell_profile.ps1" or CommandLine contains "\\WindowsPowerShell\\profile.ps1" or CommandLine contains "\\PowerShell\\profile.ps1") and (CommandLine contains "Add-Content" or CommandLine contains "Set-Content" or CommandLine contains "Out-File" or CommandLine contains "Copy-Item" or CommandLine contains ">>")
+| project TimeGenerated, Computer, SubjectUserName, ParentProcessName, NewProcessName, CommandLine

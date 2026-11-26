@@ -1,0 +1,8 @@
+```Title: Backup, Database or Security Service Stopped (raw Sysmon events)```
+```ATT&CK: T1489 | Severity: medium | Sigma id: 5132afa2-5987-479b-a58a-1c9d2949cd14```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Database and backup maintenance scripts that stop services for patching```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+((Image IN ("*\\net.exe", "*\\net1.exe", "*\\sc.exe") CommandLine="* stop *") OR Image="*\\taskkill.exe" OR CommandLine="*Stop-Service*" CommandLine IN ("*MSSQL*", "*SQLWriter*", "*SQLAgent*", "*sqlservr*", "*MSExchange*", "*VSS*", "*wbengine*", "*Veeam*", "*BackupExec*", "*Acronis*", "*Sophos*"))
+| table _time host User ParentImage Image CommandLine

@@ -1,0 +1,8 @@
+```Title: PowerShell Profile Written from the Command Line (raw Sysmon events)```
+```ATT&CK: T1546.013 | Severity: medium | Sigma id: e4660922-ef5b-4a43-8c58-c34810b1809e```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Users and setup scripts customising their PowerShell profile```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(CommandLine IN ("*$PROFILE*", "*Microsoft.PowerShell_profile.ps1*", "*\\WindowsPowerShell\\profile.ps1*", "*\\PowerShell\\profile.ps1*") CommandLine IN ("*Add-Content*", "*Set-Content*", "*Out-File*", "*Copy-Item*", "*>>*"))
+| table _time host User ParentImage Image CommandLine

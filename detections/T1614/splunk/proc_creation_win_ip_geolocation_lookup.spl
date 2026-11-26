@@ -1,0 +1,8 @@
+```Title: IP Geolocation Service Queried from the Command Line on Windows (raw Sysmon events)```
+```ATT&CK: T1614 | Severity: medium | Sigma id: 48355107-b546-42cf-8351-cb112f86e6e2```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Scripts and tools that look up their own location```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(CommandLine IN ("*ipapi.co*", "*ipwho.is*", "*geoplugin.net*", "*freegeoip.app*", "*ipgeolocation.io*", "*extreme-ip-lookup.com*", "*ip-api.io*"))
+| table _time host User ParentImage Image CommandLine

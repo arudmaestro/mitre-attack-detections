@@ -1,0 +1,12 @@
+// Title: Developer Utility Used to Run Code (csi, rcsi, dnx, cdb, Tracker)
+// ATT&CK: T1127 | Tactic: Stealth, Execution | Sigma id: bf8569be-6ad3-45cf-a4df-cfbd07755a1c
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Low
+// False positives: Developers using these tools on build or development machines
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where (FolderPath endswith "\\csi.exe" or FolderPath endswith "\\rcsi.exe" or FolderPath endswith "\\dnx.exe") or (FolderPath endswith "\\cdb.exe" and ProcessCommandLine contains "-cf") or (FolderPath endswith "\\tracker.exe" and ProcessCommandLine contains " /d ")
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

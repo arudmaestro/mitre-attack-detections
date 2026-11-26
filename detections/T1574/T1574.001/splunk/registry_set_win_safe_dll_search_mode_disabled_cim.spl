@@ -1,0 +1,11 @@
+```Title: Safe DLL Search Mode Disabled (CIM Endpoint.Registry)```
+```ATT&CK: T1574.001 | Severity: high | Sigma id: 1d0a300f-4f7d-4585-9728-63b8ea793bd3```
+```Data source: CIM Endpoint.Registry data model. summariesonly=false works without acceleration; set true once the data model is accelerated.```
+```False positives: None expected```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+| tstats summariesonly=false allow_old_summaries=true fillnull_value="null" count min(_time) as firstTime max(_time) as lastTime
+    from datamodel=Endpoint.Registry
+    where Registry.registry_path="*\\Control\\Session Manager\\SafeDllSearchMode" Registry.registry_value_data="0x00000000"
+    by Registry.dest Registry.user Registry.process_guid Registry.process_id Registry.registry_path Registry.registry_value_name Registry.registry_value_data Registry.action
+| rename Registry.* as *
+| convert timeformat="%Y-%m-%dT%H:%M:%S" ctime(firstTime) ctime(lastTime)

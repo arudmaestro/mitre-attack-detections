@@ -1,0 +1,27 @@
+title: 'COM Object Created by CLSID or ProgID from the Command Line'
+id: a35f85c4-83eb-4eba-b8c1-ede5f6e4ffc6
+status: experimental
+description: 'Detects PowerShell [Type]::GetTypeFromCLSID / GetTypeFromProgID and rundll32 -sta, which create COM objects by identifier; used to run code through COM servers (e.g. MMC20.Application, ShellWindows, ShellBrowserWindow) or attacker-registered CLSIDs.'
+references:
+  - https://attack.mitre.org/techniques/T1559/001/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.execution
+  - attack.t1559.001
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_ps:
+    CommandLine|contains:
+      - 'GetTypeFromCLSID'
+      - 'GetTypeFromProgID'
+  selection_rundll_img:
+    Image|endswith: '\rundll32.exe'
+  selection_rundll_sta:
+    CommandLine|contains: ' -sta '
+  condition: selection_ps or (selection_rundll_img and selection_rundll_sta)
+falsepositives:
+  - 'Administration scripts that automate Office, Windows Installer or Shell through COM'
+level: medium

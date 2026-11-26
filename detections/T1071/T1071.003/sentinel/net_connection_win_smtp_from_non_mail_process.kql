@@ -1,0 +1,13 @@
+// Title: Outbound SMTP Connection from a Non-Mail Process
+// ATT&CK: T1071.003 | Tactic: CommandAndControl | Sigma id: 1cdf491c-7b1d-4c92-8083-ea64b95fa2fd
+// Data source: DeviceNetworkEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Medium
+// False positives: Applications, scanners and printers that send email directly (alerting, scan-to-email)
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = InitiatingProcessAccountName, IP = RemoteIP
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceNetworkEvents
+| where TimeGenerated > ago(1d)
+| where ActionType != "InboundConnectionAccepted"
+| where (RemotePort in (25, 465, 587)) and (not((InitiatingProcessFolderPath endswith "\\outlook.exe" or InitiatingProcessFolderPath endswith "\\olk.exe" or InitiatingProcessFolderPath endswith "\\thunderbird.exe" or InitiatingProcessFolderPath endswith "\\EdgeTransport.exe" or InitiatingProcessFolderPath endswith "\\MSExchangeFrontendTransport.exe" or InitiatingProcessFolderPath endswith "\\MSExchangeTransport.exe")))
+| project TimeGenerated, DeviceName, ActionType, InitiatingProcessAccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, LocalIP, LocalPort, RemoteIP, RemotePort

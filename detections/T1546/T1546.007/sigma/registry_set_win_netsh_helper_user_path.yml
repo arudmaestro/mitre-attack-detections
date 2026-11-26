@@ -1,0 +1,27 @@
+title: 'Netsh Helper DLL Registered from a User-Writable Folder'
+id: cc92459d-467a-420c-8154-c1b1108d356d
+status: experimental
+description: 'Detects a netsh helper registry value pointing to a DLL in Temp, AppData, Downloads or the public profile.'
+references:
+  - https://attack.mitre.org/techniques/T1546/007/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.privilege-escalation
+  - attack.persistence
+  - attack.t1546.007
+logsource:
+  category: registry_set
+  product: windows
+detection:
+  selection:
+    TargetObject|contains: '\Microsoft\NetSh\'
+    Details|contains:
+      - '\AppData\Local\Temp\'
+      - '\AppData\Roaming\'
+      - '\Users\Public\'
+      - '\Downloads\'
+  condition: selection
+falsepositives:
+  - 'None expected'
+level: high

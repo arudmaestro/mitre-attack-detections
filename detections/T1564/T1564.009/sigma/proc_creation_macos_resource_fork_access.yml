@@ -1,0 +1,21 @@
+title: 'Resource Fork Accessed from the Command Line'
+id: 25a1647d-7e26-4633-8ee4-c185a01f14da
+status: experimental
+description: 'Detects command lines that reference a file''s resource fork (..namedfork/rsrc), used to hide executables or data in a part of the file that most tools ignore.'
+references:
+  - https://attack.mitre.org/techniques/T1564/009/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.stealth
+  - attack.t1564.009
+logsource:
+  category: process_creation
+  product: macos
+detection:
+  selection:
+    CommandLine|contains: '..namedfork/rsrc'
+  condition: selection
+falsepositives:
+  - 'Legacy software and file conversion tools'
+level: medium

@@ -1,0 +1,15 @@
+// Title: Kerberos TGT Issued Without Pre-Authentication (4768)
+// ATT&CK: T1558.004 | Tactic: CredentialAccess | Sigma id: 909267c6-a422-46bc-a8b0-18b7fc99e83d
+// Data source: SecurityEvent 4768 (Windows Security Events connector)
+// Severity: Medium
+// False positives: Accounts that legitimately have pre-authentication disabled (some Unix/Kerberos interoperability setups); list and remove them
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = Computer, Account = SubjectUserName
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+SecurityEvent
+| where TimeGenerated > ago(1d)
+| where EventID == 4768
+| extend PreAuthType = toint(extract(@'<Data Name="PreAuthType">([^<]*)</Data>', 1, EventData))
+| extend TicketEncryptionType = extract(@'<Data Name="TicketEncryptionType">([^<]*)</Data>', 1, EventData)
+| where EventID == 4768 and Status =~ "0x0" and PreAuthType == 0
+| project TimeGenerated, Computer, TargetUserName, TargetDomainName, IpAddress, Status, PreAuthType, TicketEncryptionType

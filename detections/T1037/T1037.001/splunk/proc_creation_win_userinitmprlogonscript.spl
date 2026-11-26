@@ -1,0 +1,8 @@
+```Title: Logon Script Set via UserInitMprLogonScript (raw Sysmon events)```
+```ATT&CK: T1037.001 | Severity: high | Sigma id: 2f381da3-9265-4c90-b709-dfa2f2d3b627```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Rare: legacy logon script deployment```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(CommandLine="*UserInitMprLogonScript*")
+| table _time host User ParentImage Image CommandLine

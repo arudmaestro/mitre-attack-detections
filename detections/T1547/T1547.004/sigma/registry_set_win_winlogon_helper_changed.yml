@@ -1,0 +1,32 @@
+title: 'Winlogon Shell, Userinit or Notify Value Changed'
+id: 5cb6a248-8800-40bc-9d16-520a2dac25c3
+status: experimental
+description: 'Detects the Winlogon Shell value set to anything other than explorer.exe, Userinit set to anything other than userinit.exe, or a value added under Winlogon\Notify; these programs or DLLs start at every logon.'
+references:
+  - https://attack.mitre.org/techniques/T1547/004/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.persistence
+  - attack.privilege-escalation
+  - attack.t1547.004
+logsource:
+  category: registry_set
+  product: windows
+detection:
+  selection_shell:
+    TargetObject|endswith: '\Winlogon\Shell'
+  filter_shell:
+    Details: 'explorer.exe'
+  selection_userinit:
+    TargetObject|endswith: '\Winlogon\Userinit'
+  filter_userinit:
+    Details|endswith:
+      - '\userinit.exe,'
+      - '\userinit.exe'
+  selection_notify:
+    TargetObject|contains: '\Winlogon\Notify\'
+  condition: (selection_shell and not filter_shell) or (selection_userinit and not filter_userinit) or selection_notify
+falsepositives:
+  - 'Kiosk / Shell Launcher configurations that replace the shell'
+level: high

@@ -1,0 +1,8 @@
+```Title: LaZagne Credential Dumper Executed (raw Sysmon events)```
+```ATT&CK: T1555 | Severity: high | Sigma id: 882cde16-5a64-4943-acd0-1cb036a5f334```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Penetration tests and red-team exercises```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(CommandLine="*lazagne*")
+| table _time host User ParentImage Image CommandLine

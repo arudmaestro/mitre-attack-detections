@@ -1,0 +1,13 @@
+// Title: AWS EC2 Instance Connect SSH Key Pushed
+// ATT&CK: T1021.008 | Tactic: LateralMovement | Sigma id: 624e5dde-bedb-4584-93a8-78736fb2b238
+// Data source: AWSCloudTrail (Amazon Web Services connector)
+// Severity: Low
+// False positives: Administrators using EC2 Instance Connect or the serial console
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Account = UserIdentityArn, IP = SourceIpAddress
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+AWSCloudTrail
+| where TimeGenerated > ago(1d)
+| where EventSource == "ec2-instance-connect.amazonaws.com"
+| where EventName in ("SendSSHPublicKey", "SendSerialConsoleSSHPublicKey")
+| project TimeGenerated, EventSource, EventName, UserIdentityArn, SourceIpAddress, AWSRegion, ErrorCode, RequestParameters

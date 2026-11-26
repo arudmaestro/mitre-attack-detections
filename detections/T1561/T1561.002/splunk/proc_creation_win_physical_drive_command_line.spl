@@ -1,0 +1,8 @@
+```Title: Physical Drive Referenced on the Command Line (raw Sysmon events)```
+```ATT&CK: T1561.002 | Severity: high | Sigma id: 60ea8239-1a22-4ddc-9e59-ecbbac92c8a6```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Disk imaging, forensic and backup tools```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(CommandLine="*\\.\\PhysicalDrive*")
+| table _time host User ParentImage Image CommandLine

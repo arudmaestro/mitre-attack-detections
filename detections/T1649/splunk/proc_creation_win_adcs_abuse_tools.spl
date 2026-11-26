@@ -1,0 +1,8 @@
+```Title: AD CS Certificate Abuse Tool Command Line on Windows (raw Sysmon events)```
+```ATT&CK: T1649 | Severity: high | Sigma id: 737a6f04-f1cc-41c7-9a61-3c6286fb59e5```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Penetration tests and red-team exercises```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(CommandLine IN ("*Certify.exe*", "*ForgeCert*", "*certipy*", "* /certificate:*"))
+| table _time host User ParentImage Image CommandLine

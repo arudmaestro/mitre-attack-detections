@@ -1,0 +1,37 @@
+title: 'PowerShell Executing Payload Stored in the Registry'
+id: d30d59a9-7d38-4bca-a3e7-5701d5d75161
+status: experimental
+description: 'Detects PowerShell reading a registry value and decoding or executing it, a fileless storage technique.'
+references:
+  - https://attack.mitre.org/techniques/T1027/011/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.stealth
+  - attack.t1027.011
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_img:
+    Image|endswith:
+      - '\powershell.exe'
+      - '\pwsh.exe'
+  selection_read:
+    CommandLine|contains:
+      - 'Get-ItemProperty'
+      - 'gp '
+  selection_hive:
+    CommandLine|contains:
+      - 'HKCU:'
+      - 'HKLM:'
+      - 'Registry::'
+  selection_exec:
+    CommandLine|contains:
+      - 'FromBase64String'
+      - 'IEX'
+      - 'Invoke-Expression'
+  condition: all of selection_*
+falsepositives:
+  - Management scripts that keep encoded configuration in the registry
+level: high

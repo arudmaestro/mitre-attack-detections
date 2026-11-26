@@ -1,0 +1,8 @@
+```Title: AWS IAM MFA Device Deactivated or Deleted (AWS CloudTrail)```
+```ATT&CK: T1556.006 | Severity: medium | Sigma id: 9895673e-0462-4369-9b91-78237a70dcf1```
+```Data source: AWS CloudTrail (Splunk Add-on for AWS). Change index to where your CloudTrail data lives.```
+```False positives: Users replacing a lost or new MFA device (followed by EnableMFADevice)```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=aws sourcetype="aws:cloudtrail"
+(eventSource="iam.amazonaws.com" eventName IN ("DeactivateMFADevice", "DeleteVirtualMFADevice"))
+| table _time eventSource eventName userIdentity.arn sourceIPAddress awsRegion errorCode

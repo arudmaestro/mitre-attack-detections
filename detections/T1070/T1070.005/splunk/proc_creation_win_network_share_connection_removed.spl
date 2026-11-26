@@ -1,0 +1,8 @@
+```Title: Network Share Connection or Share Removed via net (raw Sysmon events)```
+```ATT&CK: T1070.005 | Severity: low | Sigma id: 0fa7bb33-f86f-413c-8da1-19cdb376fb48```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Users and logon scripts disconnecting mapped drives```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity low.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(Image IN ("*\\net.exe", "*\\net1.exe") CommandLine IN ("* use *", "* share *") CommandLine="*/delete*")
+| table _time host User ParentImage Image CommandLine

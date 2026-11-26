@@ -1,0 +1,12 @@
+```Title: Scripted SSH Login via sshpass or Disabled Host Key Checking (CIM Endpoint.Processes)```
+```ATT&CK: T1021.004 | Severity: low | Sigma id: 4f16364e-6ffc-4766-ba23-ae2d5d47d26e```
+```Data source: CIM Endpoint.Processes data model. summariesonly=false works without acceleration; set true once the data model is accelerated.```
+```False positives: Automation, CI/CD and configuration management jobs```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity low.```
+| tstats summariesonly=false allow_old_summaries=true fillnull_value="null" count min(_time) as firstTime max(_time) as lastTime
+    from datamodel=Endpoint.Processes
+    where Processes.process_name="sshpass" OR (Processes.process_name="ssh" Processes.process="*StrictHostKeyChecking=no*")
+    by Processes.process Processes.dest Processes.process_current_directory Processes.process_path Processes.process_integrity_level Processes.original_file_name Processes.parent_process Processes.parent_process_path Processes.parent_process_guid Processes.parent_process_id Processes.process_guid Processes.process_id Processes.user
+| rename Processes.* as *
+| convert timeformat="%Y-%m-%dT%H:%M:%S" ctime(firstTime)
+| convert timeformat="%Y-%m-%dT%H:%M:%S" ctime(lastTime)

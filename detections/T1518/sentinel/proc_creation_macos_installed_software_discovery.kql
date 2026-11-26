@@ -1,0 +1,12 @@
+// Title: Installed Applications Listed with system_profiler
+// ATT&CK: T1518 | Tactic: Discovery | Sigma id: 12110f03-c8b4-410d-974d-14d25c55e5af
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Low
+// False positives: Inventory and MDM tools
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where FolderPath endswith "/system_profiler" and ProcessCommandLine contains "SPApplicationsDataType"
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

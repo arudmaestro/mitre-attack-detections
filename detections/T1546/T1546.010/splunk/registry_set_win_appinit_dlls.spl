@@ -1,0 +1,8 @@
+```Title: AppInit DLLs Set or Enabled (raw Sysmon events)```
+```ATT&CK: T1546.010 | Severity: high | Sigma id: 9e874477-870f-4642-b172-e8957ef4cf19```
+```Data source: Sysmon EventCode 13 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Legacy software that still uses AppInit DLLs```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=13
+((TargetObject="*\\Windows NT\\CurrentVersion\\Windows\\AppInit_DLLs" NOT Details="(Empty)") OR (TargetObject="*\\Windows NT\\CurrentVersion\\Windows\\LoadAppInit_DLLs" Details="DWORD (0x00000001)"))
+| table _time host User Image EventType TargetObject Details

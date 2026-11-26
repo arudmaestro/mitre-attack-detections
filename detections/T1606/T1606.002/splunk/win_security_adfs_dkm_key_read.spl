@@ -1,0 +1,8 @@
+```Title: AD FS DKM Key Read from Active Directory (4662) (raw Windows Security events)```
+```ATT&CK: T1606.002 | Severity: medium | Sigma id: 7568592d-cedc-4ac3-ad1b-0e7340a1650c```
+```Data source: Windows Security EventCode 4662 (Splunk Add-on for Microsoft Windows). Change index to where your Security logs live.```
+```False positives: The AD FS service account reading its own key (exclude it by SubjectUserName)```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=wineventlog source IN ("XmlWinEventLog:Security", "WinEventLog:Security")
+(EventCode=4662 Properties="*8d3bca50-1d7e-11d0-a081-00aa006c33ed*")
+| table _time host SubjectUserName SubjectDomainName ObjectName AccessMask Properties

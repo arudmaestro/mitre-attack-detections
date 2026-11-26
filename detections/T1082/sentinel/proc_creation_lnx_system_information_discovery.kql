@@ -1,0 +1,12 @@
+// Title: System Information Discovery on Linux
+// ATT&CK: T1082 | Tactic: Discovery | Sigma id: 1624459f-f0e4-439e-bcaf-7c881a7db058
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Low
+// False positives: Installers, package managers and monitoring agents
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where (FolderPath endswith "/uname" and ProcessCommandLine contains "-a") or (ProcessCommandLine contains "/etc/os-release" or ProcessCommandLine contains "/proc/version")
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

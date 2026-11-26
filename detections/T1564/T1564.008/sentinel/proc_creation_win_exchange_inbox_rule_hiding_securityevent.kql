@@ -1,0 +1,13 @@
+// Title: Inbox Rule That Deletes, Moves or Marks Mail as Read Created with PowerShell
+// ATT&CK: T1564.008 | Tactic: Stealth | Sigma id: 4e8db32e-c8c6-4f36-a22f-65ac036ed579
+// Data source: SecurityEvent 4688 (Windows Security Events connector; needs process creation and command-line auditing enabled)
+// Severity: Medium
+// False positives: Helpdesk and administrators creating rules for users
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = Computer, Account = SubjectUserName
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+SecurityEvent
+| where TimeGenerated > ago(1d)
+| where EventID == 4688
+| where (CommandLine contains "New-InboxRule" or CommandLine contains "Set-InboxRule") and (CommandLine contains "-DeleteMessage" or CommandLine contains "-MoveToFolder" or CommandLine contains "-MarkAsRead")
+| project TimeGenerated, Computer, SubjectUserName, ParentProcessName, NewProcessName, CommandLine

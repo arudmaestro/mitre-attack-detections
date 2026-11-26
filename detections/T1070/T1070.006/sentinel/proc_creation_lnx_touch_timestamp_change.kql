@@ -1,0 +1,12 @@
+// Title: File Timestamps Set with touch
+// ATT&CK: T1070.006 | Tactic: Stealth | Sigma id: 68cb0ebc-58a9-45db-8b20-9a775339e26a
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Low
+// False positives: Build systems and scripts setting reproducible timestamps
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where FolderPath endswith "/touch" and (ProcessCommandLine contains " -t " or ProcessCommandLine contains " -d " or ProcessCommandLine contains " -r " or ProcessCommandLine contains "--date" or ProcessCommandLine contains "--reference")
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

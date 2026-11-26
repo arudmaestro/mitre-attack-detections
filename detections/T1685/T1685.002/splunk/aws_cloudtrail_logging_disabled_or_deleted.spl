@@ -1,0 +1,8 @@
+```Title: AWS Logging or Threat Detection Disabled or Deleted (AWS CloudTrail)```
+```ATT&CK: T1685.002 | Severity: high | Sigma id: 55f82008-5c88-42b0-b3a6-fc3f33335ba9```
+```Data source: AWS CloudTrail (Splunk Add-on for AWS). Change index to where your CloudTrail data lives.```
+```False positives: Cloud platform teams changing logging configuration (expected only from infrastructure-as-code roles)```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+index=aws sourcetype="aws:cloudtrail"
+(eventSource IN ("cloudtrail.amazonaws.com", "ec2.amazonaws.com", "guardduty.amazonaws.com", "config.amazonaws.com") eventName IN ("StopLogging", "DeleteTrail", "UpdateTrail", "PutEventSelectors", "DeleteFlowLogs", "DeleteDetector", "UpdateDetector", "StopConfigurationRecorder", "DeleteConfigurationRecorder"))
+| table _time eventSource eventName userIdentity.arn sourceIPAddress awsRegion errorCode

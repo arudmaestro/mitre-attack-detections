@@ -1,0 +1,12 @@
+// Title: Remote Execution Service Binary Running (PsExec, PAExec, RemCom, CSExec)
+// ATT&CK: T1569.002 | Tactic: Execution | Sigma id: 8d9bc13c-079f-4345-8745-db9446b185ac
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Medium
+// False positives: Administrators using PsExec or PAExec for remote administration
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where (FolderPath endswith "\\PSEXESVC.exe" or FolderPath endswith "\\RemComSvc.exe" or FolderPath endswith "\\csexecsvc.exe") or FolderPath contains "\\PAExec-"
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

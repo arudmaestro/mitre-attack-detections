@@ -1,0 +1,12 @@
+```Title: Backup, Database or Security Service Stopped (CIM Endpoint.Processes)```
+```ATT&CK: T1489 | Severity: medium | Sigma id: 5132afa2-5987-479b-a58a-1c9d2949cd14```
+```Data source: CIM Endpoint.Processes data model. summariesonly=false works without acceleration; set true once the data model is accelerated.```
+```False positives: Database and backup maintenance scripts that stop services for patching```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+| tstats summariesonly=false allow_old_summaries=true fillnull_value="null" count min(_time) as firstTime max(_time) as lastTime
+    from datamodel=Endpoint.Processes
+    where (Processes.process_name IN ("net.exe", "net1.exe", "sc.exe") Processes.process="* stop *") OR Processes.process_name="taskkill.exe" OR Processes.process="*Stop-Service*" Processes.process IN ("*MSSQL*", "*SQLWriter*", "*SQLAgent*", "*sqlservr*", "*MSExchange*", "*VSS*", "*wbengine*", "*Veeam*", "*BackupExec*", "*Acronis*", "*Sophos*")
+    by Processes.process Processes.dest Processes.process_current_directory Processes.process_path Processes.process_integrity_level Processes.original_file_name Processes.parent_process Processes.parent_process_path Processes.parent_process_guid Processes.parent_process_id Processes.process_guid Processes.process_id Processes.user
+| rename Processes.* as *
+| convert timeformat="%Y-%m-%dT%H:%M:%S" ctime(firstTime)
+| convert timeformat="%Y-%m-%dT%H:%M:%S" ctime(lastTime)

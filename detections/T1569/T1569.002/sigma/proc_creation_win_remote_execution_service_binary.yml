@@ -1,0 +1,26 @@
+title: 'Remote Execution Service Binary Running (PsExec, PAExec, RemCom, CSExec)'
+id: 8d9bc13c-079f-4345-8745-db9446b185ac
+status: experimental
+description: 'Detects the service programs that remote-execution tools install on the target host: PSEXESVC (PsExec), PAExec-*, RemComSvc and csexecsvc.'
+references:
+  - https://attack.mitre.org/techniques/T1569/002/
+author: Detection Engineering Team
+date: 2026-11-25
+tags:
+  - attack.execution
+  - attack.t1569.002
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_name:
+    Image|endswith:
+      - '\PSEXESVC.exe'
+      - '\RemComSvc.exe'
+      - '\csexecsvc.exe'
+  selection_paexec:
+    Image|contains: '\PAExec-'
+  condition: 1 of selection_*
+falsepositives:
+  - 'Administrators using PsExec or PAExec for remote administration'
+level: medium

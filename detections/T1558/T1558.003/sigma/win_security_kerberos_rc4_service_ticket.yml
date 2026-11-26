@@ -1,0 +1,29 @@
+title: 'Kerberos Service Ticket Requested with RC4 Encryption (4769)'
+id: ffdbd384-9128-4362-89a2-4a1139356560
+status: experimental
+description: 'Detects a successful service ticket request (4769) with RC4-HMAC encryption (0x17) for a user service account (not a computer account or krbtgt), the ticket type Kerberoasting tools request because it cracks fastest.'
+references:
+  - https://attack.mitre.org/techniques/T1558/003/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.credential-access
+  - attack.t1558.003
+logsource:
+  product: windows
+  service: security
+detection:
+  selection:
+    EventID: 4769
+    TicketEncryptionType: '0x17'
+    Status: '0x0'
+  filter_machine_service:
+    ServiceName|endswith: '$'
+  filter_krbtgt:
+    ServiceName: 'krbtgt'
+  filter_machine_requester:
+    TargetUserName|contains: '$@'
+  condition: selection and not filter_machine_service and not filter_krbtgt and not filter_machine_requester
+falsepositives:
+  - 'Legacy applications and services that still only support RC4'
+level: medium

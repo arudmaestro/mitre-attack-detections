@@ -1,0 +1,25 @@
+title: 'Container Escape Command Line'
+id: 7b788bc0-3bca-4ac7-b0b6-d0db4e311370
+status: experimental
+description: 'Detects command lines typical of container breakouts: nsenter into PID 1''s namespaces, writing a cgroup release_agent, and changing the kernel core_pattern handler.'
+references:
+  - https://attack.mitre.org/techniques/T1611/
+author: Detection Engineering Team
+date: 2026-11-25
+tags:
+  - attack.privilege-escalation
+  - attack.t1611
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection:
+    CommandLine|contains:
+      - 'nsenter -t 1 '
+      - 'nsenter --target 1 '
+      - 'release_agent'
+      - '/proc/sys/kernel/core_pattern'
+  condition: selection
+falsepositives:
+  - 'Node debugging tools and administrators entering the host namespace on purpose'
+level: high

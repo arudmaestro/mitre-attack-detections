@@ -1,0 +1,8 @@
+```Title: PowerShell History File Accessed (raw Sysmon events)```
+```ATT&CK: T1552.003 | Severity: low | Sigma id: b56244d6-13db-483c-a427-97b26af8cde2```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Administrators reviewing or clearing their history```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity low.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(CommandLine IN ("*ConsoleHost_history*", "*HistorySavePath*"))
+| table _time host User ParentImage Image CommandLine

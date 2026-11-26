@@ -1,0 +1,22 @@
+title: 'AWS EC2 Root Volume Replaced (Instance Reverted)'
+id: 06f946e5-3a46-451c-a1af-d2cbdd8050a9
+status: experimental
+description: 'Detects CreateReplaceRootVolumeTask, which restores an instance''s root volume to its launch state or a snapshot; it can erase evidence on the instance after an intrusion.'
+references:
+  - https://attack.mitre.org/techniques/T1578/004/
+author: Detection Engineering Team
+date: 2026-11-25
+tags:
+  - attack.defense-impairment
+  - attack.t1578.004
+logsource:
+  product: aws
+  service: cloudtrail
+detection:
+  selection:
+    eventSource: 'ec2.amazonaws.com'
+    eventName: 'CreateReplaceRootVolumeTask'
+  condition: selection
+falsepositives:
+  - 'Operations teams restoring instances from snapshots'
+level: medium

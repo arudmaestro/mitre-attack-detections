@@ -1,0 +1,28 @@
+title: 'Command Executed Inside a Container via exec'
+id: 5d363b09-0db9-4ea8-9975-64b4ca27e1bc
+status: experimental
+description: 'Detects docker, podman, nerdctl, crictl or kubectl exec, used to run commands inside running containers.'
+references:
+  - https://attack.mitre.org/techniques/T1059/013/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.execution
+  - attack.t1059.013
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection_img:
+    Image|endswith:
+      - '/docker'
+      - '/podman'
+      - '/nerdctl'
+      - '/crictl'
+      - '/kubectl'
+  selection_exec:
+    CommandLine|contains: ' exec '
+  condition: all of selection_*
+falsepositives:
+  - 'Developers and operators troubleshooting containers'
+level: low

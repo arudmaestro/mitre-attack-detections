@@ -1,0 +1,8 @@
+```Title: AWS S3 Bucket Deleted (AWS CloudTrail)```
+```ATT&CK: T1485 | Severity: medium | Sigma id: f4ebc3f3-8eff-4a66-be35-4203a10ae50e```
+```Data source: AWS CloudTrail (Splunk Add-on for AWS). Change index to where your CloudTrail data lives.```
+```False positives: Infrastructure-as-code pipelines tearing down environments```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=aws sourcetype="aws:cloudtrail"
+(eventSource="s3.amazonaws.com" eventName="DeleteBucket")
+| table _time eventSource eventName userIdentity.arn sourceIPAddress awsRegion errorCode

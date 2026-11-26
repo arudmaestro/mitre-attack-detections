@@ -1,0 +1,8 @@
+```Title: Virtual Machine Started Headless on a Windows Host (raw Sysmon events)```
+```ATT&CK: T1564.006 | Severity: medium | Sigma id: a7d2e0e4-97b3-4731-9e0e-56c405fd48c5```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Developers and testers who run virtual machines```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(Image="*\\VBoxHeadless.exe" OR (Image="*\\VBoxManage.exe" CommandLine="*startvm*" CommandLine="*headless*") OR Image IN ("*\\qemu-system-x86_64.exe", "*\\qemu-system-x86_64w.exe", "*\\qemu-system-i386.exe"))
+| table _time host User ParentImage Image CommandLine

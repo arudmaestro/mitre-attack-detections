@@ -1,0 +1,21 @@
+title: 'Tor Executed on Linux'
+id: 9f945654-3ede-45c4-abb1-8753e7d7678f
+status: experimental
+description: 'Detects the Tor daemon or client running on a Linux host.'
+references:
+  - https://attack.mitre.org/techniques/T1090/003/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.command-and-control
+  - attack.t1090.003
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection:
+    Image|endswith: '/tor'
+  condition: selection
+falsepositives:
+  - 'Approved Tor relays or research systems'
+level: medium

@@ -1,0 +1,8 @@
+```Title: DCSync - Directory Replication Requested by Non-DC Account (raw Windows Security events)```
+```ATT&CK: T1003.006 | Severity: high | Sigma id: 594054d9-0e78-4b52-80a5-99c4ebcfd84c```
+```Data source: Windows Security EventCode 4662 (Splunk Add-on for Microsoft Windows). Change index to where your Security logs live.```
+```False positives: Azure AD / Entra Connect sync accounts not named MSOL_*; Other legitimate replication tools (e.g. some identity or backup products)```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+index=wineventlog source IN ("XmlWinEventLog:Security", "WinEventLog:Security")
+(EventCode=4662 AccessMask="0x100" Properties IN ("*1131f6aa-9c07-11d1-f79f-00c04fc2dcd2*", "*1131f6ad-9c07-11d1-f79f-00c04fc2dcd2*", "*89e95b76-444d-4c62-991a-0facbeda640c*") NOT (SubjectUserName IN ("*$", "MSOL_*")))
+| table _time host SubjectUserName SubjectDomainName ObjectName AccessMask Properties

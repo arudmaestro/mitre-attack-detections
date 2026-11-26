@@ -1,0 +1,14 @@
+// Title: LSA Authentication Packages Changed
+// ATT&CK: T1547.002 | Tactic: Persistence, PrivilegeEscalation | Sigma id: 00a68f67-7615-4099-8973-ea2acdc2b743
+// Data source: DeviceRegistryEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: High
+// False positives: Smart card, MFA or credential-provider software installing an authentication package
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = InitiatingProcessAccountName, RegistryKey = RegistryKey, RegistryValue = RegistryValueName
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceRegistryEvents
+| where TimeGenerated > ago(1d)
+| where ActionType == "RegistryValueSet"
+| extend TargetObject = strcat(RegistryKey, "\\", RegistryValueName)
+| where TargetObject endswith "\\Control\\Lsa\\Authentication Packages" and (not(InitiatingProcessFolderPath endswith "\\lsass.exe"))
+| project TimeGenerated, DeviceName, ActionType, InitiatingProcessAccountName, InitiatingProcessFolderPath, InitiatingProcessCommandLine, RegistryKey, RegistryValueName, RegistryValueType, RegistryValueData

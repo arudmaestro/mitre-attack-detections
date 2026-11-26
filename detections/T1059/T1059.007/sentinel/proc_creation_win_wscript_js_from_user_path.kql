@@ -1,0 +1,12 @@
+// Title: JScript Executed from User-Writable Path
+// ATT&CK: T1059.007 | Tactic: Execution | Sigma id: 9539797b-f314-4735-88be-258ea47c2bc3
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Medium
+// False positives: Legitimate scripts in Temp or Downloads; Command lines containing .json paths
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where (FolderPath endswith "\\wscript.exe" or FolderPath endswith "\\cscript.exe") and ProcessCommandLine contains ".js" and (ProcessCommandLine contains "\\AppData\\" or ProcessCommandLine contains "\\Temp\\" or ProcessCommandLine contains "\\Users\\Public\\" or ProcessCommandLine contains "\\Downloads\\")
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

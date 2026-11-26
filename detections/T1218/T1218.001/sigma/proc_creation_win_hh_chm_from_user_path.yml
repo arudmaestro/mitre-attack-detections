@@ -1,0 +1,29 @@
+title: 'CHM File Opened from a Download, Temp or Remote Location'
+id: 44ffe5c1-4f8f-412c-8a8f-c5a50a326d5b
+status: experimental
+description: 'Detects hh.exe opening a help file from Downloads, Temp, the public profile or a URL, where phishing CHM files land.'
+references:
+  - https://attack.mitre.org/techniques/T1218/001/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.stealth
+  - attack.t1218.001
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_img:
+    Image|endswith: '\hh.exe'
+  selection_path:
+    CommandLine|contains:
+      - '\AppData\Local\Temp\'
+      - '\AppData\Roaming\'
+      - '\Downloads\'
+      - '\Users\Public\'
+      - 'http://'
+      - 'https://'
+  condition: all of selection_*
+falsepositives:
+  - 'Users opening help files shipped with downloaded software'
+level: medium

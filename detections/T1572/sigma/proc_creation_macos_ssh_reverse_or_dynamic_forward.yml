@@ -1,0 +1,24 @@
+title: 'SSH Reverse or Dynamic Port Forwarding on macOS'
+id: aa9303f0-f4ee-436e-8241-f0af10ff0a5c
+status: experimental
+description: 'Detects ssh with -R (remote / reverse forwarding) or -D (SOCKS proxy), used to expose internal services to an attacker host or to proxy traffic into the network.'
+references:
+  - https://attack.mitre.org/techniques/T1572/
+author: Detection Engineering Team
+date: 2026-11-25
+tags:
+  - attack.command-and-control
+  - attack.t1572
+logsource:
+  category: process_creation
+  product: macos
+detection:
+  selection:
+    Image|endswith: '/ssh'
+    CommandLine|contains:
+      - ' -R '
+      - ' -D '
+  condition: selection
+falsepositives:
+  - 'Administrators and developers using SSH forwarding'
+level: low

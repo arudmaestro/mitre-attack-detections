@@ -1,0 +1,24 @@
+title: 'Webcam Capture with ffmpeg on Windows'
+id: 15971128-c737-48f8-b0fd-4db3a1912f18
+status: experimental
+description: 'Detects ffmpeg reading from a DirectShow video device (-f dshow ... video=), i.e. recording a webcam.'
+references:
+  - https://attack.mitre.org/techniques/T1125/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.collection
+  - attack.t1125
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    Image|endswith: '\ffmpeg.exe'
+    CommandLine|contains|all:
+      - 'dshow'
+      - 'video='
+  condition: selection
+falsepositives:
+  - 'Users or developers recording video with ffmpeg'
+level: medium

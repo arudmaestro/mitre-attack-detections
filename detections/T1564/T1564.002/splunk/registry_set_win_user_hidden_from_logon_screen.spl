@@ -1,0 +1,8 @@
+```Title: User Account Hidden from the Logon Screen (raw Sysmon events)```
+```ATT&CK: T1564.002 | Severity: high | Sigma id: f388ad9a-797e-4a5b-b011-ed971310a5f8```
+```Data source: Sysmon EventCode 13 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: OEM and management software hiding service or support accounts```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=13
+(TargetObject="*\\Winlogon\\SpecialAccounts\\UserList\\*" Details="DWORD (0x00000000)")
+| table _time host User Image EventType TargetObject Details

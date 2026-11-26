@@ -1,0 +1,12 @@
+// Title: Kernel Module Loaded from Temporary or Home Directory
+// ATT&CK: T1014 | Tactic: Stealth | Sigma id: f96444e9-2df8-4457-ace0-6dea408174eb
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: High
+// False positives: Developers building and testing kernel modules
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where (FolderPath endswith "/insmod" or (FolderPath endswith "/kmod" and ProcessCommandLine contains "insmod")) and (ProcessCommandLine contains "/tmp/" or ProcessCommandLine contains "/dev/shm/" or ProcessCommandLine contains "/var/tmp/" or ProcessCommandLine contains "/home/")
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

@@ -1,0 +1,25 @@
+title: 'Kubernetes Role Binding Created with kubectl'
+id: eda930fd-5a9a-4099-8062-31348331ff8b
+status: experimental
+description: 'Detects kubectl create clusterrolebinding or rolebinding, used to grant an account additional cluster permissions.'
+references:
+  - https://attack.mitre.org/techniques/T1098/006/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.persistence
+  - attack.privilege-escalation
+  - attack.t1098.006
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection:
+    Image|endswith: '/kubectl'
+    CommandLine|contains:
+      - 'create clusterrolebinding'
+      - 'create rolebinding'
+  condition: selection
+falsepositives:
+  - 'Platform engineers managing RBAC'
+level: medium

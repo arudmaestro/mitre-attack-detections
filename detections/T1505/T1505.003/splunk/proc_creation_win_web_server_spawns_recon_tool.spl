@@ -1,0 +1,8 @@
+```Title: Web Server Process Running Discovery or Download Tools on Windows (raw Sysmon events)```
+```ATT&CK: T1505.003 | Severity: high | Sigma id: 6a1bebc4-1f25-4a85-8307-2149fc13bd6c```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Web applications that query system information through command-line tools by design```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(ParentImage IN ("*\\w3wp.exe", "*\\httpd.exe", "*\\nginx.exe", "*\\php-cgi.exe", "*\\tomcat.exe", "*\\tomcat8.exe", "*\\tomcat9.exe") Image IN ("*\\net.exe", "*\\net1.exe", "*\\ipconfig.exe", "*\\systeminfo.exe", "*\\nltest.exe", "*\\quser.exe", "*\\query.exe", "*\\tasklist.exe", "*\\hostname.exe", "*\\certutil.exe", "*\\curl.exe", "*\\bitsadmin.exe", "*\\reg.exe"))
+| table _time host User ParentImage Image CommandLine

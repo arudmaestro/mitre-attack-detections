@@ -1,0 +1,22 @@
+title: 'Directory Tree Listing with tree /f'
+id: 18bf41f3-faad-4eb9-bbaf-f35206fb45fa
+status: experimental
+description: 'Detects tree.com listing files (/f), used to map directory contents.'
+references:
+  - https://attack.mitre.org/techniques/T1083/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.discovery
+  - attack.t1083
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    Image|endswith: '\tree.com'
+    CommandLine|contains: '/f'
+  condition: selection
+falsepositives:
+  - 'Users and administrators documenting folder contents'
+level: low

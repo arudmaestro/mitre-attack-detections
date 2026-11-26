@@ -1,0 +1,22 @@
+title: 'DYLD_INSERT_LIBRARIES Set on the Command Line on macOS'
+id: 988b02e3-74b0-4114-b4db-e1884af2079c
+status: experimental
+description: 'Detects DYLD_INSERT_LIBRARIES in a command line (env, launchctl setenv), which loads a library into the started program on macOS.'
+references:
+  - https://attack.mitre.org/techniques/T1574/006/
+author: Detection Engineering Team
+date: 2026-11-25
+tags:
+  - attack.stealth
+  - attack.execution
+  - attack.t1574.006
+logsource:
+  category: process_creation
+  product: macos
+detection:
+  selection:
+    CommandLine|contains: 'DYLD_INSERT_LIBRARIES'
+  condition: selection
+falsepositives:
+  - 'Developers and debugging tools injecting libraries into their own builds'
+level: medium

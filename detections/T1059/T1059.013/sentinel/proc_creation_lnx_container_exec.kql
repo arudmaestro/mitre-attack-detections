@@ -1,0 +1,12 @@
+// Title: Command Executed Inside a Container via exec
+// ATT&CK: T1059.013 | Tactic: Execution | Sigma id: 5d363b09-0db9-4ea8-9975-64b4ca27e1bc
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Low
+// False positives: Developers and operators troubleshooting containers
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where (FolderPath endswith "/docker" or FolderPath endswith "/podman" or FolderPath endswith "/nerdctl" or FolderPath endswith "/crictl" or FolderPath endswith "/kubectl") and ProcessCommandLine contains " exec "
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

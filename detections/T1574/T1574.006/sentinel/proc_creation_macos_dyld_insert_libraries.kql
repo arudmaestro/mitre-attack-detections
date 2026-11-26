@@ -1,0 +1,12 @@
+// Title: DYLD_INSERT_LIBRARIES Set on the Command Line on macOS
+// ATT&CK: T1574.006 | Tactic: Stealth, Execution | Sigma id: 988b02e3-74b0-4114-b4db-e1884af2079c
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Medium
+// False positives: Developers and debugging tools injecting libraries into their own builds
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where ProcessCommandLine contains "DYLD_INSERT_LIBRARIES"
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

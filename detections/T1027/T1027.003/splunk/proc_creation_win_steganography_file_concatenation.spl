@@ -1,0 +1,8 @@
+```Title: Payload Hidden in Image via copy /b or Steganography Tool (raw Sysmon events)```
+```ATT&CK: T1027.003 | Severity: medium | Sigma id: 9209a3bc-a2cd-401a-afeb-dedd303fd229```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Rare legitimate use of copy /b to join files```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+((CommandLine="*copy /b*" CommandLine IN ("*.jpg*", "*.jpeg*", "*.png*", "*.gif*", "*.bmp*") CommandLine IN ("*.zip*", "*.rar*", "*.7z*", "*.exe*", "*.ps1*")) OR CommandLine IN ("*Invoke-PSImage*", "*steghide*"))
+| table _time host User ParentImage Image CommandLine

@@ -1,0 +1,28 @@
+title: 'Lua Interpreter Executed on Windows'
+id: 36808368-08aa-4941-bf7e-24461b373a6e
+status: experimental
+description: 'Detects standalone Lua interpreters (lua, luajit, wlua) running on Windows endpoints, where they are uncommon.'
+references:
+  - https://attack.mitre.org/techniques/T1059/011/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.execution
+  - attack.t1059.011
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    Image|endswith:
+      - '\lua.exe'
+      - '\luajit.exe'
+      - '\lua51.exe'
+      - '\lua52.exe'
+      - '\lua53.exe'
+      - '\lua54.exe'
+      - '\wlua.exe'
+  condition: selection
+falsepositives:
+  - 'Developers and applications that bundle a Lua interpreter'
+level: low

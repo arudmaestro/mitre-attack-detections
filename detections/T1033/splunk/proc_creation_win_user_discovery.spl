@@ -1,0 +1,8 @@
+```Title: System Owner/User Discovery via whoami or quser (raw Sysmon events)```
+```ATT&CK: T1033 | Severity: low | Sigma id: b4e2da18-2995-4e1c-86bd-3011e7492558```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Administrators, login scripts and IT tools```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity low.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(Image="*\\whoami.exe" OR Image="*\\quser.exe" OR (Image="*\\query.exe" CommandLine="*user*"))
+| table _time host User ParentImage Image CommandLine

@@ -1,0 +1,8 @@
+```Title: DLL Side-Loading Host Program Running Outside Its Normal Folder (raw Sysmon events)```
+```ATT&CK: T1574.001 | Severity: high | Sigma id: deca6001-564e-4077-b703-2301e2480c4f```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Windows servicing copies of dism.exe in temporary folders during updates; Windows installed on another drive letter```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(Image IN ("*\\dism.exe", "*\\winsat.exe", "*\\wermgr.exe", "*\\MpCmdRun.exe", "*\\NisSrv.exe", "*\\msdtc.exe", "*\\consent.exe", "*\\colorcpl.exe") NOT (Image IN ("C:\\Windows\\System32\\*", "C:\\Windows\\SysWOW64\\*", "C:\\Windows\\WinSxS\\*", "C:\\ProgramData\\Microsoft\\Windows Defender\\Platform\\*", "C:\\Program Files\\Windows Defender\\*")))
+| table _time host User ParentImage Image CommandLine

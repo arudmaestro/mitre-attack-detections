@@ -1,0 +1,12 @@
+// Title: Member Added to a Privileged Windows Group
+// ATT&CK: T1098.007 | Tactic: Persistence, PrivilegeEscalation | Sigma id: b914089c-0210-4304-84fd-2e508cf245f2
+// Data source: SecurityEvent 4728, 4732, 4756 (Windows Security Events connector)
+// Severity: High
+// False positives: Administrators granting rights through change control
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = Computer, Account = SubjectUserName
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+SecurityEvent
+| where TimeGenerated > ago(1d)
+| where (EventID in (4728, 4732, 4756)) and (TargetUserName in~ ("Administrators", "Domain Admins", "Enterprise Admins", "Schema Admins", "Remote Desktop Users", "Backup Operators", "Account Operators"))
+| project TimeGenerated, Computer, EventID, Activity, SubjectUserName, SubjectDomainName, TargetUserName, TargetDomainName, MemberName

@@ -1,0 +1,26 @@
+title: 'Program in a Temp Folder Started with nohup on macOS'
+id: bce3be89-270f-414e-9311-3bc801ebd6a9
+status: experimental
+description: 'Detects nohup running a program or script from /tmp, /dev/shm or /var/tmp; nohup makes the process ignore hang-up signals so it survives the end of the session.'
+references:
+  - https://attack.mitre.org/techniques/T1564/011/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.stealth
+  - attack.t1564.011
+logsource:
+  category: process_creation
+  product: macos
+detection:
+  selection_img:
+    Image|endswith: '/nohup'
+  selection_path:
+    CommandLine|contains:
+      - '/tmp/'
+      - '/dev/shm/'
+      - '/var/tmp/'
+  condition: all of selection_*
+falsepositives:
+  - 'Build and test jobs that run programs from /tmp in the background'
+level: medium

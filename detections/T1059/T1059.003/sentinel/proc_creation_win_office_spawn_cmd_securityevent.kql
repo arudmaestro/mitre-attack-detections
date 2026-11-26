@@ -1,0 +1,13 @@
+// Title: Windows Command Shell Spawned by Office Application
+// ATT&CK: T1059.003 | Tactic: Execution | Sigma id: 78aa7281-55f4-4240-b97f-62bb2bd70ddb
+// Data source: SecurityEvent 4688 (Windows Security Events connector; needs process creation and command-line auditing enabled)
+// Severity: High
+// False positives: Legitimate Office macros or add-ins that call cmd.exe
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = Computer, Account = SubjectUserName
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+SecurityEvent
+| where TimeGenerated > ago(1d)
+| where EventID == 4688
+| where (ParentProcessName endswith "\\winword.exe" or ParentProcessName endswith "\\excel.exe" or ParentProcessName endswith "\\powerpnt.exe" or ParentProcessName endswith "\\outlook.exe" or ParentProcessName endswith "\\msaccess.exe") and NewProcessName endswith "\\cmd.exe"
+| project TimeGenerated, Computer, SubjectUserName, ParentProcessName, NewProcessName, CommandLine

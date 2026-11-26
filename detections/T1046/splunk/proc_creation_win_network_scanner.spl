@@ -1,0 +1,8 @@
+```Title: Network Scanner Executed on Windows (raw Sysmon events)```
+```ATT&CK: T1046 | Severity: medium | Sigma id: 9d6fa05c-c416-4aa4-a6e2-a69b32dfcaa7```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Authorised network administrators and vulnerability scanning```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(Image IN ("*\\nmap.exe", "*\\masscan.exe", "*\\advanced_ip_scanner.exe", "*\\advanced_ip_scanner_console.exe", "*\\netscan.exe", "*\\ipscan.exe"))
+| table _time host User ParentImage Image CommandLine

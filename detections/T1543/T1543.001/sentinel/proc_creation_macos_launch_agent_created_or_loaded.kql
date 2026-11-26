@@ -1,0 +1,12 @@
+// Title: Launch Agent Created or Loaded from the Command Line
+// ATT&CK: T1543.001 | Tactic: Persistence, PrivilegeEscalation | Sigma id: 912be5c4-35f4-458e-8510-17d5669b2631
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Low
+// False positives: Software installers and Homebrew services registering agents
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where (FolderPath endswith "/cp" or FolderPath endswith "/mv" or FolderPath endswith "/tee" or FolderPath endswith "/ln" or FolderPath endswith "/plutil" or FolderPath endswith "/defaults" or FolderPath endswith "/launchctl") and ProcessCommandLine contains "/Library/LaunchAgents/"
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

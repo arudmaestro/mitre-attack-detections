@@ -1,0 +1,10 @@
+```Title: Many Accounts Reset, Disabled or Deleted by One Account (raw Windows Security events)```
+```ATT&CK: T1531 | Severity: high | Sigma id: b883a878-5f44-41fd-972a-df23732e8cbb```
+```Data source: Windows Security EventCode 4724, 4725, 4726 (Splunk Add-on for Microsoft Windows). Change index to where your Security logs live.```
+```False positives: Bulk offboarding and identity-management synchronisation (exclude their service accounts)```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+index=wineventlog source IN ("XmlWinEventLog:Security", "WinEventLog:Security")
+(EventCode IN (4724, 4725, 4726))
+| bin _time span=10m
+| stats count as event_count by _time SubjectUserName
+| search event_count >= 5

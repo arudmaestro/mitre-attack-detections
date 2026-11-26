@@ -1,0 +1,31 @@
+title: 'Desktop Wallpaper Set to an Image in Temp, ProgramData or Public'
+id: d5b470b9-3141-4058-93b9-155de87416f6
+status: experimental
+description: 'Detects the user or policy wallpaper being set to an image in a temporary folder, ProgramData or the public profile, which ransomware does to display its ransom message.'
+references:
+  - https://attack.mitre.org/techniques/T1491/001/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.impact
+  - attack.t1491.001
+logsource:
+  category: registry_set
+  product: windows
+detection:
+  selection:
+    TargetObject|endswith:
+      - '\Control Panel\Desktop\Wallpaper'
+      - '\Policies\System\Wallpaper'
+    Details|contains:
+      - '\AppData\Local\Temp\'
+      - '\ProgramData\'
+      - '\Users\Public\'
+  filter_bginfo:
+    Image|endswith:
+      - '\Bginfo.exe'
+      - '\Bginfo64.exe'
+  condition: selection and not filter_bginfo
+falsepositives:
+  - 'Desktop customisation tools that store wallpapers in ProgramData'
+level: medium

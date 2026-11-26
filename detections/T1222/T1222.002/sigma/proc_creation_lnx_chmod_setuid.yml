@@ -1,0 +1,27 @@
+title: 'Setuid Bit Set with chmod on Linux'
+id: 6025a697-aee1-45b6-9556-9bf20a077a18
+status: experimental
+description: 'Detects chmod setting the setuid bit (u+s, +s, 4755, 4777, 6755), used to create a root backdoor from a copied shell or binary.'
+references:
+  - https://attack.mitre.org/techniques/T1222/002/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.defense-impairment
+  - attack.t1222.002
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection:
+    Image|endswith: '/chmod'
+    CommandLine|contains:
+      - 'u+s'
+      - ' +s '
+      - ' 4755 '
+      - ' 4777 '
+      - ' 6755 '
+  condition: selection
+falsepositives:
+  - 'Package installation scripts and administrators installing setuid tools'
+level: medium

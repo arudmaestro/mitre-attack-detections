@@ -1,0 +1,35 @@
+title: 'Local Account Discovery on Windows'
+id: 037bc6e7-bf31-4a25-bd62-c27503d69bf3
+status: experimental
+description: 'Detects listing local accounts with net user (without changes or /domain), Get-LocalUser or wmic useraccount.'
+references:
+  - https://attack.mitre.org/techniques/T1087/001/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.discovery
+  - attack.t1087.001
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_net:
+    Image|endswith:
+      - '\net.exe'
+      - '\net1.exe'
+    CommandLine|contains: 'user'
+  filter_net:
+    CommandLine|contains:
+      - '/add'
+      - '/delete'
+      - '/domain'
+      - '/active'
+  selection_ps:
+    CommandLine|contains: 'Get-LocalUser'
+  selection_wmic:
+    Image|endswith: '\wmic.exe'
+    CommandLine|contains: 'useraccount'
+  condition: (selection_net and not filter_net) or selection_ps or selection_wmic
+falsepositives:
+  - 'Administrators and inventory scripts'
+level: low

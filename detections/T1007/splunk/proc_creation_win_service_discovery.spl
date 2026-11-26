@@ -1,0 +1,8 @@
+```Title: System Service Discovery via sc, tasklist or net (raw Sysmon events)```
+```ATT&CK: T1007 | Severity: low | Sigma id: 539c94de-400b-4217-b5be-f9bd10f1606e```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Administrators and IT management tools; Software installers checking service state```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity low.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+((Image="*\\sc.exe" CommandLine IN ("* query*", "* qc *")) OR (Image="*\\tasklist.exe" CommandLine="*/svc*") OR (Image IN ("*\\net.exe", "*\\net1.exe") CommandLine="* start"))
+| table _time host User ParentImage Image CommandLine

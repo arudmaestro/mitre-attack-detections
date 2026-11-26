@@ -1,0 +1,29 @@
+title: 'Network Share Connection or Share Removed via net'
+id: 0fa7bb33-f86f-413c-8da1-19cdb376fb48
+status: experimental
+description: 'Detects net use /delete and net share /delete, used to remove share connections after lateral movement.'
+references:
+  - https://attack.mitre.org/techniques/T1070/005/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.stealth
+  - attack.t1070.005
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_img:
+    Image|endswith:
+      - '\net.exe'
+      - '\net1.exe'
+  selection_cmd:
+    CommandLine|contains:
+      - ' use '
+      - ' share '
+  selection_delete:
+    CommandLine|contains: '/delete'
+  condition: all of selection_*
+falsepositives:
+  - 'Users and logon scripts disconnecting mapped drives'
+level: low

@@ -1,0 +1,34 @@
+title: 'Security-Relevant Registry Value Changed from the Command Line'
+id: 74d98b28-b65b-4cc4-98e9-975d3624714f
+status: experimental
+description: 'Detects reg.exe or PowerShell changing registry values that weaken security: Defender (DisableAntiSpyware, DisableRealtimeMonitoring), UAC (EnableLUA, LocalAccountTokenFilterPolicy), WDigest (UseLogonCredential) and RDP restricted admin (DisableRestrictedAdmin).'
+references:
+  - https://attack.mitre.org/techniques/T1112/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.defense-impairment
+  - attack.persistence
+  - attack.t1112
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_value:
+    CommandLine|contains:
+      - 'DisableAntiSpyware'
+      - 'DisableRealtimeMonitoring'
+      - 'EnableLUA'
+      - 'LocalAccountTokenFilterPolicy'
+      - 'UseLogonCredential'
+      - 'DisableRestrictedAdmin'
+  selection_modify:
+    CommandLine|contains:
+      - ' add '
+      - 'Set-ItemProperty'
+      - 'New-ItemProperty'
+      - 'Set-MpPreference'
+  condition: all of selection_*
+falsepositives:
+  - 'Administrators or management tools changing these settings intentionally'
+level: high

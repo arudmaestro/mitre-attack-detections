@@ -1,0 +1,8 @@
+```Title: Outlook Data File (.pst/.ost) Accessed Outside Outlook (raw Sysmon events)```
+```ATT&CK: T1114.001 | Severity: low | Sigma id: e613d3e0-fdce-4903-8bd4-238d3418774f```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Mailbox migration or backup tools; Users moving their own PST archives```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity low.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(CommandLine IN ("*.pst*", "*.ost*") NOT (Image IN ("*\\outlook.exe", "*\\scanpst.exe")))
+| table _time host User ParentImage Image CommandLine

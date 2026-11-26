@@ -1,0 +1,13 @@
+// Title: Regasm or Regsvcs Loading an Assembly from a User-Writable Folder
+// ATT&CK: T1218.009 | Tactic: Stealth | Sigma id: cb726946-3b94-4ce3-91a4-45f54078d832
+// Data source: SecurityEvent 4688 (Windows Security Events connector; needs process creation and command-line auditing enabled)
+// Severity: Medium
+// False positives: Developers registering COM assemblies they built in a user folder; Installers registering assemblies from a temporary folder
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = Computer, Account = SubjectUserName
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+SecurityEvent
+| where TimeGenerated > ago(1d)
+| where EventID == 4688
+| where (NewProcessName endswith "\\RegAsm.exe" or NewProcessName endswith "\\RegSvcs.exe") and (CommandLine contains "\\AppData\\Local\\Temp\\" or CommandLine contains "\\AppData\\Roaming\\" or CommandLine contains "\\Downloads\\" or CommandLine contains "\\Users\\Public\\")
+| project TimeGenerated, Computer, SubjectUserName, ParentProcessName, NewProcessName, CommandLine

@@ -1,0 +1,32 @@
+title: 'Network Scanner or Port Sweep on Linux'
+id: 7d448c49-38c6-4554-b52a-9e8732c162bd
+status: experimental
+description: 'Detects network scanners (nmap, masscan, zmap, rustscan, naabu) and netcat port scans (-z).'
+references:
+  - https://attack.mitre.org/techniques/T1046/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.discovery
+  - attack.t1046
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection_scanner:
+    Image|endswith:
+      - '/nmap'
+      - '/masscan'
+      - '/zmap'
+      - '/rustscan'
+      - '/naabu'
+  selection_nc:
+    Image|endswith:
+      - '/nc'
+      - '/ncat'
+      - '/netcat'
+    CommandLine|contains: ' -z'
+  condition: 1 of selection_*
+falsepositives:
+  - 'Authorised network administrators and vulnerability scanning'
+level: medium

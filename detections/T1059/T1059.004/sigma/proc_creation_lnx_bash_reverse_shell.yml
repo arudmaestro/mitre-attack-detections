@@ -1,0 +1,26 @@
+title: Bash Reverse Shell via /dev/tcp
+id: 8ecf30c4-12dd-4c34-aff7-3469105c47d2
+status: experimental
+description: Detects a Unix shell using the /dev/tcp pseudo-device, commonly used to build reverse shells.
+references:
+  - https://attack.mitre.org/techniques/T1059/004/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.execution
+  - attack.t1059.004
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection_img:
+    Image|endswith:
+      - '/bash'
+      - '/sh'
+  selection_cli:
+    CommandLine|contains:
+      - '/dev/tcp/'
+  condition: all of selection_*
+falsepositives:
+  - Administrator scripts that test TCP connectivity with /dev/tcp
+level: high

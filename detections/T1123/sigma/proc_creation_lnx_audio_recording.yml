@@ -1,0 +1,23 @@
+title: 'Audio Recording Tool Executed on Linux'
+id: 53e7a1f7-dfce-43a0-97b4-897c0a804ba8
+status: experimental
+description: 'Detects arecord or parecord capturing audio from a microphone.'
+references:
+  - https://attack.mitre.org/techniques/T1123/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.collection
+  - attack.t1123
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection:
+    Image|endswith:
+      - '/arecord'
+      - '/parecord'
+  condition: selection
+falsepositives:
+  - 'Users recording audio, conferencing troubleshooting'
+level: low

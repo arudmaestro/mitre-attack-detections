@@ -1,0 +1,12 @@
+// Title: IIS Native or Managed Module Installed
+// ATT&CK: T1505.004 | Tactic: Persistence | Sigma id: 8f346254-6b2d-41ed-9416-c8a0af5f3a0f
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Medium
+// False positives: IIS administrators and application installers adding modules
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where (FolderPath endswith "\\appcmd.exe" and (ProcessCommandLine contains "install module" or ProcessCommandLine contains "add module" or ProcessCommandLine contains "globalModules")) or (ProcessCommandLine contains "New-WebGlobalModule" or ProcessCommandLine contains "Enable-WebGlobalModule")
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

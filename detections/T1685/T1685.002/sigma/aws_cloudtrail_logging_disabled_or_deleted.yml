@@ -1,0 +1,35 @@
+title: 'AWS Logging or Threat Detection Disabled or Deleted'
+id: 55f82008-5c88-42b0-b3a6-fc3f33335ba9
+status: experimental
+description: 'Detects CloudTrail StopLogging, DeleteTrail, UpdateTrail and PutEventSelectors, VPC DeleteFlowLogs, GuardDuty DeleteDetector / UpdateDetector and AWS Config StopConfigurationRecorder / DeleteConfigurationRecorder.'
+references:
+  - https://attack.mitre.org/techniques/T1685/002/
+author: Detection Engineering Team
+date: 2026-11-25
+tags:
+  - attack.defense-impairment
+  - attack.t1685.002
+logsource:
+  product: aws
+  service: cloudtrail
+detection:
+  selection:
+    eventSource:
+      - 'cloudtrail.amazonaws.com'
+      - 'ec2.amazonaws.com'
+      - 'guardduty.amazonaws.com'
+      - 'config.amazonaws.com'
+    eventName:
+      - 'StopLogging'
+      - 'DeleteTrail'
+      - 'UpdateTrail'
+      - 'PutEventSelectors'
+      - 'DeleteFlowLogs'
+      - 'DeleteDetector'
+      - 'UpdateDetector'
+      - 'StopConfigurationRecorder'
+      - 'DeleteConfigurationRecorder'
+  condition: selection
+falsepositives:
+  - 'Cloud platform teams changing logging configuration (expected only from infrastructure-as-code roles)'
+level: high

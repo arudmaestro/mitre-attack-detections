@@ -1,0 +1,27 @@
+title: WMIC Process Call Create
+id: dc106254-94b9-48dc-b2ed-a7f79bd2d5ec
+status: experimental
+description: Detects wmic.exe creating a process with 'process call create', used for local or remote execution.
+references:
+  - https://attack.mitre.org/techniques/T1047/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.execution
+  - attack.t1047
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_img:
+    Image|endswith:
+      - '\wmic.exe'
+  selection_cli:
+    CommandLine|contains|all:
+      - 'process'
+      - 'call'
+      - 'create'
+  condition: all of selection_*
+falsepositives:
+  - Legacy admin scripts and software deployment tools
+level: medium

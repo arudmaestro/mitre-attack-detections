@@ -1,0 +1,23 @@
+title: 'Exchange Transport Agent Installed or Enabled'
+id: 887d60ae-6268-4741-a7ac-31f32e85d702
+status: experimental
+description: 'Detects Install-TransportAgent and Enable-TransportAgent, used to load a malicious transport agent that can read and change all mail passing through Exchange.'
+references:
+  - https://attack.mitre.org/techniques/T1505/002/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.persistence
+  - attack.t1505.002
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'Install-TransportAgent'
+      - 'Enable-TransportAgent'
+  condition: selection
+falsepositives:
+  - 'Exchange administrators installing anti-spam, archiving or signature agents'
+level: medium

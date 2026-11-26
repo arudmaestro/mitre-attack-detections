@@ -1,0 +1,22 @@
+title: 'Immutable Attribute Removed with chattr'
+id: 93c3151e-c4fe-492e-936c-b2e15cdf93bf
+status: experimental
+description: 'Detects chattr -i, which removes the immutable flag so a protected file (e.g. /etc/passwd, authorized_keys, cron files) can be changed. Malware and cryptominers use it to modify or lock system files.'
+references:
+  - https://attack.mitre.org/techniques/T1222/002/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.defense-impairment
+  - attack.t1222.002
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection:
+    Image|endswith: '/chattr'
+    CommandLine|contains: ' -i'
+  condition: selection
+falsepositives:
+  - 'Administrators updating files they protected with chattr +i'
+level: medium

@@ -1,0 +1,12 @@
+// Title: Registry Query of Sensitive Keys via reg.exe
+// ATT&CK: T1012 | Tactic: Discovery | Sigma id: 33f9cd73-adcf-4ca7-b1be-17c696a20a6a
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Low
+// False positives: Administrators, installers and inventory scripts
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where FolderPath endswith "\\reg.exe" and ProcessCommandLine contains " query " and (ProcessCommandLine contains "currentversion\\run" or ProcessCommandLine contains "currentversion\\winlogon" or ProcessCommandLine contains "currentversion\\policies" or ProcessCommandLine contains "currentcontrolset\\services" or ProcessCommandLine contains "terminal server client" or ProcessCommandLine contains "/f password")
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

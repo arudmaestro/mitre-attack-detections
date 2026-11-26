@@ -1,0 +1,8 @@
+```Title: Terminal Services ServiceDll Changed (raw Sysmon events)```
+```ATT&CK: T1505.005 | Severity: high | Sigma id: fc8a5f1f-f361-4a6f-a563-e1e585196a95```
+```Data source: Sysmon EventCode 13 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Third-party RDP enhancement products that replace termsrv.dll (rare)```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=13
+(TargetObject="*\\Services\\TermService\\Parameters\\ServiceDll" NOT Details="*\\System32\\termsrv.dll")
+| table _time host User Image EventType TargetObject Details

@@ -1,0 +1,26 @@
+title: AppleScript Executing Shell Command via osascript
+id: 104e3aea-aab7-4fa9-a3d9-98ad343acfdf
+status: experimental
+description: Detects osascript running inline AppleScript that executes a shell command with 'do shell script'.
+references:
+  - https://attack.mitre.org/techniques/T1059/002/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.execution
+  - attack.t1059.002
+logsource:
+  category: process_creation
+  product: macos
+detection:
+  selection_img:
+    Image|endswith:
+      - '/osascript'
+  selection_cli:
+    CommandLine|contains|all:
+      - ' -e '
+      - 'do shell script'
+  condition: all of selection_*
+falsepositives:
+  - Admin and automation scripts that use do shell script
+level: medium

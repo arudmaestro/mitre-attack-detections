@@ -1,0 +1,12 @@
+```Title: Executable with a Document Double Extension (CIM Endpoint.Processes)```
+```ATT&CK: T1036.007 | Severity: high | Sigma id: 29b39d5e-361c-4282-a0d6-e2957432ff1e```
+```Data source: CIM Endpoint.Processes data model. summariesonly=false works without acceleration; set true once the data model is accelerated.```
+```False positives: None expected```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+| tstats summariesonly=false allow_old_summaries=true fillnull_value="null" count min(_time) as firstTime max(_time) as lastTime
+    from datamodel=Endpoint.Processes
+    where Processes.process_path IN ("*.pdf.exe", "*.doc.exe", "*.docx.exe", "*.xls.exe", "*.xlsx.exe", "*.ppt.exe", "*.pptx.exe", "*.rtf.exe", "*.txt.exe", "*.jpg.exe", "*.png.exe", "*.pdf.scr", "*.doc.scr", "*.docx.scr")
+    by Processes.process Processes.dest Processes.process_current_directory Processes.process_path Processes.process_integrity_level Processes.original_file_name Processes.parent_process Processes.parent_process_path Processes.parent_process_guid Processes.parent_process_id Processes.process_guid Processes.process_id Processes.user
+| rename Processes.* as *
+| convert timeformat="%Y-%m-%dT%H:%M:%S" ctime(firstTime)
+| convert timeformat="%Y-%m-%dT%H:%M:%S" ctime(lastTime)

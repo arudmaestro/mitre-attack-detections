@@ -1,0 +1,12 @@
+// Title: Application Firewall or Packet Filter Disabled on macOS
+// ATT&CK: T1686 | Tactic: DefenseImpairment | Sigma id: fec7b9fc-5aa8-4be0-9732-151c693069b7
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Medium
+// False positives: Administrators troubleshooting network issues
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where (FolderPath endswith "/socketfilterfw" and ProcessCommandLine contains "setglobalstate off") or (FolderPath endswith "/pfctl" and ProcessCommandLine contains " -d")
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

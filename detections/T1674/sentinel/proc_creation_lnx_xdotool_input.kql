@@ -1,0 +1,12 @@
+// Title: Keystrokes or Mouse Input Simulated with xdotool
+// ATT&CK: T1674 | Tactic: Execution | Sigma id: df1fdd1e-0893-4871-82fd-d1afdc243dd8
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Low
+// False positives: Desktop automation scripts
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where FolderPath endswith "/xdotool" and (ProcessCommandLine contains " type " or ProcessCommandLine contains " key ")
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

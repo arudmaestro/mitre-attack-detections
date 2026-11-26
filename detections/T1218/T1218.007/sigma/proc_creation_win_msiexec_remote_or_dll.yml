@@ -1,0 +1,31 @@
+title: 'Msiexec Installing from a URL or Registering a DLL'
+id: bbd745e6-1a7c-47b7-931b-f42dbfb0046a
+status: experimental
+description: 'Detects msiexec.exe installing a package straight from an http(s) URL, or calling DllRegisterServer / DllUnregisterServer of a DLL (/y, /z).'
+references:
+  - https://attack.mitre.org/techniques/T1218/007/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.stealth
+  - attack.t1218.007
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_img:
+    Image|endswith: '\msiexec.exe'
+  selection_remote:
+    CommandLine|contains:
+      - 'http://'
+      - 'https://'
+  selection_dll:
+    CommandLine|contains:
+      - ' /y'
+      - ' -y'
+      - ' /z'
+      - ' -z'
+  condition: selection_img and (selection_remote or selection_dll)
+falsepositives:
+  - 'Software deployment that installs MSI packages from an internal web server'
+level: medium

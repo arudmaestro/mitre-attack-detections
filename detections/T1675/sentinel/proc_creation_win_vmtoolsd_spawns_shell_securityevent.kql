@@ -1,0 +1,13 @@
+// Title: VMware Tools Started a Shell or Script Host
+// ATT&CK: T1675 | Tactic: Execution | Sigma id: 8f4ac52d-a6f3-4584-b761-2393f9e3469a
+// Data source: SecurityEvent 4688 (Windows Security Events connector; needs process creation and command-line auditing enabled)
+// Severity: Medium
+// False positives: VMware administrators running guest scripts with PowerCLI Invoke-VMScript
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = Computer, Account = SubjectUserName
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+SecurityEvent
+| where TimeGenerated > ago(1d)
+| where EventID == 4688
+| where (ParentProcessName endswith "\\vmtoolsd.exe" and (NewProcessName endswith "\\cmd.exe" or NewProcessName endswith "\\powershell.exe" or NewProcessName endswith "\\pwsh.exe" or NewProcessName endswith "\\wscript.exe" or NewProcessName endswith "\\cscript.exe" or NewProcessName endswith "\\mshta.exe")) and (not((CommandLine contains "poweron-vm-default" or CommandLine contains "poweroff-vm-default" or CommandLine contains "resume-vm-default" or CommandLine contains "suspend-vm-default")))
+| project TimeGenerated, Computer, SubjectUserName, ParentProcessName, NewProcessName, CommandLine

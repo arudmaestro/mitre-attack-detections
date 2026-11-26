@@ -1,0 +1,26 @@
+title: 'Secure File Deletion Tool Executed on Windows'
+id: 673513bd-1b82-41fe-966e-05605ca71dd9
+status: experimental
+description: 'Detects SDelete or cipher /w, used to securely delete files or wipe free space so deleted evidence cannot be recovered.'
+references:
+  - https://attack.mitre.org/techniques/T1070/004/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.stealth
+  - attack.t1070.004
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_sdelete:
+    Image|endswith:
+      - '\sdelete.exe'
+      - '\sdelete64.exe'
+  selection_cipher:
+    Image|endswith: '\cipher.exe'
+    CommandLine|contains: '/w:'
+  condition: 1 of selection_*
+falsepositives:
+  - 'IT staff decommissioning or sanitising disks'
+level: medium

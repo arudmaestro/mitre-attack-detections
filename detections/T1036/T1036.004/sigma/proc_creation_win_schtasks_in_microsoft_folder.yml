@@ -1,0 +1,25 @@
+title: 'Scheduled Task Created in the Microsoft\Windows Task Folder via schtasks'
+id: c7f3ad61-3a0f-4b4f-b26e-18ef295ea2cf
+status: experimental
+description: 'Detects schtasks.exe creating a task inside the \Microsoft\Windows\ task folder, where attackers hide tasks among built-in Windows tasks.'
+references:
+  - https://attack.mitre.org/techniques/T1036/004/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.stealth
+  - attack.t1036.004
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_img:
+    Image|endswith: '\schtasks.exe'
+  selection_create:
+    CommandLine|contains: '/create'
+  selection_name:
+    CommandLine|contains: 'Microsoft\Windows\'
+  condition: all of selection_*
+falsepositives:
+  - 'Rare: vendor installers that register tasks under \Microsoft\Windows\ with schtasks'
+level: medium

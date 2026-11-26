@@ -1,0 +1,8 @@
+```Title: EventLog Service or Log Channel Disabled in the Registry (raw Sysmon events)```
+```ATT&CK: T1685.001 | Severity: medium | Sigma id: 88599209-9ceb-4d1b-a650-794adc918098```
+```Data source: Sysmon EventCode 13 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Windows and software installers disabling noisy analytic / debug channels```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=13
+((TargetObject="*\\Services\\EventLog\\Start" Details="DWORD (0x00000004)") OR (TargetObject="*\\WINEVT\\Channels\\*" TargetObject="*\\Enabled" Details="DWORD (0x00000000)"))
+| table _time host User Image EventType TargetObject Details

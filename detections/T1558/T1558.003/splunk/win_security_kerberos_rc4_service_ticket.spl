@@ -1,0 +1,8 @@
+```Title: Kerberos Service Ticket Requested with RC4 Encryption (4769) (raw Windows Security events)```
+```ATT&CK: T1558.003 | Severity: medium | Sigma id: ffdbd384-9128-4362-89a2-4a1139356560```
+```Data source: Windows Security EventCode 4769 (Splunk Add-on for Microsoft Windows). Change index to where your Security logs live.```
+```False positives: Legacy applications and services that still only support RC4```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=wineventlog source IN ("XmlWinEventLog:Security", "WinEventLog:Security")
+(EventCode=4769 TicketEncryptionType="0x17" Status="0x0" NOT ServiceName="*$" NOT ServiceName="krbtgt" NOT TargetUserName="*$@*")
+| table _time host TargetUserName TargetDomainName ServiceName IpAddress Status TicketOptions TicketEncryptionType

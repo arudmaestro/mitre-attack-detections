@@ -1,0 +1,12 @@
+// Title: Remote Access Tool Executed on Windows
+// ATT&CK: T1219.002 | Tactic: CommandAndControl | Sigma id: 3dc648fb-8e5f-453e-b0e7-d68cb7a9fde9
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Medium
+// False positives: Approved remote support and RMM tools (allowlist the tools and hosts you use)
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where FolderPath endswith "\\AnyDesk.exe" or FolderPath endswith "\\TeamViewer.exe" or FolderPath endswith "\\TeamViewer_Service.exe" or FolderPath endswith "\\ScreenConnect.ClientService.exe" or FolderPath endswith "\\ScreenConnect.WindowsClient.exe" or FolderPath endswith "\\rustdesk.exe" or FolderPath endswith "\\AteraAgent.exe" or FolderPath endswith "\\SRService.exe" or FolderPath endswith "\\client32.exe" or FolderPath endswith "\\rutserv.exe" or FolderPath endswith "\\MeshAgent.exe" or FolderPath endswith "\\Supremo.exe" or FolderPath endswith "\\AA_v3.exe"
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

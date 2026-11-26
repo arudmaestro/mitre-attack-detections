@@ -1,0 +1,27 @@
+title: 'Ping to Localhost Used as a Delay'
+id: 00bec094-f846-4040-b5ed-aa61a89cc3b6
+status: experimental
+description: 'Detects ping -n to 127.0.0.1, a common way for malware and droppers to wait before the next step (e.g. deleting itself or starting a payload) without calling sleep.'
+references:
+  - https://attack.mitre.org/techniques/T1678/
+author: Detection Engineering Team
+date: 2026-11-25
+tags:
+  - attack.stealth
+  - attack.t1678
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_img:
+    Image|endswith: '\ping.exe'
+  selection_count:
+    CommandLine|contains: ' -n '
+  selection_localhost:
+    CommandLine|contains:
+      - '127.0.0.1'
+      - 'localhost'
+  condition: all of selection_*
+falsepositives:
+  - 'Batch scripts that use ping as a sleep'
+level: low

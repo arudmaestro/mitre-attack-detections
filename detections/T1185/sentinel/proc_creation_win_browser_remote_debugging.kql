@@ -1,0 +1,12 @@
+// Title: Browser Started with Remote Debugging Enabled
+// ATT&CK: T1185 | Tactic: Collection | Sigma id: e04f102a-056b-4c33-ad7a-9979ee96f893
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: High
+// False positives: Developers and test automation (Puppeteer, Playwright, Selenium)
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where (FolderPath endswith "\\msedge.exe" or FolderPath endswith "\\chrome.exe" or FolderPath endswith "\\brave.exe") and (ProcessCommandLine contains "--remote-debugging-port" or ProcessCommandLine contains "--remote-debugging-pipe")
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

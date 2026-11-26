@@ -1,0 +1,14 @@
+// Title: COM Server Registered to a DLL or EXE in a User-Writable Folder
+// ATT&CK: T1546.015 | Tactic: PrivilegeEscalation, Persistence | Sigma id: 39316757-cdbd-4e6d-a23a-25c86ecb5974
+// Data source: DeviceRegistryEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Medium
+// False positives: Per-user applications that register COM servers in AppData (Dropbox, Zoom, Slack and similar - add them to the filter)
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = InitiatingProcessAccountName, RegistryKey = RegistryKey, RegistryValue = RegistryValueName
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceRegistryEvents
+| where TimeGenerated > ago(1d)
+| where ActionType == "RegistryValueSet"
+| extend TargetObject = strcat(RegistryKey, "\\", RegistryValueName)
+| where TargetObject contains "\\CLSID\\" and (TargetObject contains "\\InprocServer32\\" or TargetObject contains "\\LocalServer32\\") and (RegistryValueData contains "\\AppData\\Local\\Temp\\" or RegistryValueData contains "\\AppData\\Roaming\\" or RegistryValueData contains "\\Users\\Public\\" or RegistryValueData contains "\\Downloads\\") and (not((RegistryValueData contains "\\AppData\\Local\\Microsoft\\OneDrive\\" or RegistryValueData contains "\\AppData\\Local\\Microsoft\\Teams\\" or RegistryValueData contains "\\AppData\\Local\\Microsoft\\TeamsMeetingAdd")))
+| project TimeGenerated, DeviceName, ActionType, InitiatingProcessAccountName, InitiatingProcessFolderPath, InitiatingProcessCommandLine, RegistryKey, RegistryValueName, RegistryValueType, RegistryValueData

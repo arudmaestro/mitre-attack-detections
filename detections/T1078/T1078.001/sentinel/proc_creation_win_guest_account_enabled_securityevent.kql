@@ -1,0 +1,13 @@
+// Title: Guest Account Enabled via net user
+// ATT&CK: T1078.001 | Tactic: Stealth, Persistence, PrivilegeEscalation, InitialAccess | Sigma id: 0f479594-8424-46d8-983b-5a8118c36c74
+// Data source: SecurityEvent 4688 (Windows Security Events connector; needs process creation and command-line auditing enabled)
+// Severity: High
+// False positives: Rare: legacy kiosk configuration
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = Computer, Account = SubjectUserName
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+SecurityEvent
+| where TimeGenerated > ago(1d)
+| where EventID == 4688
+| where (NewProcessName endswith "\\net.exe" or NewProcessName endswith "\\net1.exe") and (CommandLine contains "guest" and CommandLine contains "/active:yes")
+| project TimeGenerated, Computer, SubjectUserName, ParentProcessName, NewProcessName, CommandLine

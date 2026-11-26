@@ -1,0 +1,8 @@
+```Title: Alternate Data Stream Written or Read with PowerShell (raw Sysmon events)```
+```ATT&CK: T1564.004 | Severity: medium | Sigma id: 3abb0659-e527-4e1d-bbed-f4dde48a5460```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Administration scripts that store metadata in streams```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(CommandLine="* -Stream *" NOT CommandLine="*Zone.Identifier*")
+| table _time host User ParentImage Image CommandLine

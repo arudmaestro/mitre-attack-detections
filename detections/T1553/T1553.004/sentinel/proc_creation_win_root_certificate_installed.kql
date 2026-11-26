@@ -1,0 +1,12 @@
+// Title: Root Certificate Installed from the Command Line on Windows
+// ATT&CK: T1553.004 | Tactic: DefenseImpairment | Sigma id: 73aea01a-f2d6-4a83-8791-04d9827e0bb0
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Medium
+// False positives: Enterprise PKI deployment and proxy / TLS inspection software installing their root
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where ((FolderPath endswith "\\certutil.exe" and ProcessCommandLine contains "addstore") or ProcessCommandLine contains "Import-Certificate") and ProcessCommandLine contains "root"
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

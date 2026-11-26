@@ -1,0 +1,23 @@
+title: 'Program Started from an Outlook Attachment Folder'
+id: 19f7a65c-ec9b-43dc-85f0-8728ae4a6d19
+status: experimental
+description: 'Detects a process whose executable is in the Outlook attachment cache (INetCache\Content.Outlook or the new Outlook''s Olk\Attachments), i.e. an executable mail attachment opened directly.'
+references:
+  - https://attack.mitre.org/techniques/T1566/001/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.initial-access
+  - attack.t1566.001
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    Image|contains:
+      - '\Content.Outlook\'
+      - '\Olk\Attachments\'
+  condition: selection
+falsepositives:
+  - 'Rare: users running installers received by mail'
+level: high

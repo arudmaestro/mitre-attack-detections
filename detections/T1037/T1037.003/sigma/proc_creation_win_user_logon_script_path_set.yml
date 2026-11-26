@@ -1,0 +1,29 @@
+title: 'User Logon Script Path Set via net user or Set-ADUser'
+id: 32f0d9cc-d444-4855-ba7b-7285c6ce0038
+status: experimental
+description: 'Detects setting a user''s logon script path with net user /scriptpath: or Set-ADUser -ScriptPath.'
+references:
+  - https://attack.mitre.org/techniques/T1037/003/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.persistence
+  - attack.privilege-escalation
+  - attack.t1037.003
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_net:
+    Image|endswith:
+      - '\net.exe'
+      - '\net1.exe'
+    CommandLine|contains: '/scriptpath:'
+  selection_ad_cmdlet:
+    CommandLine|contains: 'Set-ADUser'
+  selection_ad_param:
+    CommandLine|contains: '-ScriptPath'
+  condition: selection_net or (selection_ad_cmdlet and selection_ad_param)
+falsepositives:
+  - 'Administrators assigning logon scripts'
+level: medium

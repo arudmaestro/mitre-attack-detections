@@ -1,0 +1,22 @@
+title: 'AWS S3 Lifecycle Configuration Set'
+id: 6d334ab1-ac16-4f44-8d68-96d389cdfde8
+status: experimental
+description: 'Detects a lifecycle configuration being written to an S3 bucket; an attacker can add an expiration rule that deletes all objects.'
+references:
+  - https://attack.mitre.org/techniques/T1485/001/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.impact
+  - attack.t1485.001
+logsource:
+  product: aws
+  service: cloudtrail
+detection:
+  selection:
+    eventSource: 's3.amazonaws.com'
+    eventName: 'PutBucketLifecycle'
+  condition: selection
+falsepositives:
+  - 'Infrastructure-as-code and storage administrators managing retention'
+level: low

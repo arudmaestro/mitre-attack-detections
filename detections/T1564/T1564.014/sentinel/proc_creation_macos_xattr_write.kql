@@ -1,0 +1,12 @@
+// Title: Extended Attribute Written with xattr on macOS
+// ATT&CK: T1564.014 | Tactic: Stealth | Sigma id: 5a2ab8f1-3cab-4fae-bf9b-fd330998cc45
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Low
+// False positives: Developers and installers setting attributes such as com.apple.FinderInfo
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where FolderPath endswith "/xattr" and ProcessCommandLine contains " -w"
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

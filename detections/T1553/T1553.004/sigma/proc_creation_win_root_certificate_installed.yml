@@ -1,0 +1,26 @@
+title: 'Root Certificate Installed from the Command Line on Windows'
+id: 73aea01a-f2d6-4a83-8791-04d9827e0bb0
+status: experimental
+description: 'Detects certutil -addstore and Import-Certificate adding a certificate to a Root store; a trusted root lets an attacker intercept TLS or make their code look trusted.'
+references:
+  - https://attack.mitre.org/techniques/T1553/004/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.defense-impairment
+  - attack.t1553.004
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_certutil:
+    Image|endswith: '\certutil.exe'
+    CommandLine|contains: 'addstore'
+  selection_ps:
+    CommandLine|contains: 'Import-Certificate'
+  selection_root:
+    CommandLine|contains: 'root'
+  condition: (selection_certutil or selection_ps) and selection_root
+falsepositives:
+  - 'Enterprise PKI deployment and proxy / TLS inspection software installing their root'
+level: medium

@@ -1,0 +1,30 @@
+title: 'Kernel Module Loaded from Temporary or Home Directory'
+id: f96444e9-2df8-4457-ace0-6dea408174eb
+status: experimental
+description: 'Detects insmod (directly or via kmod) loading a kernel module from /tmp, /dev/shm, /var/tmp or /home, a common rootkit installation pattern.'
+references:
+  - https://attack.mitre.org/techniques/T1014/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.stealth
+  - attack.t1014
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection_insmod:
+    Image|endswith: '/insmod'
+  selection_kmod:
+    Image|endswith: '/kmod'
+    CommandLine|contains: 'insmod'
+  selection_path:
+    CommandLine|contains:
+      - '/tmp/'
+      - '/dev/shm/'
+      - '/var/tmp/'
+      - '/home/'
+  condition: (selection_insmod or selection_kmod) and selection_path
+falsepositives:
+  - Developers building and testing kernel modules
+level: high

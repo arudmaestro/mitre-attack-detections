@@ -1,0 +1,13 @@
+// Title: Browser Bookmarks or History Read from the Command Line on Windows
+// ATT&CK: T1217 | Tactic: Discovery | Sigma id: c1b5a0c4-455e-4d47-ab77-255cae402761
+// Data source: SecurityEvent 4688 (Windows Security Events connector; needs process creation and command-line auditing enabled)
+// Severity: Low
+// False positives: Backup and browser-migration tools
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = Computer, Account = SubjectUserName
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+SecurityEvent
+| where TimeGenerated > ago(1d)
+| where EventID == 4688
+| where CommandLine contains "\\User Data\\Default\\Bookmarks" or CommandLine contains "\\User Data\\Default\\History" or CommandLine contains "\\places.sqlite"
+| project TimeGenerated, Computer, SubjectUserName, ParentProcessName, NewProcessName, CommandLine

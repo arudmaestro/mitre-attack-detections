@@ -1,0 +1,24 @@
+title: 'Pass-the-Ticket Tool Command Line'
+id: 810de0fd-6ae8-4a7c-8bf9-5325d1959070
+status: experimental
+description: 'Detects command lines that inject a Kerberos ticket into the current logon session: Mimikatz kerberos::ptt and Rubeus ptt or /ptt.'
+references:
+  - https://attack.mitre.org/techniques/T1550/003/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.lateral-movement
+  - attack.t1550.003
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'kerberos::ptt'
+      - ' ptt '
+      - '/ptt'
+  condition: selection
+falsepositives:
+  - 'Penetration tests and red-team exercises'
+level: high

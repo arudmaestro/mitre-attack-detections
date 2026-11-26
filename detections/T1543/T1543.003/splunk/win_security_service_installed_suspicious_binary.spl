@@ -1,0 +1,8 @@
+```Title: Service Installed with a Script Host or a File in a User Folder (4697) (raw Windows Security events)```
+```ATT&CK: T1543.003 | Severity: high | Sigma id: d8dcdc7a-4793-4622-af94-b97e193878a6```
+```Data source: Windows Security EventCode 4697 (Splunk Add-on for Microsoft Windows). Change index to where your Security logs live.```
+```False positives: Administration tools that install temporary services running scripts```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+index=wineventlog source IN ("XmlWinEventLog:Security", "WinEventLog:Security")
+(EventCode=4697 ServiceFileName IN ("*powershell*", "*pwsh*", "*mshta*", "*wscript*", "*cscript*", "*regsvr32*", "*cmd.exe /c*", "*cmd /c*", "*%COMSPEC%*", "*\\AppData\\Local\\Temp\\*", "*\\Users\\Public\\*"))
+| table _time host SubjectUserName SubjectDomainName ServiceName ServiceFileName ServiceType ServiceStartType ServiceAccount

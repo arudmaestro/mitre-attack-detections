@@ -1,0 +1,26 @@
+title: 'Startup Folder Location Changed'
+id: 1607470a-f816-4bcf-9a3d-678ef2697138
+status: experimental
+description: 'Detects the Startup or Common Startup folder location (User Shell Folders) being pointed somewhere other than the default Start Menu\Programs\Startup folder.'
+references:
+  - https://attack.mitre.org/techniques/T1547/001/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.persistence
+  - attack.privilege-escalation
+  - attack.t1547.001
+logsource:
+  category: registry_set
+  product: windows
+detection:
+  selection:
+    TargetObject|endswith:
+      - '\User Shell Folders\Startup'
+      - '\User Shell Folders\Common Startup'
+  filter_default:
+    Details|endswith: '\Start Menu\Programs\Startup'
+  condition: selection and not filter_default
+falsepositives:
+  - 'Folder redirection policies'
+level: high

@@ -1,0 +1,29 @@
+title: 'Admin Share Mapped via net use'
+id: 99e29713-94a0-4f76-bc0a-1ffef26aa2fd
+status: experimental
+description: 'Detects net use connecting to the C$ or ADMIN$ administrative shares, used for lateral movement and remote file transfer.'
+references:
+  - https://attack.mitre.org/techniques/T1021/002/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.lateral-movement
+  - attack.t1021.002
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_img:
+    Image|endswith:
+      - '\net.exe'
+      - '\net1.exe'
+  selection_use:
+    CommandLine|contains: ' use '
+  selection_share:
+    CommandLine|contains:
+      - '\C$'
+      - '\ADMIN$'
+  condition: all of selection_*
+falsepositives:
+  - Administrators and deployment tools mapping admin shares
+level: medium

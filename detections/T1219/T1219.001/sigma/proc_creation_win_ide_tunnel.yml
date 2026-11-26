@@ -1,0 +1,27 @@
+title: 'IDE or Dev Tunnel Started on Windows'
+id: 908b19cf-3768-48a7-a3a6-1fdeabf1b12b
+status: experimental
+description: 'Detects VS Code Remote Tunnels (code tunnel / code-tunnel.exe) and Microsoft Dev Tunnels hosting (devtunnel host), which give remote access through Microsoft relay servers.'
+references:
+  - https://attack.mitre.org/techniques/T1219/001/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.command-and-control
+  - attack.t1219.001
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_code_tunnel:
+    Image|endswith: '\code-tunnel.exe'
+  selection_code:
+    Image|endswith: '\code.exe'
+    CommandLine|contains: ' tunnel'
+  selection_devtunnel:
+    Image|endswith: '\devtunnel.exe'
+    CommandLine|contains: ' host'
+  condition: 1 of selection_*
+falsepositives:
+  - 'Developers using VS Code Remote Tunnels or Dev Tunnels with approval'
+level: medium

@@ -1,0 +1,8 @@
+```Title: AWS IAM User Created (AWS CloudTrail)```
+```ATT&CK: T1136.003 | Severity: medium | Sigma id: 3cbd15d7-28de-4ab2-8f3e-1d554cd4aac9```
+```Data source: AWS CloudTrail (Splunk Add-on for AWS). Change index to where your CloudTrail data lives.```
+```False positives: Administrators onboarding users; infrastructure-as-code pipelines```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=aws sourcetype="aws:cloudtrail"
+(eventSource="iam.amazonaws.com" eventName="CreateUser")
+| table _time eventSource eventName userIdentity.arn sourceIPAddress awsRegion errorCode

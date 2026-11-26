@@ -1,0 +1,8 @@
+```Title: Clipboard Read from PowerShell (raw Sysmon events)```
+```ATT&CK: T1115 | Severity: low | Sigma id: 3291e35b-ecd1-446d-bcd6-fd1e41e3a172```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Admin and productivity scripts that use the clipboard```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity low.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(CommandLine IN ("*Get-Clipboard*", "*Clipboard]::GetText*"))
+| table _time host User ParentImage Image CommandLine

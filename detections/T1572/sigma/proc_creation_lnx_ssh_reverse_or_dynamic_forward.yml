@@ -1,0 +1,24 @@
+title: 'SSH Reverse or Dynamic Port Forwarding on Linux'
+id: 593e3979-b66f-4102-a728-9e52aa454410
+status: experimental
+description: 'Detects ssh with -R (remote / reverse forwarding) or -D (SOCKS proxy), used to expose internal services to an attacker host or to proxy traffic into the network.'
+references:
+  - https://attack.mitre.org/techniques/T1572/
+author: Detection Engineering Team
+date: 2026-11-25
+tags:
+  - attack.command-and-control
+  - attack.t1572
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection:
+    Image|endswith: '/ssh'
+    CommandLine|contains:
+      - ' -R '
+      - ' -D '
+  condition: selection
+falsepositives:
+  - 'Administrators and developers using SSH forwarding'
+level: low

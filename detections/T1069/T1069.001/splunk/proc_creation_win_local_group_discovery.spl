@@ -1,0 +1,8 @@
+```Title: Local Group Membership Discovery on Windows (raw Sysmon events)```
+```ATT&CK: T1069.001 | Severity: low | Sigma id: 1c76b1f6-b813-4a4a-b297-9266a2a33503```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Administrators and inventory scripts```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity low.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+((Image IN ("*\\net.exe", "*\\net1.exe") CommandLine="*localgroup*" NOT (CommandLine IN ("*/add*", "*/delete*"))) OR CommandLine="*Get-LocalGroupMember*")
+| table _time host User ParentImage Image CommandLine

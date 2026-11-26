@@ -1,0 +1,8 @@
+```Title: Windows System Process Name Running Outside System Folders (raw Sysmon events)```
+```ATT&CK: T1036.005 | Severity: high | Sigma id: 0e1dc5e6-a2c9-4c3c-aa35-1fb99ec2f566```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Windows installed on a drive other than C:; Security tools that copy system binaries for analysis```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(Image IN ("*\\svchost.exe", "*\\lsass.exe", "*\\services.exe", "*\\csrss.exe", "*\\smss.exe", "*\\wininit.exe", "*\\winlogon.exe", "*\\spoolsv.exe", "*\\taskhostw.exe") NOT (Image IN ("C:\\Windows\\System32\\*", "C:\\Windows\\SysWOW64\\*", "C:\\Windows\\WinSxS\\*")))
+| table _time host User ParentImage Image CommandLine

@@ -1,0 +1,13 @@
+// Title: WMIC Loading a Remote XSL Stylesheet
+// ATT&CK: T1220 | Tactic: Stealth | Sigma id: fd90b1e0-4182-4fae-87f2-f5780cf342cd
+// Data source: SecurityEvent 4688 (Windows Security Events connector; needs process creation and command-line auditing enabled)
+// Severity: High
+// False positives: None expected
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = Computer, Account = SubjectUserName
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+SecurityEvent
+| where TimeGenerated > ago(1d)
+| where EventID == 4688
+| where NewProcessName endswith "\\wmic.exe" and CommandLine contains "format:http"
+| project TimeGenerated, Computer, SubjectUserName, ParentProcessName, NewProcessName, CommandLine

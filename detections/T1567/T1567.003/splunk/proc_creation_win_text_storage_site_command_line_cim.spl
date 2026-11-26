@@ -1,0 +1,12 @@
+```Title: Text Storage Site Referenced on the Command Line on Windows (CIM Endpoint.Processes)```
+```ATT&CK: T1567.003 | Severity: medium | Sigma id: 76193ea9-9d58-4fbb-bc92-997dec025dba```
+```Data source: CIM Endpoint.Processes data model. summariesonly=false works without acceleration; set true once the data model is accelerated.```
+```False positives: Developers and users opening paste links from the command line or scripts```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+| tstats summariesonly=false allow_old_summaries=true fillnull_value="null" count min(_time) as firstTime max(_time) as lastTime
+    from datamodel=Endpoint.Processes
+    where Processes.process IN ("*pastebin.com*", "*paste.ee*", "*hastebin.com*", "*rentry.co*", "*dpaste.com*", "*paste.rs*", "*ghostbin.*")
+    by Processes.process Processes.dest Processes.process_current_directory Processes.process_path Processes.process_integrity_level Processes.original_file_name Processes.parent_process Processes.parent_process_path Processes.parent_process_guid Processes.parent_process_id Processes.process_guid Processes.process_id Processes.user
+| rename Processes.* as *
+| convert timeformat="%Y-%m-%dT%H:%M:%S" ctime(firstTime)
+| convert timeformat="%Y-%m-%dT%H:%M:%S" ctime(lastTime)

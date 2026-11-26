@@ -1,0 +1,11 @@
+```Title: COM Server Registered to a DLL or EXE in a User-Writable Folder (CIM Endpoint.Registry)```
+```ATT&CK: T1546.015 | Severity: medium | Sigma id: 39316757-cdbd-4e6d-a23a-25c86ecb5974```
+```Data source: CIM Endpoint.Registry data model. summariesonly=false works without acceleration; set true once the data model is accelerated.```
+```False positives: Per-user applications that register COM servers in AppData (Dropbox, Zoom, Slack and similar - add them to the filter)```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+| tstats summariesonly=false allow_old_summaries=true fillnull_value="null" count min(_time) as firstTime max(_time) as lastTime
+    from datamodel=Endpoint.Registry
+    where Registry.registry_path="*\\CLSID\\*" Registry.registry_path IN ("*\\InprocServer32\\*", "*\\LocalServer32\\*") Registry.registry_value_data IN ("*\\AppData\\Local\\Temp\\*", "*\\AppData\\Roaming\\*", "*\\Users\\Public\\*", "*\\Downloads\\*") NOT (Registry.registry_value_data IN ("*\\AppData\\Local\\Microsoft\\OneDrive\\*", "*\\AppData\\Local\\Microsoft\\Teams\\*", "*\\AppData\\Local\\Microsoft\\TeamsMeetingAdd*"))
+    by Registry.dest Registry.user Registry.process_guid Registry.process_id Registry.registry_path Registry.registry_value_name Registry.registry_value_data Registry.action
+| rename Registry.* as *
+| convert timeformat="%Y-%m-%dT%H:%M:%S" ctime(firstTime) ctime(lastTime)

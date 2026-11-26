@@ -1,0 +1,8 @@
+```Title: Debugger Set for an Accessibility Program (raw Sysmon events)```
+```ATT&CK: T1546.008 | Severity: high | Sigma id: 43e1705a-be2b-4384-b359-5c87f996393d```
+```Data source: Sysmon EventCode 13 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: None expected```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=13
+(TargetObject IN ("*\\sethc.exe\\Debugger", "*\\utilman.exe\\Debugger", "*\\osk.exe\\Debugger", "*\\Magnify.exe\\Debugger", "*\\Narrator.exe\\Debugger", "*\\DisplaySwitch.exe\\Debugger", "*\\AtBroker.exe\\Debugger"))
+| table _time host User Image EventType TargetObject Details

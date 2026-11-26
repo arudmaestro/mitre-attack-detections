@@ -1,0 +1,22 @@
+title: 'Root Certificate Added to the Registry Store'
+id: 14fab96f-a5ec-42a0-8de1-b42149f0d670
+status: experimental
+description: 'Detects a certificate Blob written under SystemCertificates\Root\Certificates (machine, user or Group Policy stores), i.e. a new trusted root added by any program. Automatic Microsoft root updates use the AuthRoot store and are not matched.'
+references:
+  - https://attack.mitre.org/techniques/T1553/004/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.defense-impairment
+  - attack.t1553.004
+logsource:
+  category: registry_set
+  product: windows
+detection:
+  selection:
+    TargetObject|contains: '\SystemCertificates\Root\Certificates\'
+    TargetObject|endswith: '\Blob'
+  condition: selection
+falsepositives:
+  - 'Enterprise PKI, Group Policy certificate deployment, TLS inspection and VPN software'
+level: low

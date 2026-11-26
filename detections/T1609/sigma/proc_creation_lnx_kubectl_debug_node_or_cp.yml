@@ -1,0 +1,29 @@
+title: 'Node Debug Pod or File Copy with kubectl'
+id: d3a0cb41-e71f-49a0-a2ef-34380de42267
+status: experimental
+description: 'Detects kubectl debug node/..., which starts a privileged pod with the node''s file system mounted (a shell on the host), and kubectl cp, which copies files into or out of containers.'
+references:
+  - https://attack.mitre.org/techniques/T1609/
+author: Detection Engineering Team
+date: 2026-11-25
+tags:
+  - attack.execution
+  - attack.t1609
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection_img:
+    Image|endswith:
+      - '/kubectl'
+      - '/oc'
+  selection_debug_node:
+    CommandLine|contains: 'node/'
+  selection_debug:
+    CommandLine|contains: ' debug '
+  selection_cp:
+    CommandLine|contains: ' cp '
+  condition: selection_img and ((selection_debug and selection_debug_node) or selection_cp)
+falsepositives:
+  - 'Cluster administrators troubleshooting nodes or copying logs'
+level: medium

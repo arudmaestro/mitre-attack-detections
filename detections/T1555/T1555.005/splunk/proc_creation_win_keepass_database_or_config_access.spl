@@ -1,0 +1,8 @@
+```Title: KeePass Database or Configuration Accessed by Another Program (raw Sysmon events)```
+```ATT&CK: T1555.005 | Severity: medium | Sigma id: 7ae58f24-a90e-4cbd-811f-e0af85444103```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Backup scripts and users copying their own database```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(CommandLine IN ("*.kdbx*", "*KeePass.config.xml*") NOT (Image IN ("*\\KeePass.exe", "*\\KeePassXC.exe")))
+| table _time host User ParentImage Image CommandLine

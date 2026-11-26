@@ -1,0 +1,8 @@
+```Title: Office Application Spawning a Shell or Script Host (raw Sysmon events)```
+```ATT&CK: T1204.002 | Severity: high | Sigma id: f3fb2c62-6f7e-4dae-a3f1-5bb7681ebea9```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Business macros and add-ins that run commands by design (allowlist by command line)```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(ParentImage IN ("*\\WINWORD.EXE", "*\\EXCEL.EXE", "*\\POWERPNT.EXE", "*\\MSACCESS.EXE", "*\\MSPUB.EXE", "*\\ONENOTE.EXE") Image IN ("*\\cmd.exe", "*\\powershell.exe", "*\\pwsh.exe", "*\\wscript.exe", "*\\cscript.exe", "*\\mshta.exe", "*\\rundll32.exe", "*\\regsvr32.exe", "*\\certutil.exe", "*\\bitsadmin.exe", "*\\msbuild.exe"))
+| table _time host User ParentImage Image CommandLine

@@ -1,0 +1,33 @@
+title: VBScript Executed from User-Writable Path
+id: 4769e2d6-4785-4615-9831-70ddcef3ebde
+status: experimental
+description: Detects wscript.exe or cscript.exe running a .vbs or .vbe file from a user-writable directory.
+references:
+  - https://attack.mitre.org/techniques/T1059/005/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.execution
+  - attack.t1059.005
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_img:
+    Image|endswith:
+      - '\wscript.exe'
+      - '\cscript.exe'
+  selection_cli:
+    CommandLine|contains:
+      - '.vbs'
+      - '.vbe'
+  selection_cli2:
+    CommandLine|contains:
+      - '\AppData\'
+      - '\Temp\'
+      - '\Users\Public\'
+      - '\Downloads\'
+  condition: all of selection_*
+falsepositives:
+  - Login scripts or admin scripts staged in Temp or Downloads
+level: medium

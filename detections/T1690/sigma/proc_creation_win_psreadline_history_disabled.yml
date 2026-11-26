@@ -1,0 +1,24 @@
+title: 'PowerShell Command History Disabled'
+id: 3fdbf177-5665-483e-aeb4-ae2075a00bc5
+status: experimental
+description: 'Detects Set-PSReadLineOption -HistorySaveStyle SaveNothing and Remove-Module PSReadLine, which stop PowerShell from saving typed commands to the history file.'
+references:
+  - https://attack.mitre.org/techniques/T1690/
+author: Detection Engineering Team
+date: 2026-11-25
+tags:
+  - attack.defense-impairment
+  - attack.t1690
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'SaveNothing'
+      - 'Remove-Module PSReadLine'
+      - 'Remove-Module -Name PSReadLine'
+  condition: selection
+falsepositives:
+  - 'Users who disable history for privacy'
+level: medium

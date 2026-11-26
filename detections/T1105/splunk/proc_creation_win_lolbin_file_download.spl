@@ -1,0 +1,8 @@
+```Title: File Download with certutil, bitsadmin or PowerShell WebClient (raw Sysmon events)```
+```ATT&CK: T1105 | Severity: medium | Sigma id: b993c0e2-06b2-4b73-a15d-9db3f686eb9a```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Software updaters and admin scripts that download files```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+((Image="*\\certutil.exe" CommandLine IN ("*urlcache*", "*verifyctl*")) OR (Image="*\\bitsadmin.exe" CommandLine="*/transfer*") OR CommandLine IN ("*.DownloadFile(*", "*.DownloadString(*", "*Start-BitsTransfer*"))
+| table _time host User ParentImage Image CommandLine

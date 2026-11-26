@@ -1,0 +1,8 @@
+```Title: PowerShell Started with a Hidden Window (raw Sysmon events)```
+```ATT&CK: T1564.003 | Severity: low | Sigma id: aedb075e-4267-4bb3-af0b-3de5f16055a4```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Logon scripts, SCCM/Intune and monitoring agents that start PowerShell hidden```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity low.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(Image IN ("*\\powershell.exe", "*\\pwsh.exe") CommandLine="* -w*" CommandLine="*hidden*")
+| table _time host User ParentImage Image CommandLine

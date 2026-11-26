@@ -1,0 +1,8 @@
+```Title: Directory Tree Listing with tree /f (raw Sysmon events)```
+```ATT&CK: T1083 | Severity: low | Sigma id: 18bf41f3-faad-4eb9-bbaf-f35206fb45fa```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Users and administrators documenting folder contents```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity low.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(Image="*\\tree.com" CommandLine="*/f*")
+| table _time host User ParentImage Image CommandLine

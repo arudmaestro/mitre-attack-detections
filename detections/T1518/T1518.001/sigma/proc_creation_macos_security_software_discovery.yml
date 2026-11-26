@@ -1,0 +1,36 @@
+title: 'Security Agent Searched for in Process or File Listings on macOS'
+id: 1a2110e2-7862-48bb-abe9-4ab048a421fe
+status: experimental
+description: 'Detects grep or pgrep searching for common EDR, antivirus and monitoring agents (CrowdStrike Falcon, SentinelOne, Defender, Carbon Black, osquery, Wazuh, Sophos).'
+references:
+  - https://attack.mitre.org/techniques/T1518/001/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.discovery
+  - attack.t1518.001
+logsource:
+  category: process_creation
+  product: macos
+detection:
+  selection_img:
+    Image|endswith:
+      - '/grep'
+      - '/pgrep'
+  selection_name:
+    CommandLine|contains:
+      - 'falcon'
+      - 'crowdstrike'
+      - 'sentinelone'
+      - 'sentinelagent'
+      - 'mdatp'
+      - 'cbagent'
+      - 'carbonblack'
+      - 'osquery'
+      - 'wazuh'
+      - 'ossec'
+      - 'sophos'
+  condition: all of selection_*
+falsepositives:
+  - 'Administrators and monitoring scripts checking agent health'
+level: low

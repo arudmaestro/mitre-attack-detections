@@ -1,0 +1,25 @@
+title: 'Browser Cookie Store Accessed from the Command Line on macOS'
+id: 51e150fb-68f1-47c9-85dc-d68a4bb95487
+status: experimental
+description: 'Detects a command line that references browser cookie stores (Chromium Cookies databases, Firefox cookies.sqlite, Safari Cookies.binarycookies), typical of cookie-theft scripts and tools.'
+references:
+  - https://attack.mitre.org/techniques/T1539/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.credential-access
+  - attack.t1539
+logsource:
+  category: process_creation
+  product: macos
+detection:
+  selection:
+    CommandLine|contains:
+      - '/Default/Cookies'
+      - '/Network/Cookies'
+      - '/cookies.sqlite'
+      - 'Cookies.binarycookies'
+  condition: selection
+falsepositives:
+  - 'Backup and browser-migration scripts'
+level: medium

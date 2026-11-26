@@ -1,0 +1,30 @@
+title: 'File Timestamps Modified with PowerShell'
+id: 3a09dfd0-5304-480c-b24d-93471881ca1a
+status: experimental
+description: 'Detects PowerShell command lines assigning CreationTime, LastWriteTime or LastAccessTime, used to timestomp files.'
+references:
+  - https://attack.mitre.org/techniques/T1070/006/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.stealth
+  - attack.t1070.006
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_img:
+    Image|endswith:
+      - '\powershell.exe'
+      - '\pwsh.exe'
+  selection_property:
+    CommandLine|contains:
+      - 'CreationTime'
+      - 'LastWriteTime'
+      - 'LastAccessTime'
+  selection_assign:
+    CommandLine|contains: '='
+  condition: all of selection_*
+falsepositives:
+  - 'Scripts that preserve or reset timestamps (backups, build tools)'
+level: medium

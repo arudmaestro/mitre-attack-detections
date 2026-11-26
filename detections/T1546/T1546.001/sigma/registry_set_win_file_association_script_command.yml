@@ -1,0 +1,34 @@
+title: 'File Association Open Command Set to a Script Host'
+id: 3f32a1a5-2b8d-4d63-a426-e358a1bce6b8
+status: experimental
+description: 'Detects a file type or protocol ''open'' command (Classes\...\shell\open\command) set to PowerShell, cmd /c, mshta, script hosts, regsvr32 or a file in Temp or the public profile. Also catches ms-settings style UAC bypasses.'
+references:
+  - https://attack.mitre.org/techniques/T1546/001/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.privilege-escalation
+  - attack.persistence
+  - attack.t1546.001
+logsource:
+  category: registry_set
+  product: windows
+detection:
+  selection:
+    TargetObject|contains: '\shell\open\command\'
+    Details|contains:
+      - 'powershell'
+      - 'pwsh'
+      - 'mshta'
+      - 'wscript'
+      - 'cscript'
+      - 'regsvr32'
+      - 'cmd.exe /c'
+      - 'cmd /c'
+      - '%COMSPEC%'
+      - '\AppData\Local\Temp\'
+      - '\Users\Public\'
+  condition: selection
+falsepositives:
+  - 'Applications that register PowerShell or script files with a custom handler'
+level: medium

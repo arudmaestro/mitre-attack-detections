@@ -1,0 +1,8 @@
+```Title: LSA Password Filter (Notification Packages) Changed (raw Sysmon events)```
+```ATT&CK: T1556.002 | Severity: high | Sigma id: d417c183-4902-4ae9-9d23-30a99107f5c6```
+```Data source: Sysmon EventCode 13 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Password policy and synchronisation products (e.g. Entra Password Protection DC agent, Specops, password sync tools)```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=13
+(TargetObject="*\\Control\\Lsa\\Notification Packages" NOT Image="*\\lsass.exe")
+| table _time host User Image EventType TargetObject Details

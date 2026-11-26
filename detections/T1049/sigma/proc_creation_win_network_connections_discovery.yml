@@ -1,0 +1,29 @@
+title: 'Network Connections Discovery Commands'
+id: 1d0ceda6-cedc-4e1c-b184-dfd17c036164
+status: experimental
+description: 'Detects listing of active connections and sessions with netstat -a, net session or Get-NetTCPConnection.'
+references:
+  - https://attack.mitre.org/techniques/T1049/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.discovery
+  - attack.t1049
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_netstat:
+    Image|endswith: '\netstat.exe'
+    CommandLine|contains: '-a'
+  selection_session:
+    Image|endswith:
+      - '\net.exe'
+      - '\net1.exe'
+    CommandLine|contains: ' session'
+  selection_ps:
+    CommandLine|contains: 'Get-NetTCPConnection'
+  condition: 1 of selection_*
+falsepositives:
+  - 'Administrators, monitoring agents and support scripts'
+level: low

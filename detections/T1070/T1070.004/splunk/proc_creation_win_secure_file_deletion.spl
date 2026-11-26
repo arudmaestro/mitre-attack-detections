@@ -1,0 +1,8 @@
+```Title: Secure File Deletion Tool Executed on Windows (raw Sysmon events)```
+```ATT&CK: T1070.004 | Severity: medium | Sigma id: 673513bd-1b82-41fe-966e-05605ca71dd9```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: IT staff decommissioning or sanitising disks```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(Image IN ("*\\sdelete.exe", "*\\sdelete64.exe") OR (Image="*\\cipher.exe" CommandLine="*/w:*"))
+| table _time host User ParentImage Image CommandLine

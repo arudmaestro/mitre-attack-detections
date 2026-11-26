@@ -1,0 +1,34 @@
+title: 'File Written to the Startup Folder from the Command Line'
+id: 61cd67b8-a2e4-425c-b46b-4174fa9cd1da
+status: experimental
+description: 'Detects shells, script hosts and download tools whose command line names a Startup folder, e.g. copying a payload or shortcut there.'
+references:
+  - https://attack.mitre.org/techniques/T1547/001/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.persistence
+  - attack.privilege-escalation
+  - attack.t1547.001
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_img:
+    Image|endswith:
+      - '\cmd.exe'
+      - '\powershell.exe'
+      - '\pwsh.exe'
+      - '\wscript.exe'
+      - '\cscript.exe'
+      - '\xcopy.exe'
+      - '\robocopy.exe'
+      - '\certutil.exe'
+      - '\bitsadmin.exe'
+      - '\curl.exe'
+  selection_path:
+    CommandLine|contains: '\Start Menu\Programs\Startup'
+  condition: all of selection_*
+falsepositives:
+  - 'Login scripts and installers that place shortcuts in the Startup folder'
+level: medium

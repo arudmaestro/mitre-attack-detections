@@ -1,0 +1,29 @@
+title: 'Permissions Granted to Everyone with icacls or cacls'
+id: b0c56a31-b2bc-49ac-a048-51391e692013
+status: experimental
+description: 'Detects icacls or cacls granting rights to Everyone (S-1-1-0), used to open files or folders before tampering with them.'
+references:
+  - https://attack.mitre.org/techniques/T1222/001/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.defense-impairment
+  - attack.t1222.001
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_img:
+    Image|endswith:
+      - '\icacls.exe'
+      - '\cacls.exe'
+  selection_grant:
+    CommandLine|contains: '/grant'
+  selection_who:
+    CommandLine|contains:
+      - 'Everyone:'
+      - 'S-1-1-0:'
+  condition: all of selection_*
+falsepositives:
+  - 'Software installers and admins opening shared folders'
+level: medium

@@ -1,0 +1,8 @@
+```Title: Netsh Helper DLL Added (raw Sysmon events)```
+```ATT&CK: T1546.007 | Severity: high | Sigma id: feff39cc-af20-4abb-8b24-5eb3c52fb177```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Rare: VPN or network software registering a helper```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(Image="*\\netsh.exe" CommandLine="*add helper*")
+| table _time host User ParentImage Image CommandLine

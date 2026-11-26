@@ -1,0 +1,32 @@
+title: 'File Download with certutil, bitsadmin or PowerShell WebClient'
+id: b993c0e2-06b2-4b73-a15d-9db3f686eb9a
+status: experimental
+description: 'Detects downloads with certutil -urlcache/-verifyctl, bitsadmin /transfer, or PowerShell DownloadFile/DownloadString/Start-BitsTransfer.'
+references:
+  - https://attack.mitre.org/techniques/T1105/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.command-and-control
+  - attack.t1105
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_certutil:
+    Image|endswith: '\certutil.exe'
+    CommandLine|contains:
+      - 'urlcache'
+      - 'verifyctl'
+  selection_bitsadmin:
+    Image|endswith: '\bitsadmin.exe'
+    CommandLine|contains: '/transfer'
+  selection_powershell:
+    CommandLine|contains:
+      - '.DownloadFile('
+      - '.DownloadString('
+      - 'Start-BitsTransfer'
+  condition: 1 of selection_*
+falsepositives:
+  - 'Software updaters and admin scripts that download files'
+level: medium

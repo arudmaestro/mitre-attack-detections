@@ -1,0 +1,24 @@
+title: 'Keyboard Input Device Read or Linux Keylogger Executed'
+id: 5ec48142-64e6-407b-b2f8-28f353e9b79e
+status: experimental
+description: 'Detects command lines reading /dev/input/event* devices or execution of the logkeys keylogger.'
+references:
+  - https://attack.mitre.org/techniques/T1056/001/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.collection
+  - attack.credential-access
+  - attack.t1056.001
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection_device:
+    CommandLine|contains: '/dev/input/event'
+  selection_logkeys:
+    Image|endswith: '/logkeys'
+  condition: 1 of selection_*
+falsepositives:
+  - 'Input-device troubleshooting (evtest, libinput debug-events)'
+level: medium

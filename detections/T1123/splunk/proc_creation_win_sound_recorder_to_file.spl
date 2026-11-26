@@ -1,0 +1,8 @@
+```Title: Sound Recorder Writing Audio to a File (raw Sysmon events)```
+```ATT&CK: T1123 | Severity: medium | Sigma id: a2208632-ae23-48c9-b427-08626c310d7d```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Rare: scripted legitimate recordings```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(Image="*\\SoundRecorder.exe" CommandLine="*/FILE*")
+| table _time host User ParentImage Image CommandLine

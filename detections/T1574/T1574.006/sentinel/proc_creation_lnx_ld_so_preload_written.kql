@@ -1,0 +1,12 @@
+// Title: Dynamic Linker Preload File Written from the Command Line
+// ATT&CK: T1574.006 | Tactic: Stealth, Execution | Sigma id: 4bc0e4f4-535b-4a59-891c-833fed242755
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: High
+// False positives: Rare: performance and debugging tools installed system-wide
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where (FolderPath endswith "/cp" or FolderPath endswith "/mv" or FolderPath endswith "/tee" or FolderPath endswith "/ln" or FolderPath endswith "/install" or FolderPath endswith "/sed") and ProcessCommandLine contains "/etc/ld.so.preload"
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

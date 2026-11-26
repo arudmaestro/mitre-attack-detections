@@ -1,0 +1,12 @@
+// Title: Sleep or Hibernate Targets Masked with systemctl
+// ATT&CK: T1653 | Tactic: Persistence | Sigma id: b33037b1-c062-4aa1-b551-fd0daef5967c
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Low
+// False positives: Server and kiosk builds that disable sleep on purpose
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where FolderPath endswith "/systemctl" and ProcessCommandLine contains "mask" and (ProcessCommandLine contains "sleep.target" or ProcessCommandLine contains "suspend.target" or ProcessCommandLine contains "hibernate.target")
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

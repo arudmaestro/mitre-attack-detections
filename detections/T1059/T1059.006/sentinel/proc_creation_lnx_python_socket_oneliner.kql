@@ -1,0 +1,12 @@
+// Title: Python One-Liner with Socket or PTY Shell Primitives
+// ATT&CK: T1059.006 | Tactic: Execution | Sigma id: 8d6d7913-9cd6-4c8a-8a36-3b0460b32336
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: High
+// False positives: Developer or admin one-liners that use sockets for connectivity checks
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where FolderPath contains "/python" and ProcessCommandLine contains " -c " and (ProcessCommandLine contains "import socket" or ProcessCommandLine contains "pty.spawn" or ProcessCommandLine contains "os.dup2")
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

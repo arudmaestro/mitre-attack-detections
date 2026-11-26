@@ -1,0 +1,35 @@
+title: 'Packet Capture Started on Windows'
+id: cd086ad6-5338-4551-955a-2c4160a07195
+status: experimental
+description: 'Detects packet capture with netsh trace capture=yes, pktmon start, or capture tools such as tshark, dumpcap and WinDump.'
+references:
+  - https://attack.mitre.org/techniques/T1040/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.credential-access
+  - attack.discovery
+  - attack.t1040
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_netsh:
+    Image|endswith: '\netsh.exe'
+    CommandLine|contains|all:
+      - 'trace'
+      - 'start'
+      - 'capture=yes'
+  selection_pktmon:
+    Image|endswith: '\pktmon.exe'
+    CommandLine|contains: 'start'
+  selection_tools:
+    Image|endswith:
+      - '\tshark.exe'
+      - '\dumpcap.exe'
+      - '\windump.exe'
+      - '\tcpdump.exe'
+  condition: 1 of selection_*
+falsepositives:
+  - 'Network and support engineers troubleshooting'
+level: medium

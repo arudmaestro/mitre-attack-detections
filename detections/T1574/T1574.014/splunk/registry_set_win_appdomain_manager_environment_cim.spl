@@ -1,0 +1,11 @@
+```Title: .NET AppDomainManager Environment Variable Set (CIM Endpoint.Registry)```
+```ATT&CK: T1574.014 | Severity: high | Sigma id: b9951d6e-d2c0-44b6-a1b2-ae6ae2461cc9```
+```Data source: CIM Endpoint.Registry data model. summariesonly=false works without acceleration; set true once the data model is accelerated.```
+```False positives: None expected```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+| tstats summariesonly=false allow_old_summaries=true fillnull_value="null" count min(_time) as firstTime max(_time) as lastTime
+    from datamodel=Endpoint.Registry
+    where Registry.registry_path IN ("*\\APPDOMAIN_MANAGER_ASM", "*\\APPDOMAIN_MANAGER_TYPE")
+    by Registry.dest Registry.user Registry.process_guid Registry.process_id Registry.registry_path Registry.registry_value_name Registry.registry_value_data Registry.action
+| rename Registry.* as *
+| convert timeformat="%Y-%m-%dT%H:%M:%S" ctime(firstTime) ctime(lastTime)

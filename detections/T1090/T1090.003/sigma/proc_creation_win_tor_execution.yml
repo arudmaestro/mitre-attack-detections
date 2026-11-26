@@ -1,0 +1,23 @@
+title: 'Tor Executed on Windows'
+id: 27d2dd92-84e8-4e4b-bcd9-bc0ba1928a74
+status: experimental
+description: 'Detects the Tor client or Tor Browser running on a Windows host.'
+references:
+  - https://attack.mitre.org/techniques/T1090/003/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.command-and-control
+  - attack.t1090.003
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_tor:
+    Image|endswith: '\tor.exe'
+  selection_browser:
+    Image|contains: '\Tor Browser\'
+  condition: 1 of selection_*
+falsepositives:
+  - 'Users or researchers with approved Tor use'
+level: medium

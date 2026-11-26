@@ -1,0 +1,13 @@
+// Title: AWS Logging or Threat Detection Disabled or Deleted
+// ATT&CK: T1685.002 | Tactic: DefenseImpairment | Sigma id: 55f82008-5c88-42b0-b3a6-fc3f33335ba9
+// Data source: AWSCloudTrail (Amazon Web Services connector)
+// Severity: High
+// False positives: Cloud platform teams changing logging configuration (expected only from infrastructure-as-code roles)
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Account = UserIdentityArn, IP = SourceIpAddress
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+AWSCloudTrail
+| where TimeGenerated > ago(1d)
+| where EventSource in ("cloudtrail.amazonaws.com", "ec2.amazonaws.com", "guardduty.amazonaws.com", "config.amazonaws.com")
+| where EventName in ("StopLogging", "DeleteTrail", "UpdateTrail", "PutEventSelectors", "DeleteFlowLogs", "DeleteDetector", "UpdateDetector", "StopConfigurationRecorder", "DeleteConfigurationRecorder")
+| project TimeGenerated, EventSource, EventName, UserIdentityArn, SourceIpAddress, AWSRegion, ErrorCode, RequestParameters

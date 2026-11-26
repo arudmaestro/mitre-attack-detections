@@ -1,0 +1,23 @@
+title: 'Silent Process Exit Monitor Program Set'
+id: 8b9876f1-356d-46e9-904e-c43d54dc33aa
+status: experimental
+description: 'Detects a MonitorProcess value under SilentProcessExit, which starts a program whenever the monitored process exits (persistence, also used for LSASS dumping).'
+references:
+  - https://attack.mitre.org/techniques/T1546/012/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.privilege-escalation
+  - attack.persistence
+  - attack.t1546.012
+logsource:
+  category: registry_set
+  product: windows
+detection:
+  selection:
+    TargetObject|contains: '\SilentProcessExit\'
+    TargetObject|endswith: '\MonitorProcess'
+  condition: selection
+falsepositives:
+  - 'Debugging configurations set by developers (rare)'
+level: high

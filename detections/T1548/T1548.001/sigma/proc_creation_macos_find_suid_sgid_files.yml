@@ -1,0 +1,30 @@
+title: 'Setuid or Setgid Files Searched with find on macOS'
+id: 08a90854-c6c4-4b45-8809-ee051fb8f741
+status: experimental
+description: 'Detects find searching for setuid or setgid files (-perm -4000, /u=s, -2000, g=s), the first step of privilege escalation through setuid binaries.'
+references:
+  - https://attack.mitre.org/techniques/T1548/001/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.privilege-escalation
+  - attack.t1548.001
+logsource:
+  category: process_creation
+  product: macos
+detection:
+  selection_img:
+    Image|endswith: '/find'
+  selection_perm:
+    CommandLine|contains: '-perm'
+  selection_bits:
+    CommandLine|contains:
+      - '4000'
+      - '2000'
+      - '6000'
+      - 'u=s'
+      - 'g=s'
+  condition: all of selection_*
+falsepositives:
+  - 'Hardening and compliance scans that list setuid files'
+level: low

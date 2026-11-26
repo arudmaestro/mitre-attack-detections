@@ -1,0 +1,24 @@
+title: 'Sudo Run with User ID -1 (CVE-2019-14287)'
+id: 6949e6e5-7a6d-4140-b31a-d0ff5d3804a4
+status: experimental
+description: 'Detects sudo -u#-1 or -u#4294967295, which runs a command as root when the sudoers rule allows ''any user except root'' on sudo before 1.8.28.'
+references:
+  - https://attack.mitre.org/techniques/T1548/003/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.privilege-escalation
+  - attack.t1548.003
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection:
+    Image|endswith: '/sudo'
+    CommandLine|contains:
+      - '-u#-1'
+      - '-u#4294967295'
+  condition: selection
+falsepositives:
+  - 'None expected'
+level: high

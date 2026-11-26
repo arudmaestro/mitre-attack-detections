@@ -1,0 +1,8 @@
+```Title: MMC Spawning a Shell (MMC20.Application DCOM) (raw Sysmon events)```
+```ATT&CK: T1021.003 | Severity: medium | Sigma id: 4b6460b5-a9a0-4c15-93b6-3f728b84531c```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Administrators starting a shell from an MMC snap-in```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(ParentImage="*\\mmc.exe" Image IN ("*\\cmd.exe", "*\\powershell.exe", "*\\pwsh.exe", "*\\wscript.exe", "*\\cscript.exe", "*\\mshta.exe"))
+| table _time host User ParentImage Image CommandLine

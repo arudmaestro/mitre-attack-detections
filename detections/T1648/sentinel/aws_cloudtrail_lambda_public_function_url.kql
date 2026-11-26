@@ -1,0 +1,14 @@
+// Title: AWS Lambda Function URL Created Without Authentication
+// ATT&CK: T1648 | Tactic: Execution | Sigma id: ef64c21e-8b6a-408c-b4d4-3ac1d95c8fc5
+// Data source: AWSCloudTrail (Amazon Web Services connector)
+// Severity: Medium
+// False positives: Public webhooks and APIs deliberately built on Lambda function URLs
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Account = UserIdentityArn, IP = SourceIpAddress
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+AWSCloudTrail
+| where TimeGenerated > ago(1d)
+| where EventSource == "lambda.amazonaws.com"
+| where EventName in ("CreateFunctionUrlConfig20211031", "UpdateFunctionUrlConfig20211031")
+| where RequestParameters contains "NONE"
+| project TimeGenerated, EventSource, EventName, UserIdentityArn, SourceIpAddress, AWSRegion, ErrorCode, RequestParameters

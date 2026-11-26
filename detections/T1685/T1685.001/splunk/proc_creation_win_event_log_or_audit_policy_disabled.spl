@@ -1,0 +1,8 @@
+```Title: Event Log Channel or Audit Policy Disabled from the Command Line (raw Sysmon events)```
+```ATT&CK: T1685.001 | Severity: high | Sigma id: 201af407-0223-4f6f-a4ce-b304dafbbc7c```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Administrators tuning audit policy (should go through GPO)```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+((Image="*\\wevtutil.exe" CommandLine IN ("*/e:false*", "*/enabled:false*")) OR (Image="*\\auditpol.exe" CommandLine IN ("*/clear*", "*/remove*", "*disable*")) OR (Image IN ("*\\sc.exe", "*\\net.exe", "*\\net1.exe") CommandLine="*eventlog*" CommandLine IN ("* stop*", "*disabled*")))
+| table _time host User ParentImage Image CommandLine

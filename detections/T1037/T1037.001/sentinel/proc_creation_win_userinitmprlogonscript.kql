@@ -1,0 +1,12 @@
+// Title: Logon Script Set via UserInitMprLogonScript
+// ATT&CK: T1037.001 | Tactic: Persistence, PrivilegeEscalation | Sigma id: 2f381da3-9265-4c90-b709-dfa2f2d3b627
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: High
+// False positives: Rare: legacy logon script deployment
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where ProcessCommandLine contains "UserInitMprLogonScript"
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

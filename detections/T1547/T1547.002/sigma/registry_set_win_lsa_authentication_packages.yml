@@ -1,0 +1,24 @@
+title: 'LSA Authentication Packages Changed'
+id: 00a68f67-7615-4099-8973-ea2acdc2b743
+status: experimental
+description: 'Detects a change to the LSA ''Authentication Packages'' value; listed DLLs are loaded into LSASS at boot and can capture credentials.'
+references:
+  - https://attack.mitre.org/techniques/T1547/002/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.persistence
+  - attack.privilege-escalation
+  - attack.t1547.002
+logsource:
+  category: registry_set
+  product: windows
+detection:
+  selection:
+    TargetObject|endswith: '\Control\Lsa\Authentication Packages'
+  filter_lsass:
+    Image|endswith: '\lsass.exe'
+  condition: selection and not filter_lsass
+falsepositives:
+  - 'Smart card, MFA or credential-provider software installing an authentication package'
+level: high

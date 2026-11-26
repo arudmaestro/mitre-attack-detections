@@ -1,0 +1,25 @@
+title: 'Microsoft Defender Exclusion Added with PowerShell'
+id: 179efc78-6e7b-402c-90ee-2433b70ecbf3
+status: experimental
+description: 'Detects Add-MpPreference / Set-MpPreference with -ExclusionPath, -ExclusionExtension, -ExclusionProcess or -ExclusionIpAddress, used to hide payloads from Defender scans.'
+references:
+  - https://attack.mitre.org/techniques/T1685/
+author: Detection Engineering Team
+date: 2026-11-25
+tags:
+  - attack.defense-impairment
+  - attack.t1685
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_cmdlet:
+    CommandLine|contains:
+      - 'Add-MpPreference'
+      - 'Set-MpPreference'
+  selection_exclusion:
+    CommandLine|contains: '-Exclusion'
+  condition: all of selection_*
+falsepositives:
+  - 'Software installers and IT adding documented exclusions (prefer Intune / GPO)'
+level: high

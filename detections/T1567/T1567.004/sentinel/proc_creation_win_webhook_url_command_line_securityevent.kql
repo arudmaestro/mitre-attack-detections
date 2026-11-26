@@ -1,0 +1,13 @@
+// Title: Webhook or Bot API URL on the Command Line on Windows
+// ATT&CK: T1567.004 | Tactic: Exfiltration | Sigma id: e1d881bc-7908-41ae-a62a-087ff085d3ce
+// Data source: SecurityEvent 4688 (Windows Security Events connector; needs process creation and command-line auditing enabled)
+// Severity: Medium
+// False positives: Monitoring and build scripts that post notifications to chat webhooks (allowlist them)
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = Computer, Account = SubjectUserName
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+SecurityEvent
+| where TimeGenerated > ago(1d)
+| where EventID == 4688
+| where CommandLine contains "discord.com/api/webhooks" or CommandLine contains "discordapp.com/api/webhooks" or CommandLine contains "hooks.slack.com/services" or CommandLine contains ".webhook.office.com" or CommandLine contains "webhook.site" or CommandLine contains "api.telegram.org/bot"
+| project TimeGenerated, Computer, SubjectUserName, ParentProcessName, NewProcessName, CommandLine

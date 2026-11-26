@@ -1,0 +1,24 @@
+title: 'Remote Access Tool Executed on Linux'
+id: 8f8d541f-83f1-4c19-9362-6801ff06c964
+status: experimental
+description: 'Detects execution of common remote access / RMM tools (AnyDesk, TeamViewer, RustDesk and others), which attackers install for persistent interactive access.'
+references:
+  - https://attack.mitre.org/techniques/T1219/002/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.command-and-control
+  - attack.t1219.002
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection:
+    Image|endswith:
+      - '/anydesk'
+      - '/teamviewer'
+      - '/rustdesk'
+  condition: selection
+falsepositives:
+  - 'Approved remote support tools'
+level: medium

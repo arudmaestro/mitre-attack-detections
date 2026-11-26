@@ -1,0 +1,36 @@
+title: 'Recursive Search for Documents and Data Files'
+id: 535b5844-c3af-45c6-9eb4-5f297969c1af
+status: experimental
+description: 'Detects recursive file listing (dir /s or Get-ChildItem -Recurse) targeting document, mailbox, password-vault or database file types.'
+references:
+  - https://attack.mitre.org/techniques/T1005/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.collection
+  - attack.t1005
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_cmd:
+    CommandLine|contains|all:
+      - 'dir '
+      - ' /s'
+  selection_ps:
+    CommandLine|contains|all:
+      - 'Get-ChildItem'
+      - '-Recurse'
+  selection_ext:
+    CommandLine|contains:
+      - '.doc'
+      - '.xls'
+      - '.pdf'
+      - '.kdbx'
+      - '.pst'
+      - '.sqlite'
+  condition: (selection_cmd or selection_ps) and selection_ext
+falsepositives:
+  - Users and administrators searching for files
+  - Backup and inventory scripts
+level: low

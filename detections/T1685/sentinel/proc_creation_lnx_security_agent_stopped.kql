@@ -1,0 +1,12 @@
+// Title: Security Agent Service Stopped or Disabled on Linux
+// ATT&CK: T1685 | Tactic: DefenseImpairment | Sigma id: 2eed82c4-6c9e-46f0-b875-d73d411ab7e4
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: High
+// False positives: Agent upgrades and maintenance by IT
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where (FolderPath endswith "/systemctl" or FolderPath endswith "/service") and (ProcessCommandLine contains " stop" or ProcessCommandLine contains " disable" or ProcessCommandLine contains " mask" or ProcessCommandLine contains " kill") and (ProcessCommandLine contains "falcon-sensor" or ProcessCommandLine contains "mdatp" or ProcessCommandLine contains "sentinelone" or ProcessCommandLine contains "osqueryd" or ProcessCommandLine contains "sysmon" or ProcessCommandLine contains "wazuh-agent" or ProcessCommandLine contains "elastic-agent")
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

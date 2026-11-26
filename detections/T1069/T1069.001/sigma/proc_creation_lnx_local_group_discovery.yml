@@ -1,0 +1,26 @@
+title: 'Local Group Discovery on Linux'
+id: 12218eb9-0adc-47bf-bea9-f7d820264f7b
+status: experimental
+description: 'Detects reading /etc/group or /etc/gshadow, or getent group queries.'
+references:
+  - https://attack.mitre.org/techniques/T1069/001/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.discovery
+  - attack.t1069.001
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection_files:
+    CommandLine|contains:
+      - '/etc/group'
+      - '/etc/gshadow'
+  selection_getent:
+    Image|endswith: '/getent'
+    CommandLine|contains: 'group'
+  condition: 1 of selection_*
+falsepositives:
+  - 'Administrators and configuration management'
+level: low

@@ -1,0 +1,11 @@
+# CI tooling (Python 3.9). pyparsing is pinned separately with --no-deps: pySigma 0.11 asks for >=3.1,
+# but condition parsing with brackets / "not" only works with 3.0.9.
+pySigma==0.11.23
+sigma-cli==1.0.6
+pysigma-backend-splunk==1.1.3
+pySigma-backend-kusto==0.4.5
+pysigma-pipeline-sysmon==1.0.4
+pysigma-pipeline-windows==1.2.0
+PyYAML==6.0.3
+yamllint==1.35.1
+shellcheck-py==0.10.0.1

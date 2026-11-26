@@ -1,0 +1,10 @@
+```Title: Kerberoasting: RC4 Service Tickets for Many Services from One Account (raw Windows Security events)```
+```ATT&CK: T1558.003 | Severity: high | Sigma id: e503c311-c550-4133-a40b-35ca5cce6c54```
+```Data source: Windows Security EventCode 4769 (Splunk Add-on for Microsoft Windows). Change index to where your Security logs live.```
+```False positives: Vulnerability scanners and monitoring tools that touch many legacy RC4 services```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+index=wineventlog source IN ("XmlWinEventLog:Security", "WinEventLog:Security")
+(EventCode=4769 TicketEncryptionType="0x17" Status="0x0" NOT ServiceName="*$" NOT ServiceName="krbtgt" NOT TargetUserName="*$@*")
+| bin _time span=10m
+| stats dc(ServiceName) as value_count by _time TargetUserName
+| search value_count >= 5

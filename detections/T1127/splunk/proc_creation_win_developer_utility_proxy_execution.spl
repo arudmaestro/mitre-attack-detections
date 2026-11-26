@@ -1,0 +1,8 @@
+```Title: Developer Utility Used to Run Code (csi, rcsi, dnx, cdb, Tracker) (raw Sysmon events)```
+```ATT&CK: T1127 | Severity: low | Sigma id: bf8569be-6ad3-45cf-a4df-cfbd07755a1c```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Developers using these tools on build or development machines```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity low.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(Image IN ("*\\csi.exe", "*\\rcsi.exe", "*\\dnx.exe") OR (Image="*\\cdb.exe" CommandLine="*-cf*") OR (Image="*\\tracker.exe" CommandLine="* /d *"))
+| table _time host User ParentImage Image CommandLine

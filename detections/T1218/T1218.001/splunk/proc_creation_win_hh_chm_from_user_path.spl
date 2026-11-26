@@ -1,0 +1,8 @@
+```Title: CHM File Opened from a Download, Temp or Remote Location (raw Sysmon events)```
+```ATT&CK: T1218.001 | Severity: medium | Sigma id: 44ffe5c1-4f8f-412c-8a8f-c5a50a326d5b```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Users opening help files shipped with downloaded software```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(Image="*\\hh.exe" CommandLine IN ("*\\AppData\\Local\\Temp\\*", "*\\AppData\\Roaming\\*", "*\\Downloads\\*", "*\\Users\\Public\\*", "*http://*", "*https://*"))
+| table _time host User ParentImage Image CommandLine

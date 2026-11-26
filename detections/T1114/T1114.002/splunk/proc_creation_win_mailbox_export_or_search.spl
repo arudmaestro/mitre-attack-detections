@@ -1,0 +1,8 @@
+```Title: Mailbox Export or Bulk Mail Search from the Command Line (raw Sysmon events)```
+```ATT&CK: T1114.002 | Severity: medium | Sigma id: 9cd15d69-fc7f-44a6-84bb-378a5da839c4```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Exchange administrators exporting mailboxes for legal hold or migration```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(CommandLine IN ("*New-MailboxExportRequest*", "*Invoke-SelfSearch*", "*Invoke-GlobalMailSearch*"))
+| table _time host User ParentImage Image CommandLine

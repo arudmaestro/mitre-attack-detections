@@ -1,0 +1,8 @@
+```Title: Bluetooth File Transfer Wizard Execution (raw Sysmon events)```
+```ATT&CK: T1011.001 | Severity: low | Sigma id: 3af191f2-057d-4089-bd35-e2e253c32a1a```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Legitimate Bluetooth file transfers by users```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity low.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(Image="*\\fsquirt.exe")
+| table _time host User ParentImage Image CommandLine

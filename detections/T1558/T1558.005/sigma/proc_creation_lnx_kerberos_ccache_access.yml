@@ -1,0 +1,26 @@
+title: 'Kerberos Credential Cache File Accessed on Linux'
+id: d494f56c-cb1b-47e6-84f4-088536c36f89
+status: experimental
+description: 'Detects a command line that names a Kerberos credential cache file (/tmp/krb5cc_*) in a program other than klist, kinit or kdestroy, e.g. copying another user''s tickets to reuse them.'
+references:
+  - https://attack.mitre.org/techniques/T1558/005/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.credential-access
+  - attack.t1558.005
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection:
+    CommandLine|contains: '/tmp/krb5cc_'
+  filter_kerberos_tools:
+    Image|endswith:
+      - '/klist'
+      - '/kinit'
+      - '/kdestroy'
+  condition: selection and not filter_kerberos_tools
+falsepositives:
+  - 'Scripts that set KRB5CCNAME for service accounts; backup tools'
+level: medium

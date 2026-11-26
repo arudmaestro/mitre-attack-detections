@@ -1,0 +1,24 @@
+title: 'SID History Added to an Account'
+id: 03034695-d015-4424-80dc-8b7182ac783f
+status: experimental
+description: 'Detects SID History being added to an account (4765) or a failed attempt (4766), used to grant hidden privileges.'
+references:
+  - https://attack.mitre.org/techniques/T1134/005/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.stealth
+  - attack.privilege-escalation
+  - attack.t1134.005
+logsource:
+  product: windows
+  service: security
+detection:
+  selection:
+    EventID:
+      - 4765
+      - 4766
+  condition: selection
+falsepositives:
+  - 'Domain migrations that use SID History (ADMT)'
+level: high

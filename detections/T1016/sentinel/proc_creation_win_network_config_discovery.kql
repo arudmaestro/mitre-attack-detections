@@ -1,0 +1,12 @@
+// Title: Network Configuration Discovery Commands
+// ATT&CK: T1016 | Tactic: Discovery | Sigma id: 00f5040b-c751-46ff-95f6-1c8d6cc4479b
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Low
+// False positives: Users, help desk and administrators troubleshooting networks
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where (FolderPath endswith "\\ipconfig.exe" and ProcessCommandLine contains "/all") or (FolderPath endswith "\\route.exe" and ProcessCommandLine contains "print") or (FolderPath endswith "\\arp.exe" and ProcessCommandLine contains "-a") or (FolderPath endswith "\\netsh.exe" and (ProcessCommandLine contains "interface" and ProcessCommandLine contains "show"))
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

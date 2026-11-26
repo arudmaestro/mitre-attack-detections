@@ -1,0 +1,8 @@
+```Title: Screensaver Set to a Program Outside Windows or Program Files (raw Sysmon events)```
+```ATT&CK: T1546.002 | Severity: medium | Sigma id: 22e1d805-6cc9-4cd3-86fb-b39cd8ef6754```
+```Data source: Sysmon EventCode 13 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Third-party screensavers installed in user folders```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=13
+(TargetObject="*\\Control Panel\\Desktop\\SCRNSAVE.EXE" NOT (Details IN ("*\\System32\\*", "*\\SysWOW64\\*", "*\\Program Files\\*", "*\\Program Files (x86)\\*")))
+| table _time host User Image EventType TargetObject Details

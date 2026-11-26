@@ -1,0 +1,8 @@
+```Title: InstallUtil Used to Run Code (raw Sysmon events)```
+```ATT&CK: T1218.004 | Severity: medium | Sigma id: 13944f8b-eb33-4d82-a1ad-294581ea901d```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Developers installing Windows services they built from a user folder```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(Image="*\\InstallUtil.exe" CommandLine IN ("*\\AppData\\Local\\Temp\\*", "*\\AppData\\Roaming\\*", "*\\Downloads\\*", "*\\Users\\Public\\*") OR (CommandLine="*/logfile=*" CommandLine="*/LogToConsole=false*"))
+| table _time host User ParentImage Image CommandLine

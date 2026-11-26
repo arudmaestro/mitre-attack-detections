@@ -1,0 +1,40 @@
+title: 'Office Application Spawning a Shell or Script Host'
+id: f3fb2c62-6f7e-4dae-a3f1-5bb7681ebea9
+status: experimental
+description: 'Detects Word, Excel, PowerPoint, Access, Publisher or OneNote starting a shell, script host or common proxy binary, the typical result of a malicious macro or embedded object.'
+references:
+  - https://attack.mitre.org/techniques/T1204/002/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.execution
+  - attack.t1204.002
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_parent:
+    ParentImage|endswith:
+      - '\WINWORD.EXE'
+      - '\EXCEL.EXE'
+      - '\POWERPNT.EXE'
+      - '\MSACCESS.EXE'
+      - '\MSPUB.EXE'
+      - '\ONENOTE.EXE'
+  selection_child:
+    Image|endswith:
+      - '\cmd.exe'
+      - '\powershell.exe'
+      - '\pwsh.exe'
+      - '\wscript.exe'
+      - '\cscript.exe'
+      - '\mshta.exe'
+      - '\rundll32.exe'
+      - '\regsvr32.exe'
+      - '\certutil.exe'
+      - '\bitsadmin.exe'
+      - '\msbuild.exe'
+  condition: all of selection_*
+falsepositives:
+  - 'Business macros and add-ins that run commands by design (allowlist by command line)'
+level: high

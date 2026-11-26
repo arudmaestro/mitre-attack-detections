@@ -1,0 +1,26 @@
+title: 'Browser Started with --load-extension'
+id: d50affd1-a7f8-45eb-a467-05b0626d6872
+status: experimental
+description: 'Detects Chromium-based browsers started with --load-extension, which loads an unpacked extension without the store or user consent.'
+references:
+  - https://attack.mitre.org/techniques/T1176/001/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.persistence
+  - attack.t1176.001
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_img:
+    Image|endswith:
+      - '\msedge.exe'
+      - '\chrome.exe'
+      - '\brave.exe'
+  selection_cli:
+    CommandLine|contains: '--load-extension'
+  condition: all of selection_*
+falsepositives:
+  - 'Extension developers and browser automation (Selenium, Puppeteer)'
+level: high

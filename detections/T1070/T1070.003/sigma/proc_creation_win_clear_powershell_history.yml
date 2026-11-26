@@ -1,0 +1,25 @@
+title: 'PowerShell History Cleared or Disabled'
+id: 61139bcd-0563-4ad8-8800-4d4cb7e4f89b
+status: experimental
+description: 'Detects clearing or disabling PowerShell command history (Clear-History, deleting ConsoleHost_history.txt, HistorySaveStyle SaveNothing).'
+references:
+  - https://attack.mitre.org/techniques/T1070/003/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.stealth
+  - attack.t1070.003
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'Clear-History'
+      - 'ConsoleHost_history.txt'
+      - 'HistorySavePath'
+      - 'SaveNothing'
+  condition: selection
+falsepositives:
+  - 'Privacy or hardening scripts'
+level: medium

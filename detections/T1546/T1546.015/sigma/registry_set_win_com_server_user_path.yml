@@ -1,0 +1,37 @@
+title: 'COM Server Registered to a DLL or EXE in a User-Writable Folder'
+id: 39316757-cdbd-4e6d-a23a-25c86ecb5974
+status: experimental
+description: 'Detects a COM class (CLSID) InprocServer32 or LocalServer32 pointing to Temp, AppData, Downloads or the public profile, typical of COM hijacking in HKCU.'
+references:
+  - https://attack.mitre.org/techniques/T1546/015/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.privilege-escalation
+  - attack.persistence
+  - attack.t1546.015
+logsource:
+  category: registry_set
+  product: windows
+detection:
+  selection_clsid:
+    TargetObject|contains: '\CLSID\'
+  selection_server:
+    TargetObject|contains:
+      - '\InprocServer32\'
+      - '\LocalServer32\'
+  selection_path:
+    Details|contains:
+      - '\AppData\Local\Temp\'
+      - '\AppData\Roaming\'
+      - '\Users\Public\'
+      - '\Downloads\'
+  filter_known:
+    Details|contains:
+      - '\AppData\Local\Microsoft\OneDrive\'
+      - '\AppData\Local\Microsoft\Teams\'
+      - '\AppData\Local\Microsoft\TeamsMeetingAdd'
+  condition: selection_clsid and selection_server and selection_path and not filter_known
+falsepositives:
+  - 'Per-user applications that register COM servers in AppData (Dropbox, Zoom, Slack and similar - add them to the filter)'
+level: medium

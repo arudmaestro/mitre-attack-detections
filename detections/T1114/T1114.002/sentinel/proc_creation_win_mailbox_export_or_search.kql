@@ -1,0 +1,12 @@
+// Title: Mailbox Export or Bulk Mail Search from the Command Line
+// ATT&CK: T1114.002 | Tactic: Collection | Sigma id: 9cd15d69-fc7f-44a6-84bb-378a5da839c4
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Medium
+// False positives: Exchange administrators exporting mailboxes for legal hold or migration
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where ProcessCommandLine contains "New-MailboxExportRequest" or ProcessCommandLine contains "Invoke-SelfSearch" or ProcessCommandLine contains "Invoke-GlobalMailSearch"
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

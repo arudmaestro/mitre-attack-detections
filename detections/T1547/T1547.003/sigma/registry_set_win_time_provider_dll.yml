@@ -1,0 +1,27 @@
+title: 'Windows Time Provider DLL Changed'
+id: 340eea21-c954-45df-b6f2-978be62d90cb
+status: experimental
+description: 'Detects a W32Time time provider DllName set to anything other than w32time.dll or the Hyper-V time provider; the DLL is loaded by the Windows Time service.'
+references:
+  - https://attack.mitre.org/techniques/T1547/003/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.persistence
+  - attack.privilege-escalation
+  - attack.t1547.003
+logsource:
+  category: registry_set
+  product: windows
+detection:
+  selection:
+    TargetObject|contains: '\Services\W32Time\TimeProviders\'
+    TargetObject|endswith: '\DllName'
+  filter_known:
+    Details|endswith:
+      - '\system32\w32time.dll'
+      - '\System32\vmictimeprovider.dll'
+  condition: selection and not filter_known
+falsepositives:
+  - 'Third-party time synchronisation software (e.g. PTP/GPS clocks)'
+level: high

@@ -1,0 +1,23 @@
+title: 'Screen Capture from the Command Line on Windows'
+id: 3c4a4bb2-faa0-48e5-92bf-b99ff71069af
+status: experimental
+description: 'Detects PowerShell CopyFromScreen or NirCmd savescreenshot, used to capture the screen.'
+references:
+  - https://attack.mitre.org/techniques/T1113/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.collection
+  - attack.t1113
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'CopyFromScreen'
+      - 'savescreenshot'
+  condition: selection
+falsepositives:
+  - 'Support and documentation tools'
+level: medium

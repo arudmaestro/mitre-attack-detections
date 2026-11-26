@@ -1,0 +1,12 @@
+// Title: Network Scanner or Port Sweep on Linux
+// ATT&CK: T1046 | Tactic: Discovery | Sigma id: 7d448c49-38c6-4554-b52a-9e8732c162bd
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Medium
+// False positives: Authorised network administrators and vulnerability scanning
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where (FolderPath endswith "/nmap" or FolderPath endswith "/masscan" or FolderPath endswith "/zmap" or FolderPath endswith "/rustscan" or FolderPath endswith "/naabu") or ((FolderPath endswith "/nc" or FolderPath endswith "/ncat" or FolderPath endswith "/netcat") and ProcessCommandLine contains " -z")
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

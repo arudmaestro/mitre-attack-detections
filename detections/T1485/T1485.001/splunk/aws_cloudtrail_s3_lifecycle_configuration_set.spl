@@ -1,0 +1,8 @@
+```Title: AWS S3 Lifecycle Configuration Set (AWS CloudTrail)```
+```ATT&CK: T1485.001 | Severity: low | Sigma id: 6d334ab1-ac16-4f44-8d68-96d389cdfde8```
+```Data source: AWS CloudTrail (Splunk Add-on for AWS). Change index to where your CloudTrail data lives.```
+```False positives: Infrastructure-as-code and storage administrators managing retention```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity low.```
+index=aws sourcetype="aws:cloudtrail"
+(eventSource="s3.amazonaws.com" eventName="PutBucketLifecycle")
+| table _time eventSource eventName userIdentity.arn sourceIPAddress awsRegion errorCode

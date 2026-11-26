@@ -1,0 +1,11 @@
+```Title: SIP or Trust Provider DLL Registered from a User-Writable Folder (CIM Endpoint.Registry)```
+```ATT&CK: T1553.003 | Severity: high | Sigma id: f16fc65f-4f27-4591-be8d-bba8495adaf5```
+```Data source: CIM Endpoint.Registry data model. summariesonly=false works without acceleration; set true once the data model is accelerated.```
+```False positives: None expected```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+| tstats summariesonly=false allow_old_summaries=true fillnull_value="null" count min(_time) as firstTime max(_time) as lastTime
+    from datamodel=Endpoint.Registry
+    where (Registry.registry_path="*\\CryptSIPDll*" Registry.registry_path="*\\Dll") OR (Registry.registry_path="*\\Cryptography\\Providers\\Trust\\*" Registry.registry_path="*\\$DLL") Registry.registry_value_data IN ("*\\AppData\\Local\\Temp\\*", "*\\AppData\\Roaming\\*", "*\\Users\\Public\\*", "*\\Downloads\\*")
+    by Registry.dest Registry.user Registry.process_guid Registry.process_id Registry.registry_path Registry.registry_value_name Registry.registry_value_data Registry.action
+| rename Registry.* as *
+| convert timeformat="%Y-%m-%dT%H:%M:%S" ctime(firstTime) ctime(lastTime)

@@ -1,0 +1,13 @@
+// Title: Executable with a Document Double Extension
+// ATT&CK: T1036.007 | Tactic: Stealth | Sigma id: 29b39d5e-361c-4282-a0d6-e2957432ff1e
+// Data source: SecurityEvent 4688 (Windows Security Events connector; needs process creation and command-line auditing enabled)
+// Severity: High
+// False positives: None expected
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = Computer, Account = SubjectUserName
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+SecurityEvent
+| where TimeGenerated > ago(1d)
+| where EventID == 4688
+| where NewProcessName endswith ".pdf.exe" or NewProcessName endswith ".doc.exe" or NewProcessName endswith ".docx.exe" or NewProcessName endswith ".xls.exe" or NewProcessName endswith ".xlsx.exe" or NewProcessName endswith ".ppt.exe" or NewProcessName endswith ".pptx.exe" or NewProcessName endswith ".rtf.exe" or NewProcessName endswith ".txt.exe" or NewProcessName endswith ".jpg.exe" or NewProcessName endswith ".png.exe" or NewProcessName endswith ".pdf.scr" or NewProcessName endswith ".doc.scr" or NewProcessName endswith ".docx.scr"
+| project TimeGenerated, Computer, SubjectUserName, ParentProcessName, NewProcessName, CommandLine

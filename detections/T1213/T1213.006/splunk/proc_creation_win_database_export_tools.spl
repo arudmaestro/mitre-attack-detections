@@ -1,0 +1,8 @@
+```Title: Database Export Tool Executed on Windows (raw Sysmon events)```
+```ATT&CK: T1213.006 | Severity: low | Sigma id: 22df311c-28ef-470f-b94a-404d7ca9b441```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Scheduled database backups and ETL jobs (allowlist by host and account)```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity low.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+((Image="*\\bcp.exe" CommandLine IN ("* out *", "* queryout *")) OR Image IN ("*\\mysqldump.exe", "*\\pg_dump.exe", "*\\pg_dumpall.exe", "*\\mongodump.exe", "*\\mongoexport.exe"))
+| table _time host User ParentImage Image CommandLine

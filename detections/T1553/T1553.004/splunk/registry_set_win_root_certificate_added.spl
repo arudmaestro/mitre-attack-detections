@@ -1,0 +1,8 @@
+```Title: Root Certificate Added to the Registry Store (raw Sysmon events)```
+```ATT&CK: T1553.004 | Severity: low | Sigma id: 14fab96f-a5ec-42a0-8de1-b42149f0d670```
+```Data source: Sysmon EventCode 13 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Enterprise PKI, Group Policy certificate deployment, TLS inspection and VPN software```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity low.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=13
+(TargetObject="*\\SystemCertificates\\Root\\Certificates\\*" TargetObject="*\\Blob")
+| table _time host User Image EventType TargetObject Details

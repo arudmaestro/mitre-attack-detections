@@ -1,0 +1,27 @@
+title: 'Screen Capture from the Command Line on Linux'
+id: 206d69e4-867e-4b04-8725-a3a4d9654c3f
+status: experimental
+description: 'Detects xwd -root, ImageMagick import -window root, or scrot capturing the X display.'
+references:
+  - https://attack.mitre.org/techniques/T1113/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.collection
+  - attack.t1113
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection_xwd:
+    Image|endswith: '/xwd'
+    CommandLine|contains: '-root'
+  selection_import:
+    Image|endswith: '/import'
+    CommandLine|contains: '-window root'
+  selection_scrot:
+    Image|endswith: '/scrot'
+  condition: 1 of selection_*
+falsepositives:
+  - 'Users taking screenshots from scripts'
+level: low

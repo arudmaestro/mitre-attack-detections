@@ -1,0 +1,12 @@
+// Title: Program Run with launchctl submit or a Launch Job Loaded from a Temp Folder
+// ATT&CK: T1569.001 | Tactic: Execution | Sigma id: fe59c1ab-4027-48c1-899e-e48544bf1a5f
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Medium
+// False positives: Developer tools and installers using launchctl submit (rare)
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where FolderPath endswith "/launchctl" and (ProcessCommandLine contains " submit " or ((ProcessCommandLine contains " load " or ProcessCommandLine contains " bootstrap ") and (ProcessCommandLine contains "/tmp/" or ProcessCommandLine contains "/Users/Shared/")))
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

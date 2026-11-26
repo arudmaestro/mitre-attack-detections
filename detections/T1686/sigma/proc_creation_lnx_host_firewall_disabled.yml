@@ -1,0 +1,47 @@
+title: 'Host Firewall Disabled or Flushed on Linux'
+id: 62f3f6e4-332a-4173-ab91-70cb6427f1e5
+status: experimental
+description: 'Detects ufw disable, iptables -F / --flush, nft flush ruleset, and systemctl / service stopping or disabling firewalld, ufw or iptables.'
+references:
+  - https://attack.mitre.org/techniques/T1686/
+author: Detection Engineering Team
+date: 2026-11-25
+tags:
+  - attack.defense-impairment
+  - attack.t1686
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection_ufw:
+    Image|endswith: '/ufw'
+    CommandLine|contains: 'disable'
+  selection_iptables_img:
+    Image|endswith:
+      - '/iptables'
+      - '/ip6tables'
+  selection_iptables_flush:
+    CommandLine|contains:
+      - ' -F'
+      - '--flush'
+  selection_nft:
+    Image|endswith: '/nft'
+    CommandLine|contains: 'flush ruleset'
+  selection_service_img:
+    Image|endswith:
+      - '/systemctl'
+      - '/service'
+  selection_service_name:
+    CommandLine|contains:
+      - 'firewalld'
+      - 'ufw'
+      - 'iptables'
+  selection_service_action:
+    CommandLine|contains:
+      - ' stop'
+      - ' disable'
+      - ' mask'
+  condition: selection_ufw or (selection_iptables_img and selection_iptables_flush) or selection_nft or (selection_service_img and selection_service_name and selection_service_action)
+falsepositives:
+  - 'Administrators and configuration management reloading firewall rules (a flush followed by new rules)'
+level: medium

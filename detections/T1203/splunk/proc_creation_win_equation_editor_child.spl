@@ -1,0 +1,8 @@
+```Title: Equation Editor Starting a Process (raw Sysmon events)```
+```ATT&CK: T1203 | Severity: high | Sigma id: bdddff59-9488-4ca9-b3d2-37bd31d92d3e```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: None expected: the Equation Editor does not start other programs```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(ParentImage="*\\EQNEDT32.EXE")
+| table _time host User ParentImage Image CommandLine

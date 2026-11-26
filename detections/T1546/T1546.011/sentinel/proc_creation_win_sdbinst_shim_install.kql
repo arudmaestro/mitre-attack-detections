@@ -1,0 +1,12 @@
+// Title: Application Compatibility Shim Database Installed
+// ATT&CK: T1546.011 | Tactic: PrivilegeEscalation, Persistence | Sigma id: c810e881-99c2-4d1e-9c1b-c4c3b10333b9
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Medium
+// False positives: Software installers that ship compatibility fixes
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where FolderPath endswith "\\sdbinst.exe"
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

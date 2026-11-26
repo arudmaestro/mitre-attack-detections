@@ -1,0 +1,31 @@
+title: 'Domain Federation or Trust Changed from the Command Line'
+id: 57827ba2-b562-4423-a543-bcdbff67e700
+status: experimental
+description: 'Detects commands that convert an Entra ID domain to federated or change its federation settings (MSOnline, Microsoft Graph, AADInternals backdoor), and netdom adding a trust.'
+references:
+  - https://attack.mitre.org/techniques/T1484/002/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.defense-impairment
+  - attack.privilege-escalation
+  - attack.t1484.002
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_cloud:
+    CommandLine|contains:
+      - 'Set-MsolDomainAuthentication'
+      - 'New-MgDomainFederationConfiguration'
+      - 'Update-MgDomainFederationConfiguration'
+      - 'New-AADIntBackdoor'
+  selection_netdom:
+    Image|endswith: '\netdom.exe'
+    CommandLine|contains|all:
+      - 'trust'
+      - '/add'
+  condition: 1 of selection_*
+falsepositives:
+  - 'Identity administrators setting up federation or trusts'
+level: high

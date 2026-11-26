@@ -1,0 +1,8 @@
+```Title: PowerShell History Cleared or Disabled (raw Sysmon events)```
+```ATT&CK: T1070.003 | Severity: medium | Sigma id: 61139bcd-0563-4ad8-8800-4d4cb7e4f89b```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Privacy or hardening scripts```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(CommandLine IN ("*Clear-History*", "*ConsoleHost_history.txt*", "*HistorySavePath*", "*SaveNothing*"))
+| table _time host User ParentImage Image CommandLine

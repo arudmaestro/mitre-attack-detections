@@ -1,0 +1,21 @@
+title: 'AS-REP Roasting with Impacket GetNPUsers'
+id: 6afc364b-71c5-42a9-aff1-3eee4c13840f
+status: experimental
+description: 'Detects Impacket GetNPUsers, which requests TGTs for accounts without Kerberos pre-authentication and prints them in a crackable format.'
+references:
+  - https://attack.mitre.org/techniques/T1558/004/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.credential-access
+  - attack.t1558.004
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection:
+    CommandLine|contains: 'GetNPUsers'
+  condition: selection
+falsepositives:
+  - 'Penetration tests and red-team exercises'
+level: high

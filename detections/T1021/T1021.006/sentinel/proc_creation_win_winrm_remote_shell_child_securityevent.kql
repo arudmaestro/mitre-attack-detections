@@ -1,0 +1,13 @@
+// Title: Process Spawned by WinRM Remote Shell Host
+// ATT&CK: T1021.006 | Tactic: LateralMovement | Sigma id: 179631d6-eaf8-47c8-afc5-b32d78914132
+// Data source: SecurityEvent 4688 (Windows Security Events connector; needs process creation and command-line auditing enabled)
+// Severity: Medium
+// False positives: Administrators and management tools using PowerShell remoting
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = Computer, Account = SubjectUserName
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+SecurityEvent
+| where TimeGenerated > ago(1d)
+| where EventID == 4688
+| where ParentProcessName endswith "\\wsmprovhost.exe" or ParentProcessName endswith "\\winrshost.exe"
+| project TimeGenerated, Computer, SubjectUserName, ParentProcessName, NewProcessName, CommandLine

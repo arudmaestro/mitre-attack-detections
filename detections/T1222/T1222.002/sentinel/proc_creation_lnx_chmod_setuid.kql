@@ -1,0 +1,12 @@
+// Title: Setuid Bit Set with chmod on Linux
+// ATT&CK: T1222.002 | Tactic: DefenseImpairment | Sigma id: 6025a697-aee1-45b6-9556-9bf20a077a18
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Medium
+// False positives: Package installation scripts and administrators installing setuid tools
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where FolderPath endswith "/chmod" and (ProcessCommandLine contains "u+s" or ProcessCommandLine contains " +s " or ProcessCommandLine contains " 4755 " or ProcessCommandLine contains " 4777 " or ProcessCommandLine contains " 6755 ")
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

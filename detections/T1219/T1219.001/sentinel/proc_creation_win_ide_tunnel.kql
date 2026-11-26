@@ -1,0 +1,12 @@
+// Title: IDE or Dev Tunnel Started on Windows
+// ATT&CK: T1219.001 | Tactic: CommandAndControl | Sigma id: 908b19cf-3768-48a7-a3a6-1fdeabf1b12b
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Medium
+// False positives: Developers using VS Code Remote Tunnels or Dev Tunnels with approval
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where FolderPath endswith "\\code-tunnel.exe" or (FolderPath endswith "\\code.exe" and ProcessCommandLine contains " tunnel") or (FolderPath endswith "\\devtunnel.exe" and ProcessCommandLine contains " host")
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

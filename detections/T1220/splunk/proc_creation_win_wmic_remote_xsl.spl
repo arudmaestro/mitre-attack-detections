@@ -1,0 +1,8 @@
+```Title: WMIC Loading a Remote XSL Stylesheet (raw Sysmon events)```
+```ATT&CK: T1220 | Severity: high | Sigma id: fd90b1e0-4182-4fae-87f2-f5780cf342cd```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: None expected```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(Image="*\\wmic.exe" CommandLine="*format:http*")
+| table _time host User ParentImage Image CommandLine

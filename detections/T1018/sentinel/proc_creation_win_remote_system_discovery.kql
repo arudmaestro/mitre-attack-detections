@@ -1,0 +1,12 @@
+// Title: Remote System Discovery via net or nltest
+// ATT&CK: T1018 | Tactic: Discovery | Sigma id: e788846d-91a4-4a1c-98a3-1580575d0af0
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Low
+// False positives: Administrators and IT inventory scripts
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where ((FolderPath endswith "\\net.exe" or FolderPath endswith "\\net1.exe") and ProcessCommandLine contains " view") or ((FolderPath endswith "\\net.exe" or FolderPath endswith "\\net1.exe") and (ProcessCommandLine contains "group" and ProcessCommandLine contains "domain computers")) or (FolderPath endswith "\\nltest.exe" and (ProcessCommandLine contains "/dclist" or ProcessCommandLine contains "/dsgetdc"))
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

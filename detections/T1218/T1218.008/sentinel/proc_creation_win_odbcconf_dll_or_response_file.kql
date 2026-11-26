@@ -1,0 +1,12 @@
+// Title: Odbcconf Registering a DLL or Using a Response File
+// ATT&CK: T1218.008 | Tactic: Stealth | Sigma id: 2bc82bfc-ff6a-4322-a9fb-8304f100ef0a
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Medium
+// False positives: Database driver installers registering ODBC driver DLLs
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where FolderPath endswith "\\odbcconf.exe" and (ProcessCommandLine contains "regsvr" or ProcessCommandLine contains ".rsp")
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

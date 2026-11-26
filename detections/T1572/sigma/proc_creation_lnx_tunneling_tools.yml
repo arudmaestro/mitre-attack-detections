@@ -1,0 +1,26 @@
+title: 'Tunneling Tool Executed on Linux'
+id: d3b8a49b-2cd2-4a73-8288-bc6f96b4c81c
+status: experimental
+description: 'Detects ngrok, chisel, frp client, iodine and dnscat, tools that tunnel connections through HTTPS, DNS or other protocols to reach internal hosts.'
+references:
+  - https://attack.mitre.org/techniques/T1572/
+author: Detection Engineering Team
+date: 2026-11-25
+tags:
+  - attack.command-and-control
+  - attack.t1572
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection:
+    Image|endswith:
+      - '/ngrok'
+      - '/chisel'
+      - '/frpc'
+      - '/iodine'
+      - '/dnscat'
+  condition: selection
+falsepositives:
+  - 'Developers using ngrok for testing; sanctioned tunnels'
+level: high

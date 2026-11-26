@@ -1,0 +1,13 @@
+// Title: Privileged Group Membership Added from the Command Line
+// ATT&CK: T1098.007 | Tactic: Persistence, PrivilegeEscalation | Sigma id: 5056aec4-2cf9-43ae-b397-dc8e24974463
+// Data source: SecurityEvent 4688 (Windows Security Events connector; needs process creation and command-line auditing enabled)
+// Severity: Medium
+// False positives: Administrators and provisioning scripts
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = Computer, Account = SubjectUserName
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+SecurityEvent
+| where TimeGenerated > ago(1d)
+| where EventID == 4688
+| where (((NewProcessName endswith "\\net.exe" or NewProcessName endswith "\\net1.exe") and (CommandLine contains "group" and CommandLine contains "/add")) or (CommandLine contains "Add-LocalGroupMember" or CommandLine contains "Add-ADGroupMember")) and (CommandLine contains "administrators" or CommandLine contains "domain admins" or CommandLine contains "enterprise admins" or CommandLine contains "schema admins" or CommandLine contains "remote desktop users" or CommandLine contains "backup operators" or CommandLine contains "account operators")
+| project TimeGenerated, Computer, SubjectUserName, ParentProcessName, NewProcessName, CommandLine

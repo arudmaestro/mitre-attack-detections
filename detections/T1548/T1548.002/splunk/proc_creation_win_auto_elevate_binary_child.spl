@@ -1,0 +1,8 @@
+```Title: Auto-Elevating Windows Program Started a Child Process (raw Sysmon events)```
+```ATT&CK: T1548.002 | Severity: high | Sigma id: 8521aaee-00d2-478f-aac3-3c4cb5369a24```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Rare: troubleshooting tools started from Event Viewer```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(ParentImage IN ("*\\fodhelper.exe", "*\\computerdefaults.exe", "*\\wsreset.exe", "*\\eventvwr.exe") NOT (Image IN ("*\\conhost.exe", "*\\WerFault.exe", "*\\mmc.exe")))
+| table _time host User ParentImage Image CommandLine

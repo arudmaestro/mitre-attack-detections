@@ -1,0 +1,11 @@
+```Title: EventLog Service or Log Channel Disabled in the Registry (CIM Endpoint.Registry)```
+```ATT&CK: T1685.001 | Severity: medium | Sigma id: 88599209-9ceb-4d1b-a650-794adc918098```
+```Data source: CIM Endpoint.Registry data model. summariesonly=false works without acceleration; set true once the data model is accelerated.```
+```False positives: Windows and software installers disabling noisy analytic / debug channels```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+| tstats summariesonly=false allow_old_summaries=true fillnull_value="null" count min(_time) as firstTime max(_time) as lastTime
+    from datamodel=Endpoint.Registry
+    where (Registry.registry_path="*\\Services\\EventLog\\Start" Registry.registry_value_data="0x00000004") OR (Registry.registry_path="*\\WINEVT\\Channels\\*" Registry.registry_path="*\\Enabled" Registry.registry_value_data="0x00000000")
+    by Registry.dest Registry.user Registry.process_guid Registry.process_id Registry.registry_path Registry.registry_value_name Registry.registry_value_data Registry.action
+| rename Registry.* as *
+| convert timeformat="%Y-%m-%dT%H:%M:%S" ctime(firstTime) ctime(lastTime)

@@ -1,0 +1,27 @@
+title: 'Clipboard Read with xclip or xsel'
+id: 34013f90-fbd5-40f6-90a0-caf1b1475641
+status: experimental
+description: 'Detects xclip or xsel printing clipboard contents (-o / --output).'
+references:
+  - https://attack.mitre.org/techniques/T1115/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.collection
+  - attack.t1115
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection_xclip:
+    Image|endswith: '/xclip'
+    CommandLine|contains: '-o'
+  selection_xsel:
+    Image|endswith: '/xsel'
+    CommandLine|contains:
+      - '-o'
+      - '--output'
+  condition: 1 of selection_*
+falsepositives:
+  - 'Users and scripts using the clipboard from the terminal'
+level: low

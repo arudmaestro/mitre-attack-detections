@@ -1,0 +1,8 @@
+```Title: LSASS Memory Dump via Comsvcs MiniDump or ProcDump (raw Sysmon events)```
+```ATT&CK: T1003.001 | Severity: high | Sigma id: 87c20870-1627-4277-9953-8530f1f2c6e3```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Troubleshooting LSASS crashes with ProcDump under change control```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+((Image="*\\rundll32.exe" CommandLine="*comsvcs*" CommandLine IN ("*minidump*", "*#24*")) OR (CommandLine="* -ma *" CommandLine="*lsass*"))
+| table _time host User ParentImage Image CommandLine

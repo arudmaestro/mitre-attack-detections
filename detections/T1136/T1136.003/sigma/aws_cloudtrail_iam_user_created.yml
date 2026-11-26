@@ -1,0 +1,22 @@
+title: 'AWS IAM User Created'
+id: 3cbd15d7-28de-4ab2-8f3e-1d554cd4aac9
+status: experimental
+description: 'Detects creation of a new IAM user, which can be used as a persistent backdoor account.'
+references:
+  - https://attack.mitre.org/techniques/T1136/003/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.persistence
+  - attack.t1136.003
+logsource:
+  product: aws
+  service: cloudtrail
+detection:
+  selection:
+    eventSource: 'iam.amazonaws.com'
+    eventName: 'CreateUser'
+  condition: selection
+falsepositives:
+  - 'Administrators onboarding users; infrastructure-as-code pipelines'
+level: medium

@@ -1,0 +1,12 @@
+// Title: Security-Relevant Registry Value Changed from the Command Line
+// ATT&CK: T1112 | Tactic: DefenseImpairment, Persistence | Sigma id: 74d98b28-b65b-4cc4-98e9-975d3624714f
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: High
+// False positives: Administrators or management tools changing these settings intentionally
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where (ProcessCommandLine contains "DisableAntiSpyware" or ProcessCommandLine contains "DisableRealtimeMonitoring" or ProcessCommandLine contains "EnableLUA" or ProcessCommandLine contains "LocalAccountTokenFilterPolicy" or ProcessCommandLine contains "UseLogonCredential" or ProcessCommandLine contains "DisableRestrictedAdmin") and (ProcessCommandLine contains " add " or ProcessCommandLine contains "Set-ItemProperty" or ProcessCommandLine contains "New-ItemProperty" or ProcessCommandLine contains "Set-MpPreference")
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

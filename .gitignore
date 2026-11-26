@@ -1,0 +1,13 @@
+.DS_Store
+*.log
+*.tmp
+.idea/
+.vscode/
+__pycache__/
+.venv/
+
+# Office lock files
+~$*
+
+# Internal build/validation tooling - not for public sharing
+internal-tools/

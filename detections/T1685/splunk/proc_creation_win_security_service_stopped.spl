@@ -1,0 +1,8 @@
+```Title: Security Product Service Stopped, Disabled or Deleted (raw Sysmon events)```
+```ATT&CK: T1685 | Severity: high | Sigma id: baff6b95-d346-4dfb-ae70-fe941b05b481```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Product upgrades and uninstallers run by IT```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+((Image IN ("*\\sc.exe", "*\\net.exe", "*\\net1.exe", "*\\taskkill.exe") CommandLine IN ("* stop *", "* delete *", "* config *", "*/im *") CommandLine IN ("*WinDefend*", "*WdNisSvc*", "*MsMpEng*", "* Sense*", "*SepMasterService*", "*CSFalconService*", "*SentinelAgent*", "*cbdefense*", "*Sysmon*")) OR (Image="*\\fltMC.exe" CommandLine="*unload*"))
+| table _time host User ParentImage Image CommandLine

@@ -1,0 +1,12 @@
+// Title: Virtual Machines Enumerated on a Linux Host
+// ATT&CK: T1673 | Tactic: Discovery | Sigma id: 5ab60733-542a-42d4-bd70-9bd5293fa082
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Low
+// False positives: Virtualisation administrators and monitoring scripts
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where ProcessCommandLine contains "virsh list" or ProcessCommandLine contains "VBoxManage list" or ProcessCommandLine contains "vim-cmd vmsvc/getallvms" or ProcessCommandLine contains "esxcli vm process list"
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

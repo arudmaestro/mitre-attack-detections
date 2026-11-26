@@ -1,0 +1,12 @@
+// Title: Linux Audit Disabled or Rules Deleted
+// ATT&CK: T1685.004 | Tactic: DefenseImpairment | Sigma id: 1f2b5bda-7f67-43ac-8224-3af8f42fe1a3
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: High
+// False positives: Administrators reloading audit rules (auditctl -D is followed by loading rules; augenrules does this)
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where (FolderPath endswith "/auditctl" and (ProcessCommandLine contains " -e 0" or ProcessCommandLine contains " -D")) or ((FolderPath endswith "/systemctl" or FolderPath endswith "/service") and ProcessCommandLine contains "auditd" and (ProcessCommandLine contains " stop" or ProcessCommandLine contains " disable" or ProcessCommandLine contains " mask"))
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

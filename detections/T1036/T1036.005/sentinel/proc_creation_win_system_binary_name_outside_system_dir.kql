@@ -1,0 +1,12 @@
+// Title: Windows System Process Name Running Outside System Folders
+// ATT&CK: T1036.005 | Tactic: Stealth | Sigma id: 0e1dc5e6-a2c9-4c3c-aa35-1fb99ec2f566
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: High
+// False positives: Windows installed on a drive other than C:; Security tools that copy system binaries for analysis
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where (FolderPath endswith "\\svchost.exe" or FolderPath endswith "\\lsass.exe" or FolderPath endswith "\\services.exe" or FolderPath endswith "\\csrss.exe" or FolderPath endswith "\\smss.exe" or FolderPath endswith "\\wininit.exe" or FolderPath endswith "\\winlogon.exe" or FolderPath endswith "\\spoolsv.exe" or FolderPath endswith "\\taskhostw.exe") and (not((FolderPath startswith "C:\\Windows\\System32\\" or FolderPath startswith "C:\\Windows\\SysWOW64\\" or FolderPath startswith "C:\\Windows\\WinSxS\\")))
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

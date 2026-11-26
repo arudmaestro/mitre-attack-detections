@@ -1,0 +1,12 @@
+// Title: Payload Hidden in Image via copy /b or Steganography Tool
+// ATT&CK: T1027.003 | Tactic: Stealth | Sigma id: 9209a3bc-a2cd-401a-afeb-dedd303fd229
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Medium
+// False positives: Rare legitimate use of copy /b to join files
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where (ProcessCommandLine contains "copy /b" and (ProcessCommandLine contains ".jpg" or ProcessCommandLine contains ".jpeg" or ProcessCommandLine contains ".png" or ProcessCommandLine contains ".gif" or ProcessCommandLine contains ".bmp") and (ProcessCommandLine contains ".zip" or ProcessCommandLine contains ".rar" or ProcessCommandLine contains ".7z" or ProcessCommandLine contains ".exe" or ProcessCommandLine contains ".ps1")) or (ProcessCommandLine contains "Invoke-PSImage" or ProcessCommandLine contains "steghide")
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

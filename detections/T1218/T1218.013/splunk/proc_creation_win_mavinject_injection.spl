@@ -1,0 +1,8 @@
+```Title: Mavinject Injecting a DLL into a Running Process (raw Sysmon events)```
+```ATT&CK: T1218.013 | Severity: high | Sigma id: f127aed8-8f21-477c-bad1-a10b2f19a069```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Microsoft App-V client injecting its virtualization DLL```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(Image="*\\mavinject.exe" CommandLine="*/INJECTRUNNING*")
+| table _time host User ParentImage Image CommandLine

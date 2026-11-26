@@ -1,0 +1,12 @@
+// Title: Domain Federation or Trust Changed from the Command Line
+// ATT&CK: T1484.002 | Tactic: DefenseImpairment, PrivilegeEscalation | Sigma id: 57827ba2-b562-4423-a543-bcdbff67e700
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: High
+// False positives: Identity administrators setting up federation or trusts
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where (ProcessCommandLine contains "Set-MsolDomainAuthentication" or ProcessCommandLine contains "New-MgDomainFederationConfiguration" or ProcessCommandLine contains "Update-MgDomainFederationConfiguration" or ProcessCommandLine contains "New-AADIntBackdoor") or (FolderPath endswith "\\netdom.exe" and (ProcessCommandLine contains "trust" and ProcessCommandLine contains "/add"))
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

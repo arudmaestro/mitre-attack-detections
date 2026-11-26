@@ -1,0 +1,30 @@
+title: 'Local Group Membership Discovery on Windows'
+id: 1c76b1f6-b813-4a4a-b297-9266a2a33503
+status: experimental
+description: 'Detects listing of local groups or members with net localgroup (without /add or /delete) or Get-LocalGroupMember.'
+references:
+  - https://attack.mitre.org/techniques/T1069/001/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.discovery
+  - attack.t1069.001
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_net:
+    Image|endswith:
+      - '\net.exe'
+      - '\net1.exe'
+    CommandLine|contains: 'localgroup'
+  filter_change:
+    CommandLine|contains:
+      - '/add'
+      - '/delete'
+  selection_ps:
+    CommandLine|contains: 'Get-LocalGroupMember'
+  condition: (selection_net and not filter_change) or selection_ps
+falsepositives:
+  - 'Administrators and inventory scripts'
+level: low

@@ -1,0 +1,8 @@
+```Title: Kerberoasting Tool Command Line on Windows (raw Sysmon events)```
+```ATT&CK: T1558.003 | Severity: high | Sigma id: 7b7e9524-9458-45f6-abd8-c011c29b406c```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Penetration tests and red-team exercises```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(CommandLine IN ("* kerberoast*", "*Invoke-Kerberoast*"))
+| table _time host User ParentImage Image CommandLine

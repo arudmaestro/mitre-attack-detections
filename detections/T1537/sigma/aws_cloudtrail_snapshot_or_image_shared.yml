@@ -1,0 +1,28 @@
+title: 'AWS Snapshot or Image Sharing Permissions Modified'
+id: 74e13d4e-41e6-4a89-99f9-8317a5936630
+status: experimental
+description: 'Detects changes to who can use an EBS snapshot, AMI or RDS snapshot; adding another AWS account (or ''all'') lets an attacker copy the data into an account they control.'
+references:
+  - https://attack.mitre.org/techniques/T1537/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.exfiltration
+  - attack.t1537
+logsource:
+  product: aws
+  service: cloudtrail
+detection:
+  selection:
+    eventSource:
+      - 'ec2.amazonaws.com'
+      - 'rds.amazonaws.com'
+    eventName:
+      - 'ModifySnapshotAttribute'
+      - 'ModifyImageAttribute'
+      - 'ModifyDBSnapshotAttribute'
+      - 'ModifyDBClusterSnapshotAttribute'
+  condition: selection
+falsepositives:
+  - 'Backup and AMI-sharing pipelines between your own accounts (allowlist their account IDs)'
+level: medium

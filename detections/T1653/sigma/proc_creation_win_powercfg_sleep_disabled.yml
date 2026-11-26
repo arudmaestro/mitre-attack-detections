@@ -1,0 +1,29 @@
+title: 'Sleep or Hibernation Settings Changed with powercfg'
+id: 92a9f185-0872-401f-a90c-12fe10059395
+status: experimental
+description: 'Detects powercfg changing sleep / hibernate timeouts or turning hibernation off (/change, /x, /hibernate off), used by malware such as cryptominers to keep a machine awake.'
+references:
+  - https://attack.mitre.org/techniques/T1653/
+author: Detection Engineering Team
+date: 2026-11-25
+tags:
+  - attack.persistence
+  - attack.t1653
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_img:
+    Image|endswith: '\powercfg.exe'
+  selection_change:
+    CommandLine|contains:
+      - '/change'
+      - '-change'
+      - '/x '
+      - '-x '
+      - '/hibernate off'
+      - '-h off'
+  condition: all of selection_*
+falsepositives:
+  - 'Power-management GPOs and scripts on kiosks, servers and lab machines'
+level: low

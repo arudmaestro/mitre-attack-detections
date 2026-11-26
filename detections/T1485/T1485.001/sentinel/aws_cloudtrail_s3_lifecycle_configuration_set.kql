@@ -1,0 +1,13 @@
+// Title: AWS S3 Lifecycle Configuration Set
+// ATT&CK: T1485.001 | Tactic: Impact | Sigma id: 6d334ab1-ac16-4f44-8d68-96d389cdfde8
+// Data source: AWSCloudTrail (Amazon Web Services connector)
+// Severity: Low
+// False positives: Infrastructure-as-code and storage administrators managing retention
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Account = UserIdentityArn, IP = SourceIpAddress
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+AWSCloudTrail
+| where TimeGenerated > ago(1d)
+| where EventSource == "s3.amazonaws.com"
+| where EventName == "PutBucketLifecycle"
+| project TimeGenerated, EventSource, EventName, UserIdentityArn, SourceIpAddress, AWSRegion, ErrorCode, RequestParameters

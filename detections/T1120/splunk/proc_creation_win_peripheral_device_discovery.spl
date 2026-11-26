@@ -1,0 +1,8 @@
+```Title: Peripheral and Drive Discovery on Windows (raw Sysmon events)```
+```ATT&CK: T1120 | Severity: low | Sigma id: fcf85c81-39e7-4124-b79f-fca20f4bc8cc```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Inventory, support and device-management tools```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity low.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+((Image="*\\fsutil.exe" CommandLine="*fsinfo drives*") OR (Image="*\\wmic.exe" CommandLine IN ("*logicaldisk*", "*diskdrive*", "*usbcontroller*", "*win32_pnpentity*")) OR CommandLine="*Get-PnpDevice*")
+| table _time host User ParentImage Image CommandLine

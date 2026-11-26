@@ -1,0 +1,12 @@
+// Title: Command Run as a Transient systemd Unit from a Temp Folder or Shell
+// ATT&CK: T1569.003 | Tactic: Execution | Sigma id: 7f5701a2-e26c-4650-bd75-41b36c2b7176
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Medium
+// False positives: Administrators and automation running ad-hoc jobs with systemd-run
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where FolderPath endswith "/systemd-run" and (ProcessCommandLine contains "/tmp/" or ProcessCommandLine contains "/dev/shm/" or ProcessCommandLine contains "/var/tmp/" or ProcessCommandLine contains "bash -c" or ProcessCommandLine contains "sh -c" or ProcessCommandLine contains "curl " or ProcessCommandLine contains "wget " or ProcessCommandLine contains "base64")
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

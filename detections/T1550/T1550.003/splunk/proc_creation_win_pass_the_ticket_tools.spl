@@ -1,0 +1,8 @@
+```Title: Pass-the-Ticket Tool Command Line (raw Sysmon events)```
+```ATT&CK: T1550.003 | Severity: high | Sigma id: 810de0fd-6ae8-4a7c-8bf9-5325d1959070```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Penetration tests and red-team exercises```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(CommandLine IN ("*kerberos::ptt*", "* ptt *", "*/ptt*"))
+| table _time host User ParentImage Image CommandLine

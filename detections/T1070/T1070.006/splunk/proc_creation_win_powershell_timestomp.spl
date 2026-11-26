@@ -1,0 +1,8 @@
+```Title: File Timestamps Modified with PowerShell (raw Sysmon events)```
+```ATT&CK: T1070.006 | Severity: medium | Sigma id: 3a09dfd0-5304-480c-b24d-93471881ca1a```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Scripts that preserve or reset timestamps (backups, build tools)```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(Image IN ("*\\powershell.exe", "*\\pwsh.exe") CommandLine IN ("*CreationTime*", "*LastWriteTime*", "*LastAccessTime*") CommandLine="*=*")
+| table _time host User ParentImage Image CommandLine

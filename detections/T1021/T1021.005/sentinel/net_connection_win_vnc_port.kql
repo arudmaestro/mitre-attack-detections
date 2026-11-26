@@ -1,0 +1,12 @@
+// Title: Network Connection on VNC Ports
+// ATT&CK: T1021.005 | Tactic: LateralMovement | Sigma id: 91a9d91b-5582-4345-b632-69aec1ebc4ec
+// Data source: DeviceNetworkEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Low
+// False positives: Approved VNC remote support tools and jump hosts
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = InitiatingProcessAccountName, IP = RemoteIP
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceNetworkEvents
+| where TimeGenerated > ago(1d)
+| where (RemotePort in (5900, 5901, 5902, 5903) or (ActionType == "InboundConnectionAccepted" and LocalPort in (5900, 5901, 5902, 5903)))
+| project TimeGenerated, DeviceName, ActionType, InitiatingProcessAccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, LocalIP, LocalPort, RemoteIP, RemotePort

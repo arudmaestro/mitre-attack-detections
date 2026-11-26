@@ -1,0 +1,29 @@
+title: 'Windows Event Log Cleared from the Command Line'
+id: d1c404df-db57-4b81-a57d-530259c95516
+status: experimental
+description: 'Detects wevtutil cl / clear-log, PowerShell Clear-EventLog and the .NET EventLogSession ClearLog method, used to erase evidence.'
+references:
+  - https://attack.mitre.org/techniques/T1685/005/
+author: Detection Engineering Team
+date: 2026-11-25
+tags:
+  - attack.defense-impairment
+  - attack.t1685.005
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_wevtutil_img:
+    Image|endswith: '\wevtutil.exe'
+  selection_wevtutil_clear:
+    CommandLine|contains:
+      - ' cl '
+      - ' clear-log '
+  selection_ps:
+    CommandLine|contains:
+      - 'Clear-EventLog'
+      - '.ClearLog('
+  condition: (selection_wevtutil_img and selection_wevtutil_clear) or selection_ps
+falsepositives:
+  - 'Administrators clearing logs on test machines'
+level: high

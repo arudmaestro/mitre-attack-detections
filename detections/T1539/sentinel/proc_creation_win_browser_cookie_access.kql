@@ -1,0 +1,12 @@
+// Title: Browser Cookie Store Accessed from the Command Line on Windows
+// ATT&CK: T1539 | Tactic: CredentialAccess | Sigma id: 79982d61-6ace-4bd5-8548-2febed2dfb8b
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Medium
+// False positives: Backup, browser-migration and forensic tools
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where ProcessCommandLine contains "\\Network\\Cookies" or ProcessCommandLine contains "\\User Data\\Default\\Cookies" or ProcessCommandLine contains "\\cookies.sqlite"
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

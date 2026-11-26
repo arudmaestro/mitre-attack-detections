@@ -1,0 +1,8 @@
+```Title: SQL Command-Execution Procedure Used from the Command Line (raw Sysmon events)```
+```ATT&CK: T1505.001 | Severity: medium | Sigma id: 6dbc26be-5d70-459f-9a07-ec5369985e3d```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: DBAs and deployment scripts that configure these procedures```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(CommandLine IN ("*xp_cmdshell*", "*sp_OACreate*", "*sp_addextendedproc*"))
+| table _time host User ParentImage Image CommandLine

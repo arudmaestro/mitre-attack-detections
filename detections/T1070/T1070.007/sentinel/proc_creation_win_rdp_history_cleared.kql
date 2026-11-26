@@ -1,0 +1,12 @@
+// Title: RDP Connection History Cleared
+// ATT&CK: T1070.007 | Tactic: Stealth | Sigma id: 02d01e17-c139-4edd-a214-1e4ef3bdfd81
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Medium
+// False positives: Privacy cleanup tools and administrators
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where (ProcessCommandLine contains "Terminal Server Client" or ProcessCommandLine contains "Default.rdp") and (ProcessCommandLine contains " delete " or ProcessCommandLine contains " del " or ProcessCommandLine contains "Remove-Item")
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

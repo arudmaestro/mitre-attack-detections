@@ -1,0 +1,8 @@
+```Title: Port Forwarding Added with netsh portproxy (raw Sysmon events)```
+```ATT&CK: T1090.001 | Severity: medium | Sigma id: faaa5a3c-f601-4746-95ba-5608584d8f6d```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Administrators setting up legitimate port forwarding (e.g. WSL or lab access)```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(Image="*\\netsh.exe" CommandLine="*portproxy*" CommandLine="*add*")
+| table _time host User ParentImage Image CommandLine

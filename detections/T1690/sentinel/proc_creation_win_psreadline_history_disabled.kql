@@ -1,0 +1,12 @@
+// Title: PowerShell Command History Disabled
+// ATT&CK: T1690 | Tactic: DefenseImpairment | Sigma id: 3fdbf177-5665-483e-aeb4-ae2075a00bc5
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Medium
+// False positives: Users who disable history for privacy
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where ProcessCommandLine contains "SaveNothing" or ProcessCommandLine contains "Remove-Module PSReadLine" or ProcessCommandLine contains "Remove-Module -Name PSReadLine"
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

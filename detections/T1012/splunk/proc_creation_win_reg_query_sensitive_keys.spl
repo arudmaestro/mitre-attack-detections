@@ -1,0 +1,8 @@
+```Title: Registry Query of Sensitive Keys via reg.exe (raw Sysmon events)```
+```ATT&CK: T1012 | Severity: low | Sigma id: 33f9cd73-adcf-4ca7-b1be-17c696a20a6a```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Administrators, installers and inventory scripts```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity low.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(Image="*\\reg.exe" CommandLine="* query *" CommandLine IN ("*currentversion\\run*", "*currentversion\\winlogon*", "*currentversion\\policies*", "*currentcontrolset\\services*", "*terminal server client*", "*/f password*"))
+| table _time host User ParentImage Image CommandLine

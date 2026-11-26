@@ -1,0 +1,10 @@
+```Title: Many Failed Logons for One Account (raw Windows Security events)```
+```ATT&CK: T1110.001 | Severity: medium | Sigma id: ea8a0a2b-0486-4175-b285-bd5df74e3f5f```
+```Data source: Windows Security EventCode 4625 (Splunk Add-on for Microsoft Windows). Change index to where your Security logs live.```
+```False positives: Users with a stale password on a phone or mapped drive; Misconfigured services or scheduled tasks```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=wineventlog source IN ("XmlWinEventLog:Security", "WinEventLog:Security")
+(EventCode=4625)
+| bin _time span=10m
+| stats count as event_count by _time TargetUserName
+| search event_count >= 10

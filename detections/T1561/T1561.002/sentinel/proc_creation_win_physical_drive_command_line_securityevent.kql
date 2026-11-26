@@ -1,0 +1,13 @@
+// Title: Physical Drive Referenced on the Command Line
+// ATT&CK: T1561.002 | Tactic: Impact | Sigma id: 60ea8239-1a22-4ddc-9e59-ecbbac92c8a6
+// Data source: SecurityEvent 4688 (Windows Security Events connector; needs process creation and command-line auditing enabled)
+// Severity: High
+// False positives: Disk imaging, forensic and backup tools
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = Computer, Account = SubjectUserName
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+SecurityEvent
+| where TimeGenerated > ago(1d)
+| where EventID == 4688
+| where CommandLine contains "\\.\\PhysicalDrive"
+| project TimeGenerated, Computer, SubjectUserName, ParentProcessName, NewProcessName, CommandLine

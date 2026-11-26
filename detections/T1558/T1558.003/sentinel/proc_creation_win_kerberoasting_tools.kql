@@ -1,0 +1,12 @@
+// Title: Kerberoasting Tool Command Line on Windows
+// ATT&CK: T1558.003 | Tactic: CredentialAccess | Sigma id: 7b7e9524-9458-45f6-abd8-c011c29b406c
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: High
+// False positives: Penetration tests and red-team exercises
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where ProcessCommandLine contains " kerberoast" or ProcessCommandLine contains "Invoke-Kerberoast"
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

@@ -1,0 +1,12 @@
+// Title: File Downloaded to a Temporary Directory with curl or wget
+// ATT&CK: T1105 | Tactic: CommandAndControl | Sigma id: 43c10f7b-83b4-483c-b6a5-1cb041a21e6d
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Low
+// False positives: Installers and scripts that download into /tmp
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where (FolderPath endswith "/curl" or FolderPath endswith "/wget") and (ProcessCommandLine contains "/tmp/" or ProcessCommandLine contains "/var/tmp/" or ProcessCommandLine contains "/dev/shm/")
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

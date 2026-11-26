@@ -1,0 +1,25 @@
+title: 'Silver Ticket Forging Command on Windows'
+id: c458ddb4-8f87-4efd-86a1-3acf4aacd3b8
+status: experimental
+description: 'Detects command lines that forge a service ticket with a service account key: Mimikatz kerberos::golden with /service and Rubeus silver.'
+references:
+  - https://attack.mitre.org/techniques/T1558/002/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.credential-access
+  - attack.t1558.002
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_mimikatz_cmd:
+    CommandLine|contains: 'kerberos::golden'
+  selection_mimikatz_service:
+    CommandLine|contains: '/service:'
+  selection_rubeus:
+    CommandLine|contains: ' silver /'
+  condition: (selection_mimikatz_cmd and selection_mimikatz_service) or selection_rubeus
+falsepositives:
+  - 'Penetration tests and red-team exercises'
+level: high

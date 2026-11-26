@@ -1,0 +1,8 @@
+```Title: Outlook Folder Home Page Configured (raw Sysmon events)```
+```ATT&CK: T1137.004 | Severity: high | Sigma id: 0be36d2d-5f3f-449a-94a7-f606648a82c2```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Rare legacy configurations that use Outlook folder home pages```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(CommandLine="*\\Outlook\\WebView\\*")
+| table _time host User ParentImage Image CommandLine

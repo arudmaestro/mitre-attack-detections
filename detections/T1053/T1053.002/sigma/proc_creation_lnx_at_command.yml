@@ -1,0 +1,23 @@
+title: 'at Job Scheduler Used on Linux'
+id: 93d94ab2-ada9-4201-b91a-3139b1d9994f
+status: experimental
+description: 'Detects use of the at command to schedule one-time jobs.'
+references:
+  - https://attack.mitre.org/techniques/T1053/002/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.execution
+  - attack.persistence
+  - attack.privilege-escalation
+  - attack.t1053.002
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection:
+    Image|endswith: '/at'
+  condition: selection
+falsepositives:
+  - 'Administrators scheduling one-time maintenance jobs'
+level: low

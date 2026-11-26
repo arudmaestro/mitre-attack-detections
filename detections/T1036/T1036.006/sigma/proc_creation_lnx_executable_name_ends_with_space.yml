@@ -1,0 +1,21 @@
+title: 'Executable File Name Ending with a Space'
+id: 1a3a38fb-1ff2-41bf-bb25-55a2c503b4da
+status: experimental
+description: 'Detects Linux processes whose executable path ends with a space, a trick that makes a binary look like a document (e.g. ''report.txt '').'
+references:
+  - https://attack.mitre.org/techniques/T1036/006/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.stealth
+  - attack.t1036.006
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection:
+    Image|endswith: ' '
+  condition: selection
+falsepositives:
+  - 'None expected'
+level: medium

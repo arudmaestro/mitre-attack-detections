@@ -1,0 +1,8 @@
+```Title: Network Connection on VNC Ports (raw Sysmon events)```
+```ATT&CK: T1021.005 | Severity: low | Sigma id: 91a9d91b-5582-4345-b632-69aec1ebc4ec```
+```Data source: Sysmon EventCode 3 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Approved VNC remote support tools and jump hosts```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity low.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=3
+(DestinationPort IN (5900, 5901, 5902, 5903))
+| table _time host User Image Protocol Initiated SourceIp SourcePort DestinationIp DestinationPort

@@ -1,0 +1,8 @@
+```Title: Safe DLL Search Mode Disabled (raw Sysmon events)```
+```ATT&CK: T1574.001 | Severity: high | Sigma id: 1d0a300f-4f7d-4585-9728-63b8ea793bd3```
+```Data source: Sysmon EventCode 13 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: None expected```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=13
+(TargetObject="*\\Control\\Session Manager\\SafeDllSearchMode" Details="DWORD (0x00000000)")
+| table _time host User Image EventType TargetObject Details

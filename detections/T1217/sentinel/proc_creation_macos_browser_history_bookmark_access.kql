@@ -1,0 +1,12 @@
+// Title: Browser Bookmarks or History Read from the Command Line on macOS
+// ATT&CK: T1217 | Tactic: Discovery | Sigma id: 8615f463-c2d6-419a-929f-f35ee4a45ad1
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Low
+// False positives: Backup and browser-migration scripts
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where ProcessCommandLine contains "/Library/Safari/History.db" or ProcessCommandLine contains "/Library/Safari/Bookmarks.plist" or ProcessCommandLine contains "/Google/Chrome/Default/History" or ProcessCommandLine contains "/Google/Chrome/Default/Bookmarks" or ProcessCommandLine contains "/places.sqlite"
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

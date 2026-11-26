@@ -1,0 +1,13 @@
+// Title: AWS EC2 Root Volume Replaced (Instance Reverted)
+// ATT&CK: T1578.004 | Tactic: DefenseImpairment | Sigma id: 06f946e5-3a46-451c-a1af-d2cbdd8050a9
+// Data source: AWSCloudTrail (Amazon Web Services connector)
+// Severity: Medium
+// False positives: Operations teams restoring instances from snapshots
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Account = UserIdentityArn, IP = SourceIpAddress
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+AWSCloudTrail
+| where TimeGenerated > ago(1d)
+| where EventSource == "ec2.amazonaws.com"
+| where EventName == "CreateReplaceRootVolumeTask"
+| project TimeGenerated, EventSource, EventName, UserIdentityArn, SourceIpAddress, AWSRegion, ErrorCode, RequestParameters

@@ -1,0 +1,45 @@
+title: 'Failed Windows logon (4625)'
+id: a7de72a1-e3a0-427d-acf0-1a72d1b48184
+name: win_security_failed_logons_single_account_events
+status: experimental
+description: 'Base events for: Many Failed Logons for One Account'
+references:
+  - https://attack.mitre.org/techniques/T1110/001/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.credential-access
+  - attack.t1110.001
+logsource:
+  product: windows
+  service: security
+detection:
+  selection:
+    EventID: 4625
+  condition: selection
+level: informational
+---
+title: 'Many Failed Logons for One Account'
+id: ea8a0a2b-0486-4175-b285-bd5df74e3f5f
+status: experimental
+description: 'Detects 10 or more failed Windows logons (4625) for the same account within 10 minutes, a sign of password guessing.'
+references:
+  - https://attack.mitre.org/techniques/T1110/001/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.credential-access
+  - attack.t1110.001
+correlation:
+  type: event_count
+  rules:
+    - win_security_failed_logons_single_account_events
+  group-by:
+    - TargetUserName
+  timespan: 10m
+  condition:
+    gte: 10
+falsepositives:
+  - 'Users with a stale password on a phone or mapped drive'
+  - 'Misconfigured services or scheduled tasks'
+level: medium

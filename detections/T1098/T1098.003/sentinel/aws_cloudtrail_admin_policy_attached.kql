@@ -1,0 +1,14 @@
+// Title: AWS AdministratorAccess Policy Attached
+// ATT&CK: T1098.003 | Tactic: Persistence, PrivilegeEscalation | Sigma id: 8acbc859-92b7-486c-8129-28ef852e900c
+// Data source: AWSCloudTrail (Amazon Web Services connector)
+// Severity: High
+// False positives: Administrators granting admin rights through change control
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Account = UserIdentityArn, IP = SourceIpAddress
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+AWSCloudTrail
+| where TimeGenerated > ago(1d)
+| where EventSource == "iam.amazonaws.com"
+| where EventName in ("AttachUserPolicy", "AttachGroupPolicy", "AttachRolePolicy")
+| where RequestParameters contains "policy/AdministratorAccess"
+| project TimeGenerated, EventSource, EventName, UserIdentityArn, SourceIpAddress, AWSRegion, ErrorCode, RequestParameters

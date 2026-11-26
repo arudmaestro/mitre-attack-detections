@@ -1,0 +1,26 @@
+title: 'System PATH Changed to Include a Temp, Public or Downloads Folder'
+id: 055e1086-5a92-4a83-bb1a-da0eca3675e1
+status: experimental
+description: 'Detects the machine-wide Path environment variable set to include a Temp, public profile or Downloads folder; programs started by name can then run an attacker''s executable placed there.'
+references:
+  - https://attack.mitre.org/techniques/T1574/007/
+author: Detection Engineering Team
+date: 2026-11-25
+tags:
+  - attack.stealth
+  - attack.execution
+  - attack.t1574.007
+logsource:
+  category: registry_set
+  product: windows
+detection:
+  selection:
+    TargetObject|endswith: '\Control\Session Manager\Environment\Path'
+    Details|contains:
+      - '\AppData\Local\Temp'
+      - '\Users\Public'
+      - '\Downloads'
+  condition: selection
+falsepositives:
+  - 'Badly written installers that add their temporary folder to the Path'
+level: high

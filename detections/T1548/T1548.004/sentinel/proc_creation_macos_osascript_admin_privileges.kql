@@ -1,0 +1,12 @@
+// Title: osascript Shell Script Run with Administrator Privileges
+// ATT&CK: T1548.004 | Tactic: PrivilegeEscalation | Sigma id: 6c47ea57-e286-4551-b02b-73f27ae8144f
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Medium
+// False positives: Installers and admin scripts that ask for elevation with osascript
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where FolderPath endswith "/osascript" and ProcessCommandLine contains "with administrator privileges"
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

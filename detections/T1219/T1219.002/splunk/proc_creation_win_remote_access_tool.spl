@@ -1,0 +1,8 @@
+```Title: Remote Access Tool Executed on Windows (raw Sysmon events)```
+```ATT&CK: T1219.002 | Severity: medium | Sigma id: 3dc648fb-8e5f-453e-b0e7-d68cb7a9fde9```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Approved remote support and RMM tools (allowlist the tools and hosts you use)```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(Image IN ("*\\AnyDesk.exe", "*\\TeamViewer.exe", "*\\TeamViewer_Service.exe", "*\\ScreenConnect.ClientService.exe", "*\\ScreenConnect.WindowsClient.exe", "*\\rustdesk.exe", "*\\AteraAgent.exe", "*\\SRService.exe", "*\\client32.exe", "*\\rutserv.exe", "*\\MeshAgent.exe", "*\\Supremo.exe", "*\\AA_v3.exe"))
+| table _time host User ParentImage Image CommandLine

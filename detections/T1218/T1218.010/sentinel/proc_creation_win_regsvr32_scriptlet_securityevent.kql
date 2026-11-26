@@ -1,0 +1,13 @@
+// Title: Regsvr32 Loading a Scriptlet (Squiblydoo)
+// ATT&CK: T1218.010 | Tactic: Stealth | Sigma id: 9e5788da-468a-48b3-bddb-418d8537ecb8
+// Data source: SecurityEvent 4688 (Windows Security Events connector; needs process creation and command-line auditing enabled)
+// Severity: High
+// False positives: None expected
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = Computer, Account = SubjectUserName
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+SecurityEvent
+| where TimeGenerated > ago(1d)
+| where EventID == 4688
+| where NewProcessName endswith "\\regsvr32.exe" and (CommandLine contains "scrobj.dll" or CommandLine contains "/i:http" or CommandLine contains "-i:http")
+| project TimeGenerated, Computer, SubjectUserName, ParentProcessName, NewProcessName, CommandLine

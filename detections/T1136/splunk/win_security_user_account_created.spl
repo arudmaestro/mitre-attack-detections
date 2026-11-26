@@ -1,0 +1,8 @@
+```Title: User Account Created (Windows Security 4720) (raw Windows Security events)```
+```ATT&CK: T1136 | Severity: low | Sigma id: 48b471e6-f2a5-41db-874d-77428cb58fbf```
+```Data source: Windows Security EventCode 4720 (Splunk Add-on for Microsoft Windows). Change index to where your Security logs live.```
+```False positives: Normal account provisioning by administrators and identity management systems```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity low.```
+index=wineventlog source IN ("XmlWinEventLog:Security", "WinEventLog:Security")
+(EventCode=4720)
+| table _time host SubjectUserName SubjectDomainName TargetUserName TargetDomainName

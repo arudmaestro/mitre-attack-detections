@@ -1,0 +1,12 @@
+// Title: Kernel Extension Loaded on macOS
+// ATT&CK: T1547.006 | Tactic: Persistence, PrivilegeEscalation | Sigma id: fe80d3f5-d967-464a-b591-e24f0524d375
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Medium
+// False positives: Hardware and security vendors installing kernel extensions
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where FolderPath endswith "/kextload" or (FolderPath endswith "/kmutil" and ProcessCommandLine contains "load")
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

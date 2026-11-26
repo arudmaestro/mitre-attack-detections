@@ -1,0 +1,12 @@
+// Title: Verclsid Started by a Process Other than Explorer
+// ATT&CK: T1218.012 | Tactic: Stealth | Sigma id: fb87e55a-d68c-4be6-b131-14ff0cae71c2
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Low
+// False positives: Other shell hosts (file dialogs in applications) that verify shell extensions
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where (FolderPath endswith "\\verclsid.exe" and (ProcessCommandLine contains "/S" and ProcessCommandLine contains "/C")) and (not(InitiatingProcessFolderPath endswith "\\explorer.exe"))
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

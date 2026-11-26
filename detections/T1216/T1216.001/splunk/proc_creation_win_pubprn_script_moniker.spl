@@ -1,0 +1,8 @@
+```Title: PubPrn.vbs Used to Run a Remote Script (raw Sysmon events)```
+```ATT&CK: T1216.001 | Severity: high | Sigma id: 44fd4bff-cfcc-461d-b7bb-114a35d3fa36```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: None expected: printer publishing does not use script: monikers```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(CommandLine="*pubprn.vbs*" CommandLine="*script:*")
+| table _time host User ParentImage Image CommandLine

@@ -1,0 +1,39 @@
+title: Suspicious Scheduled Task Creation via schtasks
+id: e0ef03a7-1b14-406e-8caa-7064d070cac1
+status: experimental
+description: Detects schtasks.exe creating a task that runs as SYSTEM, at logon or startup, or launches scripts or user-writable paths.
+references:
+  - https://attack.mitre.org/techniques/T1053/005/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.execution
+  - attack.persistence
+  - attack.privilege-escalation
+  - attack.t1053.005
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_img:
+    Image|endswith:
+      - '\schtasks.exe'
+  selection_cli:
+    CommandLine|contains:
+      - ' /create '
+  selection_cli2:
+    CommandLine|contains:
+      - '/ru system'
+      - '/sc onlogon'
+      - '/sc onstart'
+      - '\Users\Public\'
+      - '\AppData\'
+      - '\Temp\'
+      - 'powershell'
+      - 'wscript'
+      - 'mshta'
+  condition: all of selection_*
+falsepositives:
+  - Software installers and updaters creating scheduled tasks
+  - Admin automation
+level: medium

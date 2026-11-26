@@ -1,0 +1,8 @@
+```Title: ClickOnce Application Launched via dfshim or dfsvc (raw Sysmon events)```
+```ATT&CK: T1127.002 | Severity: low | Sigma id: c955ed70-a56d-4d37-b7a5-f1fc861791d6```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Legitimate ClickOnce business applications```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity low.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+((Image="*\\rundll32.exe" CommandLine="*dfshim*" CommandLine="*ShOpenVerbApplication*") OR ParentImage="*\\dfsvc.exe")
+| table _time host User ParentImage Image CommandLine

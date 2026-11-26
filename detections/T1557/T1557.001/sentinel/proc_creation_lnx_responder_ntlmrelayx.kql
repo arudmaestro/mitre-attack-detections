@@ -1,0 +1,12 @@
+// Title: Responder or NTLM Relay Tool Executed on Linux
+// ATT&CK: T1557.001 | Tactic: CredentialAccess, Collection | Sigma id: 63421887-26e2-454b-9b35-395e1500c055
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: High
+// False positives: Penetration tests and red-team exercises
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where (ProcessCommandLine contains "Responder.py" or ProcessCommandLine contains "ntlmrelayx" or ProcessCommandLine contains "MultiRelay") or FolderPath endswith "/responder"
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

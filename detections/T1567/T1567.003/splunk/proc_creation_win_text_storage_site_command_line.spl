@@ -1,0 +1,8 @@
+```Title: Text Storage Site Referenced on the Command Line on Windows (raw Sysmon events)```
+```ATT&CK: T1567.003 | Severity: medium | Sigma id: 76193ea9-9d58-4fbb-bc92-997dec025dba```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Developers and users opening paste links from the command line or scripts```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(CommandLine IN ("*pastebin.com*", "*paste.ee*", "*hastebin.com*", "*rentry.co*", "*dpaste.com*", "*paste.rs*", "*ghostbin.*"))
+| table _time host User ParentImage Image CommandLine

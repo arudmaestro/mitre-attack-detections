@@ -1,0 +1,12 @@
+// Title: Event Log Channel or Audit Policy Disabled from the Command Line
+// ATT&CK: T1685.001 | Tactic: DefenseImpairment | Sigma id: 201af407-0223-4f6f-a4ce-b304dafbbc7c
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: High
+// False positives: Administrators tuning audit policy (should go through GPO)
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where (FolderPath endswith "\\wevtutil.exe" and (ProcessCommandLine contains "/e:false" or ProcessCommandLine contains "/enabled:false")) or (FolderPath endswith "\\auditpol.exe" and (ProcessCommandLine contains "/clear" or ProcessCommandLine contains "/remove" or ProcessCommandLine contains "disable")) or ((FolderPath endswith "\\sc.exe" or FolderPath endswith "\\net.exe" or FolderPath endswith "\\net1.exe") and ProcessCommandLine contains "eventlog" and (ProcessCommandLine contains " stop" or ProcessCommandLine contains "disabled"))
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

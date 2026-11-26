@@ -1,0 +1,14 @@
+// Title: LSA Security Support Providers Changed
+// ATT&CK: T1547.005 | Tactic: Persistence, PrivilegeEscalation | Sigma id: 8032985f-bc9e-476a-a5d6-f01c8fa88409
+// Data source: DeviceRegistryEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: High
+// False positives: Security or authentication software installing an SSP
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = InitiatingProcessAccountName, RegistryKey = RegistryKey, RegistryValue = RegistryValueName
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceRegistryEvents
+| where TimeGenerated > ago(1d)
+| where ActionType == "RegistryValueSet"
+| extend TargetObject = strcat(RegistryKey, "\\", RegistryValueName)
+| where (TargetObject endswith "\\Control\\Lsa\\Security Packages" or TargetObject endswith "\\Control\\Lsa\\OSConfig\\Security Packages") and (not(InitiatingProcessFolderPath endswith "\\lsass.exe"))
+| project TimeGenerated, DeviceName, ActionType, InitiatingProcessAccountName, InitiatingProcessFolderPath, InitiatingProcessCommandLine, RegistryKey, RegistryValueName, RegistryValueType, RegistryValueData

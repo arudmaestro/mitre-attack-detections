@@ -1,0 +1,33 @@
+title: 'Quarantine Attribute Removed or Gatekeeper Disabled'
+id: 2676faf7-af05-4156-a616-d03ed635a788
+status: experimental
+description: 'Detects xattr deleting the com.apple.quarantine attribute (so Gatekeeper never checks the file) and spctl disabling Gatekeeper (--master-disable, --global-disable).'
+references:
+  - https://attack.mitre.org/techniques/T1553/001/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.defense-impairment
+  - attack.t1553.001
+logsource:
+  category: process_creation
+  product: macos
+detection:
+  selection_xattr_img:
+    Image|endswith: '/xattr'
+  selection_xattr_attr:
+    CommandLine|contains: 'com.apple.quarantine'
+  selection_xattr_delete:
+    CommandLine|contains:
+      - ' -d'
+      - ' -rd'
+  selection_spctl:
+    Image|endswith: '/spctl'
+    CommandLine|contains:
+      - '--master-disable'
+      - '--global-disable'
+      - '--disable'
+  condition: (all of selection_xattr_*) or selection_spctl
+falsepositives:
+  - 'Developers removing quarantine from their own builds; installers'
+level: medium

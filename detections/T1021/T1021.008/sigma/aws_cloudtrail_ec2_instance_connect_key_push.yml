@@ -1,0 +1,24 @@
+title: 'AWS EC2 Instance Connect SSH Key Pushed'
+id: 624e5dde-bedb-4584-93a8-78736fb2b238
+status: experimental
+description: 'Detects EC2 Instance Connect pushing a temporary SSH public key to an instance or its serial console, enabling direct login.'
+references:
+  - https://attack.mitre.org/techniques/T1021/008/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.lateral-movement
+  - attack.t1021.008
+logsource:
+  product: aws
+  service: cloudtrail
+detection:
+  selection:
+    eventSource: 'ec2-instance-connect.amazonaws.com'
+    eventName:
+      - 'SendSSHPublicKey'
+      - 'SendSerialConsoleSSHPublicKey'
+  condition: selection
+falsepositives:
+  - Administrators using EC2 Instance Connect or the serial console
+level: low

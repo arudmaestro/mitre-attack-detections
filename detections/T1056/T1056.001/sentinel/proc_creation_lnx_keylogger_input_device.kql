@@ -1,0 +1,12 @@
+// Title: Keyboard Input Device Read or Linux Keylogger Executed
+// ATT&CK: T1056.001 | Tactic: Collection, CredentialAccess | Sigma id: 5ec48142-64e6-407b-b2f8-28f353e9b79e
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Medium
+// False positives: Input-device troubleshooting (evtest, libinput debug-events)
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where ProcessCommandLine contains "/dev/input/event" or FolderPath endswith "/logkeys"
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

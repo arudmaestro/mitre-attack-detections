@@ -1,0 +1,8 @@
+```Title: AWS Snapshot or Image Sharing Permissions Modified (AWS CloudTrail)```
+```ATT&CK: T1537 | Severity: medium | Sigma id: 74e13d4e-41e6-4a89-99f9-8317a5936630```
+```Data source: AWS CloudTrail (Splunk Add-on for AWS). Change index to where your CloudTrail data lives.```
+```False positives: Backup and AMI-sharing pipelines between your own accounts (allowlist their account IDs)```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=aws sourcetype="aws:cloudtrail"
+(eventSource IN ("ec2.amazonaws.com", "rds.amazonaws.com") eventName IN ("ModifySnapshotAttribute", "ModifyImageAttribute", "ModifyDBSnapshotAttribute", "ModifyDBClusterSnapshotAttribute"))
+| table _time eventSource eventName userIdentity.arn sourceIPAddress awsRegion errorCode

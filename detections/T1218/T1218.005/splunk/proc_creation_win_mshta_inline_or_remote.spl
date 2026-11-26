@@ -1,0 +1,8 @@
+```Title: Mshta Running Inline Script or a Remote HTA (raw Sysmon events)```
+```ATT&CK: T1218.005 | Severity: high | Sigma id: 39367e0f-a00e-43ef-b87c-65db84c8868a```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Legacy intranet applications delivered as remote HTA files```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(Image="*\\mshta.exe" CommandLine IN ("*javascript:*", "*vbscript:*", "*http://*", "*https://*"))
+| table _time host User ParentImage Image CommandLine

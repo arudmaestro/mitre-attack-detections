@@ -1,0 +1,23 @@
+title: 'Windows Firewall Profile Disabled in the Registry'
+id: 9ddb483d-2b03-4f36-bca7-968dfb9c6276
+status: experimental
+description: 'Detects EnableFirewall set to 0 under a FirewallPolicy profile (Domain, Standard / Private, Public), by netsh, PowerShell, Group Policy or direct registry writes.'
+references:
+  - https://attack.mitre.org/techniques/T1686/003/
+author: Detection Engineering Team
+date: 2026-11-25
+tags:
+  - attack.defense-impairment
+  - attack.t1686.003
+logsource:
+  category: registry_set
+  product: windows
+detection:
+  selection:
+    TargetObject|contains: '\FirewallPolicy\'
+    TargetObject|endswith: '\EnableFirewall'
+    Details: 'DWORD (0x00000000)'
+  condition: selection
+falsepositives:
+  - 'Group Policy deliberately turning off a profile; third-party firewalls replacing Windows Firewall'
+level: high

@@ -1,0 +1,53 @@
+title: 'Kerberos RC4 service ticket for a user service account (4769)'
+id: b81ab4a3-95ff-425b-8c67-7098f67b1445
+name: win_security_kerberoasting_many_services_events
+status: experimental
+description: 'Base events for: Kerberoasting: RC4 Service Tickets for Many Services from One Account'
+references:
+  - https://attack.mitre.org/techniques/T1558/003/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.credential-access
+  - attack.t1558.003
+logsource:
+  product: windows
+  service: security
+detection:
+  selection:
+    EventID: 4769
+    TicketEncryptionType: '0x17'
+    Status: '0x0'
+  filter_machine_service:
+    ServiceName|endswith: '$'
+  filter_krbtgt:
+    ServiceName: 'krbtgt'
+  filter_machine_requester:
+    TargetUserName|contains: '$@'
+  condition: selection and not filter_machine_service and not filter_krbtgt and not filter_machine_requester
+level: informational
+---
+title: 'Kerberoasting: RC4 Service Tickets for Many Services from One Account'
+id: e503c311-c550-4133-a40b-35ca5cce6c54
+status: experimental
+description: 'Detects one account requesting RC4 service tickets for at least 5 different user service accounts within 10 minutes, the pattern of Kerberoasting tools that request a ticket for every SPN.'
+references:
+  - https://attack.mitre.org/techniques/T1558/003/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.credential-access
+  - attack.t1558.003
+correlation:
+  type: value_count
+  rules:
+    - win_security_kerberoasting_many_services_events
+  group-by:
+    - TargetUserName
+  timespan: 10m
+  condition:
+    gte: 5
+    field: ServiceName
+falsepositives:
+  - 'Vulnerability scanners and monitoring tools that touch many legacy RC4 services'
+level: high

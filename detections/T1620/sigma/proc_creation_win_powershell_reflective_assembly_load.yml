@@ -1,0 +1,24 @@
+title: 'Reflective .NET Assembly or PE Load from the Command Line'
+id: c8e0debe-861a-4b7f-9625-16f54cc5f9fc
+status: experimental
+description: 'Detects command lines that load a .NET assembly from memory ([Reflection.Assembly]::Load, often with FromBase64String) or use Invoke-ReflectivePEInjection, so the payload never touches disk as a file.'
+references:
+  - https://attack.mitre.org/techniques/T1620/
+author: Detection Engineering Team
+date: 2026-11-25
+tags:
+  - attack.stealth
+  - attack.t1620
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'Reflection.Assembly]::Load('
+      - 'Assembly]::Load([Convert]::FromBase64String'
+      - 'Invoke-ReflectivePEInjection'
+  condition: selection
+falsepositives:
+  - 'Administration tools that load embedded assemblies from scripts (rare on a command line)'
+level: high

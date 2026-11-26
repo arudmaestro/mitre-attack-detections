@@ -1,0 +1,29 @@
+title: 'System Time Discovery on Windows'
+id: b816fce5-4c44-4396-a4bc-30598436a63b
+status: experimental
+description: 'Detects net time and w32tm time zone or remote time queries.'
+references:
+  - https://attack.mitre.org/techniques/T1124/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.discovery
+  - attack.t1124
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_net:
+    Image|endswith:
+      - '\net.exe'
+      - '\net1.exe'
+    CommandLine|contains: ' time'
+  selection_w32tm:
+    Image|endswith: '\w32tm.exe'
+    CommandLine|contains:
+      - '/tz'
+      - '/stripchart'
+  condition: 1 of selection_*
+falsepositives:
+  - 'Administrators and time-sync troubleshooting'
+level: low

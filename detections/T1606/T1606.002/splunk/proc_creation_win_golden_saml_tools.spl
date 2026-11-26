@@ -1,0 +1,8 @@
+```Title: Golden SAML Tool Command Line (raw Sysmon events)```
+```ATT&CK: T1606.002 | Severity: high | Sigma id: f86944e0-86bb-4b20-9e68-f5ca1ac0cc3a```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Penetration tests and red-team exercises```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(CommandLine IN ("*ADFSDump*", "*ADFSpoof*", "*shimit*", "*Export-AADIntADFSSigningCertificate*", "*Export-AADIntADFSCertificates*", "*New-AADIntSAMLToken*"))
+| table _time host User ParentImage Image CommandLine

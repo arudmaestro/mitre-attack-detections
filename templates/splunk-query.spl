@@ -1,0 +1,9 @@
+```Title: <Detection title> (raw Sysmon events)```
+```ATT&CK: Txxxx.xxx | Severity: medium```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: <benign causes>```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on host + command line, notable severity medium.```
+index=sysmon sourcetype="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+Image IN ("*\\example.exe")
+CommandLine IN ("*<value>*")
+| table _time host User ParentImage Image CommandLine

@@ -1,0 +1,12 @@
+// Title: Service Installed with a Script Host or a File in a User Folder (4697)
+// ATT&CK: T1543.003 | Tactic: Persistence, PrivilegeEscalation | Sigma id: d8dcdc7a-4793-4622-af94-b97e193878a6
+// Data source: SecurityEvent 4697 (Windows Security Events connector)
+// Severity: High
+// False positives: Administration tools that install temporary services running scripts
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = Computer, Account = SubjectUserName
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+SecurityEvent
+| where TimeGenerated > ago(1d)
+| where EventID == 4697 and (ServiceFileName contains "powershell" or ServiceFileName contains "pwsh" or ServiceFileName contains "mshta" or ServiceFileName contains "wscript" or ServiceFileName contains "cscript" or ServiceFileName contains "regsvr32" or ServiceFileName contains "cmd.exe /c" or ServiceFileName contains "cmd /c" or ServiceFileName contains "%COMSPEC%" or ServiceFileName contains "\\AppData\\Local\\Temp\\" or ServiceFileName contains "\\Users\\Public\\")
+| project TimeGenerated, Computer, SubjectUserName, SubjectDomainName, ServiceName, ServiceFileName, ServiceType, ServiceStartType, ServiceAccount

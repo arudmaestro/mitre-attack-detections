@@ -1,0 +1,12 @@
+// Title: DCSync - Directory Replication Requested by Non-DC Account
+// ATT&CK: T1003.006 | Tactic: CredentialAccess | Sigma id: 594054d9-0e78-4b52-80a5-99c4ebcfd84c
+// Data source: SecurityEvent 4662 (Windows Security Events connector)
+// Severity: High
+// False positives: Azure AD / Entra Connect sync accounts not named MSOL_*; Other legitimate replication tools (e.g. some identity or backup products)
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = Computer, Account = SubjectUserName
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+SecurityEvent
+| where TimeGenerated > ago(1d)
+| where (EventID == 4662 and AccessMask =~ "0x100" and (Properties contains "1131f6aa-9c07-11d1-f79f-00c04fc2dcd2" or Properties contains "1131f6ad-9c07-11d1-f79f-00c04fc2dcd2" or Properties contains "89e95b76-444d-4c62-991a-0facbeda640c")) and (not((SubjectUserName endswith "$" or SubjectUserName startswith "MSOL_")))
+| project TimeGenerated, Computer, SubjectUserName, SubjectDomainName, ObjectName, AccessMask, Properties

@@ -1,0 +1,27 @@
+title: 'Golden SAML Tool Command Line'
+id: f86944e0-86bb-4b20-9e68-f5ca1ac0cc3a
+status: experimental
+description: 'Detects tools and commands that steal the AD FS token-signing key or forge SAML tokens: ADFSDump, ADFSpoof, shimit, and AADInternals Export-AADIntADFSSigningCertificate / New-AADIntSAMLToken.'
+references:
+  - https://attack.mitre.org/techniques/T1606/002/
+author: Detection Engineering Team
+date: 2026-11-25
+tags:
+  - attack.credential-access
+  - attack.t1606.002
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'ADFSDump'
+      - 'ADFSpoof'
+      - 'shimit'
+      - 'Export-AADIntADFSSigningCertificate'
+      - 'Export-AADIntADFSCertificates'
+      - 'New-AADIntSAMLToken'
+  condition: selection
+falsepositives:
+  - 'Penetration tests and red-team exercises'
+level: high

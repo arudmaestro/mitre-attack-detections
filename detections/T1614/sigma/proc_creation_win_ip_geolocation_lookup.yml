@@ -1,0 +1,28 @@
+title: 'IP Geolocation Service Queried from the Command Line on Windows'
+id: 48355107-b546-42cf-8351-cb112f86e6e2
+status: experimental
+description: 'Detects a command line that contains an IP geolocation API (ipapi.co, ipwho.is, geoplugin.net, freegeoip.app, ipgeolocation.io), used by malware to decide whether to run in the victim''s country.'
+references:
+  - https://attack.mitre.org/techniques/T1614/
+author: Detection Engineering Team
+date: 2026-11-25
+tags:
+  - attack.discovery
+  - attack.t1614
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'ipapi.co'
+      - 'ipwho.is'
+      - 'geoplugin.net'
+      - 'freegeoip.app'
+      - 'ipgeolocation.io'
+      - 'extreme-ip-lookup.com'
+      - 'ip-api.io'
+  condition: selection
+falsepositives:
+  - 'Scripts and tools that look up their own location'
+level: medium

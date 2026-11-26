@@ -1,0 +1,16 @@
+// Title: Kerberoasting: RC4 Service Tickets for Many Services from One Account
+// ATT&CK: T1558.003 | Tactic: CredentialAccess | Sigma id: e503c311-c550-4133-a40b-35ca5cce6c54
+// Data source: SecurityEvent 4769 (Windows Security Events connector)
+// Severity: High
+// False positives: Vulnerability scanners and monitoring tools that touch many legacy RC4 services
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: map the group-by fields: TargetUserName
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+SecurityEvent
+| where TimeGenerated > ago(1d)
+| where EventID == 4769
+| extend TicketEncryptionType = extract(@'<Data Name="TicketEncryptionType">([^<]*)</Data>', 1, EventData)
+| extend TicketOptions = extract(@'<Data Name="TicketOptions">([^<]*)</Data>', 1, EventData)
+| where (TicketEncryptionType =~ "0x17" and EventID == 4769 and Status =~ "0x0") and (not(ServiceName endswith "$")) and (not(ServiceName =~ "krbtgt")) and (not(TargetUserName contains "$@"))
+| summarize value_count = dcount(ServiceName) by bin(TimeGenerated, 10m), TargetUserName
+| where value_count >= 5

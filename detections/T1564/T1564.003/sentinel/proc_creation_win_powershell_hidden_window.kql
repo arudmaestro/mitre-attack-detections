@@ -1,0 +1,12 @@
+// Title: PowerShell Started with a Hidden Window
+// ATT&CK: T1564.003 | Tactic: Stealth | Sigma id: aedb075e-4267-4bb3-af0b-3de5f16055a4
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Low
+// False positives: Logon scripts, SCCM/Intune and monitoring agents that start PowerShell hidden
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where (FolderPath endswith "\\powershell.exe" or FolderPath endswith "\\pwsh.exe") and ProcessCommandLine contains " -w" and ProcessCommandLine contains "hidden"
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

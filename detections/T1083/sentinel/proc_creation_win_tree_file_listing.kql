@@ -1,0 +1,12 @@
+// Title: Directory Tree Listing with tree /f
+// ATT&CK: T1083 | Tactic: Discovery | Sigma id: 18bf41f3-faad-4eb9-bbaf-f35206fb45fa
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Low
+// False positives: Users and administrators documenting folder contents
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where FolderPath endswith "\\tree.com" and ProcessCommandLine contains "/f"
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

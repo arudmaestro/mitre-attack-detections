@@ -1,0 +1,8 @@
+```Title: AWS EC2 Root Volume Replaced (Instance Reverted) (AWS CloudTrail)```
+```ATT&CK: T1578.004 | Severity: medium | Sigma id: 06f946e5-3a46-451c-a1af-d2cbdd8050a9```
+```Data source: AWS CloudTrail (Splunk Add-on for AWS). Change index to where your CloudTrail data lives.```
+```False positives: Operations teams restoring instances from snapshots```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=aws sourcetype="aws:cloudtrail"
+(eventSource="ec2.amazonaws.com" eventName="CreateReplaceRootVolumeTask")
+| table _time eventSource eventName userIdentity.arn sourceIPAddress awsRegion errorCode

@@ -1,0 +1,12 @@
+// Title: Security Product Service Stopped, Disabled or Deleted
+// ATT&CK: T1685 | Tactic: DefenseImpairment | Sigma id: baff6b95-d346-4dfb-ae70-fe941b05b481
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: High
+// False positives: Product upgrades and uninstallers run by IT
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where ((FolderPath endswith "\\sc.exe" or FolderPath endswith "\\net.exe" or FolderPath endswith "\\net1.exe" or FolderPath endswith "\\taskkill.exe") and (ProcessCommandLine contains " stop " or ProcessCommandLine contains " delete " or ProcessCommandLine contains " config " or ProcessCommandLine contains "/im ") and (ProcessCommandLine contains "WinDefend" or ProcessCommandLine contains "WdNisSvc" or ProcessCommandLine contains "MsMpEng" or ProcessCommandLine contains " Sense" or ProcessCommandLine contains "SepMasterService" or ProcessCommandLine contains "CSFalconService" or ProcessCommandLine contains "SentinelAgent" or ProcessCommandLine contains "cbdefense" or ProcessCommandLine contains "Sysmon")) or (FolderPath endswith "\\fltMC.exe" and ProcessCommandLine contains "unload")
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

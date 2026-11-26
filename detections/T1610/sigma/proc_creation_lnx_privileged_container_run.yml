@@ -1,0 +1,34 @@
+title: 'Privileged or Host-Mounting Container Started'
+id: cf713274-3c33-4ed0-949b-dc787c625c8c
+status: experimental
+description: 'Detects docker, podman or nerdctl run with --privileged, the host''s root file system mounted (-v /:/...), or the host PID namespace; such containers can control the host and are used for breakout and persistence.'
+references:
+  - https://attack.mitre.org/techniques/T1610/
+author: Detection Engineering Team
+date: 2026-11-25
+tags:
+  - attack.execution
+  - attack.t1610
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection_img:
+    Image|endswith:
+      - '/docker'
+      - '/podman'
+      - '/nerdctl'
+  selection_run:
+    CommandLine|contains: ' run '
+  selection_flags:
+    CommandLine|contains:
+      - '--privileged'
+      - ' -v /:/'
+      - '--volume /:/'
+      - '--volume=/:/'
+      - '--pid=host'
+      - '--pid host'
+  condition: all of selection_*
+falsepositives:
+  - 'Monitoring agents and system containers deployed with host access (they usually start from orchestration, not the CLI)'
+level: high

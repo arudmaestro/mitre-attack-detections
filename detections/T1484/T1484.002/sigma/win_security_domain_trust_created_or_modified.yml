@@ -1,0 +1,24 @@
+title: 'Active Directory Domain Trust Created or Modified'
+id: 681ad72f-5173-4349-9d32-4695e938c122
+status: experimental
+description: 'Detects a new domain trust (4706) or a change to trusted domain information (4716) on a domain controller.'
+references:
+  - https://attack.mitre.org/techniques/T1484/002/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.defense-impairment
+  - attack.privilege-escalation
+  - attack.t1484.002
+logsource:
+  product: windows
+  service: security
+detection:
+  selection:
+    EventID:
+      - 4706
+      - 4716
+  condition: selection
+falsepositives:
+  - 'Planned trust creation or changes during mergers and migrations'
+level: high

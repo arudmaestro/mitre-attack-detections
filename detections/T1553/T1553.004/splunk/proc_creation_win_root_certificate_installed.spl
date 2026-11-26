@@ -1,0 +1,8 @@
+```Title: Root Certificate Installed from the Command Line on Windows (raw Sysmon events)```
+```ATT&CK: T1553.004 | Severity: medium | Sigma id: 73aea01a-f2d6-4a83-8791-04d9827e0bb0```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Enterprise PKI deployment and proxy / TLS inspection software installing their root```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+((Image="*\\certutil.exe" CommandLine="*addstore*") OR CommandLine="*Import-Certificate*" CommandLine="*root*")
+| table _time host User ParentImage Image CommandLine

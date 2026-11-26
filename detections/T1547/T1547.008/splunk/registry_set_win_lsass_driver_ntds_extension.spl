@@ -1,0 +1,8 @@
+```Title: LSASS Extension DLL Registered under NTDS (raw Sysmon events)```
+```ATT&CK: T1547.008 | Severity: high | Sigma id: 84bce0e3-796c-431e-bafc-20fe57d8061f```
+```Data source: Sysmon EventCode 13 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: None expected```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=13
+(TargetObject IN ("*\\Services\\NTDS\\DirectoryServiceExtPt", "*\\Services\\NTDS\\LsaDbExtPt"))
+| table _time host User Image EventType TargetObject Details

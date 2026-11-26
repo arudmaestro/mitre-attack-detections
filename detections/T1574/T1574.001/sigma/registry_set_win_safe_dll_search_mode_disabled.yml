@@ -1,0 +1,23 @@
+title: 'Safe DLL Search Mode Disabled'
+id: 1d0a300f-4f7d-4585-9728-63b8ea793bd3
+status: experimental
+description: 'Detects SafeDllSearchMode set to 0, which makes Windows search the current directory before system folders when loading DLLs, making DLL search-order hijacking easier.'
+references:
+  - https://attack.mitre.org/techniques/T1574/001/
+author: Detection Engineering Team
+date: 2026-11-25
+tags:
+  - attack.stealth
+  - attack.execution
+  - attack.t1574.001
+logsource:
+  category: registry_set
+  product: windows
+detection:
+  selection:
+    TargetObject|endswith: '\Control\Session Manager\SafeDllSearchMode'
+    Details: 'DWORD (0x00000000)'
+  condition: selection
+falsepositives:
+  - 'None expected'
+level: high

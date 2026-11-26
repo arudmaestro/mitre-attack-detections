@@ -1,0 +1,26 @@
+title: 'Virtual Machines Enumerated on a Windows Host'
+id: 0bdbb15f-cd22-4348-a15d-6c25a2bacca9
+status: experimental
+description: 'Detects Hyper-V Get-VM, VirtualBox VBoxManage list and VMware vmrun list, used to find virtual machines to stop or encrypt (e.g. before ransomware).'
+references:
+  - https://attack.mitre.org/techniques/T1673/
+author: Detection Engineering Team
+date: 2026-11-25
+tags:
+  - attack.discovery
+  - attack.t1673
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'Get-VM'
+      - 'VBoxManage list'
+      - 'VBoxManage.exe list'
+      - 'vmrun list'
+      - 'vmrun.exe list'
+  condition: selection
+falsepositives:
+  - 'Hyper-V and virtualisation administrators, backup software'
+level: low

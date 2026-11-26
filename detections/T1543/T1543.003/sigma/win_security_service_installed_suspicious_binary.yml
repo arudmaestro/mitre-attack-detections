@@ -1,0 +1,34 @@
+title: 'Service Installed with a Script Host or a File in a User Folder (4697)'
+id: d8dcdc7a-4793-4622-af94-b97e193878a6
+status: experimental
+description: 'Detects Security event 4697 (a service was installed) where the service file name uses PowerShell, cmd /c, %COMSPEC% (as used by remote-execution tools), mshta, script hosts, regsvr32 or a file in Temp or the public profile.'
+references:
+  - https://attack.mitre.org/techniques/T1543/003/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.persistence
+  - attack.privilege-escalation
+  - attack.t1543.003
+logsource:
+  product: windows
+  service: security
+detection:
+  selection:
+    EventID: 4697
+    ServiceFileName|contains:
+      - 'powershell'
+      - 'pwsh'
+      - 'mshta'
+      - 'wscript'
+      - 'cscript'
+      - 'regsvr32'
+      - 'cmd.exe /c'
+      - 'cmd /c'
+      - '%COMSPEC%'
+      - '\AppData\Local\Temp\'
+      - '\Users\Public\'
+  condition: selection
+falsepositives:
+  - 'Administration tools that install temporary services running scripts'
+level: high

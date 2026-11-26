@@ -1,0 +1,8 @@
+```Title: Ownership of System Files Taken with takeown (raw Sysmon events)```
+```ATT&CK: T1222.001 | Severity: medium | Sigma id: 2c74427b-3804-44f6-a3e3-9251864f3705```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Administrators repairing or customising system files```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(Image="*\\takeown.exe" CommandLine IN ("*\\System32\\*", "*\\SysWOW64\\*"))
+| table _time host User ParentImage Image CommandLine

@@ -1,0 +1,8 @@
+```Title: Permanent WMI Event Subscription Created from the Command Line (raw Sysmon events)```
+```ATT&CK: T1546.003 | Severity: high | Sigma id: 3c9eed57-ad3c-4116-8872-baf2c60d4d92```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Management agents that register WMI subscriptions (SCCM, some monitoring tools)```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(CommandLine IN ("*__EventFilter*", "*CommandLineEventConsumer*", "*ActiveScriptEventConsumer*", "*__FilterToConsumerBinding*"))
+| table _time host User ParentImage Image CommandLine

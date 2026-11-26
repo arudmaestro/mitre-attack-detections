@@ -1,0 +1,28 @@
+title: 'File Timestamps Set with touch'
+id: 68cb0ebc-58a9-45db-8b20-9a775339e26a
+status: experimental
+description: 'Detects touch setting an explicit or referenced timestamp (-t, -d, -r, --date, --reference).'
+references:
+  - https://attack.mitre.org/techniques/T1070/006/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.stealth
+  - attack.t1070.006
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection_img:
+    Image|endswith: '/touch'
+  selection_opts:
+    CommandLine|contains:
+      - ' -t '
+      - ' -d '
+      - ' -r '
+      - '--date'
+      - '--reference'
+  condition: all of selection_*
+falsepositives:
+  - 'Build systems and scripts setting reproducible timestamps'
+level: low

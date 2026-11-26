@@ -1,0 +1,8 @@
+```Title: JScript Executed from User-Writable Path (raw Sysmon events)```
+```ATT&CK: T1059.007 | Severity: medium | Sigma id: 9539797b-f314-4735-88be-258ea47c2bc3```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Legitimate scripts in Temp or Downloads; Command lines containing .json paths```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(Image IN ("*\\wscript.exe", "*\\cscript.exe") CommandLine="*.js*" CommandLine IN ("*\\AppData\\*", "*\\Temp\\*", "*\\Users\\Public\\*", "*\\Downloads\\*"))
+| table _time host User ParentImage Image CommandLine

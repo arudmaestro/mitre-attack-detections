@@ -1,0 +1,13 @@
+// Title: IP Geolocation Service Queried from the Command Line on Windows
+// ATT&CK: T1614 | Tactic: Discovery | Sigma id: 48355107-b546-42cf-8351-cb112f86e6e2
+// Data source: SecurityEvent 4688 (Windows Security Events connector; needs process creation and command-line auditing enabled)
+// Severity: Medium
+// False positives: Scripts and tools that look up their own location
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = Computer, Account = SubjectUserName
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+SecurityEvent
+| where TimeGenerated > ago(1d)
+| where EventID == 4688
+| where CommandLine contains "ipapi.co" or CommandLine contains "ipwho.is" or CommandLine contains "geoplugin.net" or CommandLine contains "freegeoip.app" or CommandLine contains "ipgeolocation.io" or CommandLine contains "extreme-ip-lookup.com" or CommandLine contains "ip-api.io"
+| project TimeGenerated, Computer, SubjectUserName, ParentProcessName, NewProcessName, CommandLine

@@ -1,0 +1,8 @@
+```Title: Electron or Chromium Application Started with a Command-Launching Switch (raw Sysmon events)```
+```ATT&CK: T1218.015 | Severity: medium | Sigma id: f0f96e40-a307-4761-a9e4-49bcf70cf9cb```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Developers debugging Chromium or Electron applications```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(CommandLine IN ("*--gpu-launcher=*", "*--utility-cmd-prefix=*", "*--renderer-cmd-prefix=*", "*--browser-subprocess-path=*"))
+| table _time host User ParentImage Image CommandLine

@@ -1,0 +1,13 @@
+// Title: DLL Injection via mavinject.exe
+// ATT&CK: T1055.001 | Tactic: Stealth, PrivilegeEscalation | Sigma id: c9953c08-a42f-4557-8952-82a56aa6d372
+// Data source: SecurityEvent 4688 (Windows Security Events connector; needs process creation and command-line auditing enabled)
+// Severity: High
+// False positives: Microsoft App-V clients, which use mavinject legitimately
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = Computer, Account = SubjectUserName
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+SecurityEvent
+| where TimeGenerated > ago(1d)
+| where EventID == 4688
+| where NewProcessName endswith "\\mavinject.exe" or CommandLine contains "/INJECTRUNNING"
+| project TimeGenerated, Computer, SubjectUserName, ParentProcessName, NewProcessName, CommandLine

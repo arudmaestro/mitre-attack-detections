@@ -1,0 +1,8 @@
+```Title: Browser Opening a Local SVG File from Mail or Download Folders (raw Sysmon events)```
+```ATT&CK: T1027.017 | Severity: medium | Sigma id: 8233c4e4-b3c2-4e40-b0df-db5310f16012```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Users opening legitimate SVG images received by email```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(Image IN ("*\\msedge.exe", "*\\chrome.exe", "*\\firefox.exe", "*\\brave.exe", "*\\opera.exe") CommandLine="*.svg*" CommandLine IN ("*\\Content.Outlook\\*", "*\\Olk\\*", "*\\INetCache\\*", "*\\Downloads\\*", "*\\Temp\\*"))
+| table _time host User ParentImage Image CommandLine

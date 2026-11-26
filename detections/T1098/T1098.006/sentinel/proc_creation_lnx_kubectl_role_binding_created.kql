@@ -1,0 +1,12 @@
+// Title: Kubernetes Role Binding Created with kubectl
+// ATT&CK: T1098.006 | Tactic: Persistence, PrivilegeEscalation | Sigma id: eda930fd-5a9a-4099-8062-31348331ff8b
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Medium
+// False positives: Platform engineers managing RBAC
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where FolderPath endswith "/kubectl" and (ProcessCommandLine contains "create clusterrolebinding" or ProcessCommandLine contains "create rolebinding")
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

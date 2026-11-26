@@ -1,0 +1,68 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  ATTACK_URL: https://raw.githubusercontent.com/mitre-attack/attack-stix-data/master/enterprise-attack/enterprise-attack-20.1.json
+  ATTACK_SHA256: 539a843a7b53ed9749740b2123dddae3726b1a4831841c32aca740b011b910b5
+
+jobs:
+  rules:
+    name: Sigma rules, queries and structure
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.9"
+          cache: pip
+          cache-dependency-path: .github/ci/requirements.txt
+      - name: Install tools
+        run: |
+          pip install -r .github/ci/requirements.txt
+          pip install --no-deps "pyparsing==3.0.9"
+      - name: Download ATT&CK v20.1 data
+        run: |
+          curl -sSfL -o "$RUNNER_TEMP/enterprise-attack.json" "$ATTACK_URL"
+          echo "$ATTACK_SHA256  $RUNNER_TEMP/enterprise-attack.json" | sha256sum -c -
+      - name: YAML lint
+        run: yamllint -s detections templates .github .yamllint.yml
+      - name: Repository checks and sigma check
+        env:
+          PYTHONWARNINGS: ignore
+        run: python .github/ci/check_repo.py "$RUNNER_TEMP/enterprise-attack.json" . "$(command -v sigma)"
+
+  shell-tests:
+    name: Shell test scripts (ShellCheck)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: bash -n and ShellCheck
+        run: |
+          mapfile -t files < <(find detections -path '*/tests/*.sh' | sort)
+          echo "Shell scripts: ${#files[@]}"
+          for f in "${files[@]}"; do bash -n "$f"; done
+          shellcheck -S warning "${files[@]}"
+
+  powershell-tests:
+    name: PowerShell test scripts (parser + PSScriptAnalyzer)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install PSScriptAnalyzer
+        shell: pwsh
+        run: Install-Module PSScriptAnalyzer -RequiredVersion 1.23.0 -Scope CurrentUser -Force
+      - name: Parse and analyze
+        shell: pwsh
+        run: ./.github/ci/check_powershell.ps1 -Root $PWD

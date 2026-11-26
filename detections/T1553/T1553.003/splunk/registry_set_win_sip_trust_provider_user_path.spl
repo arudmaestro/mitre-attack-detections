@@ -1,0 +1,8 @@
+```Title: SIP or Trust Provider DLL Registered from a User-Writable Folder (raw Sysmon events)```
+```ATT&CK: T1553.003 | Severity: high | Sigma id: f16fc65f-4f27-4591-be8d-bba8495adaf5```
+```Data source: Sysmon EventCode 13 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: None expected```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=13
+((TargetObject="*\\CryptSIPDll*" TargetObject="*\\Dll") OR (TargetObject="*\\Cryptography\\Providers\\Trust\\*" TargetObject="*\\$DLL") Details IN ("*\\AppData\\Local\\Temp\\*", "*\\AppData\\Roaming\\*", "*\\Users\\Public\\*", "*\\Downloads\\*"))
+| table _time host User Image EventType TargetObject Details

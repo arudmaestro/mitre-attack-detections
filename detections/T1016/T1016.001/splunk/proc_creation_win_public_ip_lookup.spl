@@ -1,0 +1,8 @@
+```Title: Public IP or Internet Connectivity Lookup Service in Command Line (raw Sysmon events)```
+```ATT&CK: T1016.001 | Severity: medium | Sigma id: 4315208a-2f8d-4e73-a475-15498af51a4e```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: IT scripts and VPN or monitoring tools that check the public IP```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(CommandLine IN ("*api.ipify.org*", "*ifconfig.me*", "*icanhazip.com*", "*ipinfo.io*", "*checkip.amazonaws.com*", "*myip.opendns.com*", "*ip-api.com*", "*wtfismyip.com*", "*checkip.dyndns.org*"))
+| table _time host User ParentImage Image CommandLine

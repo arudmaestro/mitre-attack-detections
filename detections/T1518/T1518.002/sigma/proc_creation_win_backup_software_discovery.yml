@@ -1,0 +1,37 @@
+title: 'Backup Software Discovery on Windows'
+id: 51f34752-ecb7-4808-a74d-8877e907fda5
+status: experimental
+description: 'Detects findstr, sc, tasklist, wmic or reg looking for backup products (Veeam, Backup Exec, Acronis, Commvault, Veritas, Arcserve, Cohesity, Rubrik), which ransomware operators locate before attacking backups.'
+references:
+  - https://attack.mitre.org/techniques/T1518/002/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.discovery
+  - attack.t1518.002
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_img:
+    Image|endswith:
+      - '\findstr.exe'
+      - '\sc.exe'
+      - '\tasklist.exe'
+      - '\wmic.exe'
+      - '\reg.exe'
+  selection_name:
+    CommandLine|contains:
+      - 'veeam'
+      - 'backupexec'
+      - 'acronis'
+      - 'commvault'
+      - 'veritas'
+      - 'arcserve'
+      - 'cohesity'
+      - 'rubrik'
+  condition: all of selection_*
+falsepositives:
+  - 'Backup product installers and health checks'
+  - 'Administrators troubleshooting backup services'
+level: low

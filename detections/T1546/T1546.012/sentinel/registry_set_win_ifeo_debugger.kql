@@ -1,0 +1,14 @@
+// Title: Image File Execution Options Debugger Set
+// ATT&CK: T1546.012 | Tactic: PrivilegeEscalation, Persistence | Sigma id: 8947fb4e-984d-4be0-a9ac-a0be05d4c27d
+// Data source: DeviceRegistryEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Medium
+// False positives: Developers and admins setting debuggers (e.g. replacing Task Manager with Process Explorer)
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = InitiatingProcessAccountName, RegistryKey = RegistryKey, RegistryValue = RegistryValueName
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceRegistryEvents
+| where TimeGenerated > ago(1d)
+| where ActionType == "RegistryValueSet"
+| extend TargetObject = strcat(RegistryKey, "\\", RegistryValueName)
+| where (TargetObject contains "\\Image File Execution Options\\" and TargetObject endswith "\\Debugger") and (not((RegistryValueData contains "procexp" or RegistryValueData contains "vsjitdebugger.exe")))
+| project TimeGenerated, DeviceName, ActionType, InitiatingProcessAccountName, InitiatingProcessFolderPath, InitiatingProcessCommandLine, RegistryKey, RegistryValueName, RegistryValueType, RegistryValueData

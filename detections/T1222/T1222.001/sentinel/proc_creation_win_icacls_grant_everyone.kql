@@ -1,0 +1,12 @@
+// Title: Permissions Granted to Everyone with icacls or cacls
+// ATT&CK: T1222.001 | Tactic: DefenseImpairment | Sigma id: b0c56a31-b2bc-49ac-a048-51391e692013
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Medium
+// False positives: Software installers and admins opening shared folders
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where (FolderPath endswith "\\icacls.exe" or FolderPath endswith "\\cacls.exe") and ProcessCommandLine contains "/grant" and (ProcessCommandLine contains "Everyone:" or ProcessCommandLine contains "S-1-1-0:")
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

@@ -1,0 +1,26 @@
+title: 'AWS VPC Traffic Mirroring Configured'
+id: 34eea066-cf25-4cab-8fa4-ff798ca2a91e
+status: experimental
+description: 'Detects creation of AWS VPC Traffic Mirroring sessions, targets, filters or filter rules, which can copy network traffic to an attacker-controlled destination.'
+references:
+  - https://attack.mitre.org/techniques/T1020/001/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.exfiltration
+  - attack.t1020.001
+logsource:
+  product: aws
+  service: cloudtrail
+detection:
+  selection:
+    eventSource: 'ec2.amazonaws.com'
+    eventName:
+      - 'CreateTrafficMirrorSession'
+      - 'CreateTrafficMirrorTarget'
+      - 'CreateTrafficMirrorFilter'
+      - 'CreateTrafficMirrorFilterRule'
+  condition: selection
+falsepositives:
+  - Network or security teams configuring traffic mirroring for monitoring
+level: medium

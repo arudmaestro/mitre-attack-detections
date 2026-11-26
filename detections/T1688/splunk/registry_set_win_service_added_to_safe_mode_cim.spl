@@ -1,0 +1,11 @@
+```Title: Service Registered to Start in Safe Mode (CIM Endpoint.Registry)```
+```ATT&CK: T1688 | Severity: medium | Sigma id: c4f7a840-f32b-45aa-9801-daac904c902a```
+```Data source: CIM Endpoint.Registry data model. summariesonly=false works without acceleration; set true once the data model is accelerated.```
+```False positives: Security products and drivers that register themselves for safe mode```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+| tstats summariesonly=false allow_old_summaries=true fillnull_value="null" count min(_time) as firstTime max(_time) as lastTime
+    from datamodel=Endpoint.Registry
+    where Registry.registry_path IN ("*\\Control\\SafeBoot\\Minimal\\*", "*\\Control\\SafeBoot\\Network\\*")
+    by Registry.dest Registry.user Registry.process_guid Registry.process_id Registry.registry_path Registry.registry_value_name Registry.registry_value_data Registry.action
+| rename Registry.* as *
+| convert timeformat="%Y-%m-%dT%H:%M:%S" ctime(firstTime) ctime(lastTime)

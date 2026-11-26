@@ -1,0 +1,8 @@
+```Title: Rarely Used Windows Binary Known for Proxy Execution (raw Sysmon events)```
+```ATT&CK: T1218 | Severity: medium | Sigma id: 8454916a-74b1-4627-a44d-05865a6d55b6```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Driver or software installers that use InfDefaultInstall```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(Image IN ("*\\Microsoft.Workflow.Compiler.exe", "*\\Register-CimProvider.exe", "*\\InfDefaultInstall.exe", "*\\ieexec.exe"))
+| table _time host User ParentImage Image CommandLine

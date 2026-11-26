@@ -1,0 +1,8 @@
+```Title: Outbound SMTP Connection from a Non-Mail Process (raw Sysmon events)```
+```ATT&CK: T1071.003 | Severity: medium | Sigma id: 1cdf491c-7b1d-4c92-8083-ea64b95fa2fd```
+```Data source: Sysmon EventCode 3 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Applications, scanners and printers that send email directly (alerting, scan-to-email)```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=3
+(Initiated="true" DestinationPort IN (25, 465, 587) NOT (Image IN ("*\\outlook.exe", "*\\olk.exe", "*\\thunderbird.exe", "*\\EdgeTransport.exe", "*\\MSExchangeFrontendTransport.exe", "*\\MSExchangeTransport.exe")))
+| table _time host User Image Protocol Initiated SourceIp SourcePort DestinationIp DestinationPort

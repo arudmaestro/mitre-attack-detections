@@ -1,0 +1,14 @@
+// Title: Run Key Set to a Script Host or a File in Temp or Public
+// ATT&CK: T1547.001 | Tactic: Persistence, PrivilegeEscalation | Sigma id: d7fc5b74-b156-4945-8594-06413d95008b
+// Data source: DeviceRegistryEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Medium
+// False positives: Installers using RunOnce to finish setup with a script after reboot
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = InitiatingProcessAccountName, RegistryKey = RegistryKey, RegistryValue = RegistryValueName
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceRegistryEvents
+| where TimeGenerated > ago(1d)
+| where ActionType == "RegistryValueSet"
+| extend TargetObject = strcat(RegistryKey, "\\", RegistryValueName)
+| where (TargetObject contains "\\CurrentVersion\\Run\\" or TargetObject contains "\\CurrentVersion\\RunOnce\\" or TargetObject contains "\\CurrentVersion\\RunOnceEx\\" or TargetObject contains "\\Policies\\Explorer\\Run\\") and (RegistryValueData contains "powershell" or RegistryValueData contains "pwsh" or RegistryValueData contains "mshta" or RegistryValueData contains "wscript" or RegistryValueData contains "cscript" or RegistryValueData contains "regsvr32" or RegistryValueData contains "cmd.exe /c" or RegistryValueData contains "cmd /c" or RegistryValueData contains "%COMSPEC%" or RegistryValueData contains "\\AppData\\Local\\Temp\\" or RegistryValueData contains "\\Users\\Public\\")
+| project TimeGenerated, DeviceName, ActionType, InitiatingProcessAccountName, InitiatingProcessFolderPath, InitiatingProcessCommandLine, RegistryKey, RegistryValueName, RegistryValueType, RegistryValueData

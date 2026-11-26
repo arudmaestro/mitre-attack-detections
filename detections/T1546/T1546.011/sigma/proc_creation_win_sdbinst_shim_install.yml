@@ -1,0 +1,22 @@
+title: 'Application Compatibility Shim Database Installed'
+id: c810e881-99c2-4d1e-9c1b-c4c3b10333b9
+status: experimental
+description: 'Detects sdbinst.exe installing a shim database (.sdb); custom shims can inject DLLs or patch programs when they start.'
+references:
+  - https://attack.mitre.org/techniques/T1546/011/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.privilege-escalation
+  - attack.persistence
+  - attack.t1546.011
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    Image|endswith: '\sdbinst.exe'
+  condition: selection
+falsepositives:
+  - 'Software installers that ship compatibility fixes'
+level: medium

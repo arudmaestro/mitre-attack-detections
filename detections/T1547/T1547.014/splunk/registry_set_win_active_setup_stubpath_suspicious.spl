@@ -1,0 +1,8 @@
+```Title: Active Setup StubPath Set to a Script Host or a File in Temp or Public (raw Sysmon events)```
+```ATT&CK: T1547.014 | Severity: medium | Sigma id: 18a87ff0-2ba4-488a-8f50-a3fc32864f74```
+```Data source: Sysmon EventCode 13 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Enterprise software deployment that uses Active Setup scripts per user```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=13
+(TargetObject="*\\Active Setup\\Installed Components\\*" TargetObject="*\\StubPath" Details IN ("*powershell*", "*pwsh*", "*mshta*", "*wscript*", "*cscript*", "*regsvr32*", "*cmd.exe /c*", "*cmd /c*", "*%COMSPEC%*", "*\\AppData\\Local\\Temp\\*", "*\\Users\\Public\\*"))
+| table _time host User Image EventType TargetObject Details

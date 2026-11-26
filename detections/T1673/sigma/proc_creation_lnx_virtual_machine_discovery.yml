@@ -1,0 +1,25 @@
+title: 'Virtual Machines Enumerated on a Linux Host'
+id: 5ab60733-542a-42d4-bd70-9bd5293fa082
+status: experimental
+description: 'Detects virsh list, VBoxManage list and the ESXi commands vim-cmd vmsvc/getallvms and esxcli vm process list (run from a Linux host or management script), used to find VMs to stop or encrypt.'
+references:
+  - https://attack.mitre.org/techniques/T1673/
+author: Detection Engineering Team
+date: 2026-11-25
+tags:
+  - attack.discovery
+  - attack.t1673
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection:
+    CommandLine|contains:
+      - 'virsh list'
+      - 'VBoxManage list'
+      - 'vim-cmd vmsvc/getallvms'
+      - 'esxcli vm process list'
+  condition: selection
+falsepositives:
+  - 'Virtualisation administrators and monitoring scripts'
+level: low

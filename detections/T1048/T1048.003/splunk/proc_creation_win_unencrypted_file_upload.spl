@@ -1,0 +1,8 @@
+```Title: File Upload over FTP or TFTP from the Command Line (raw Sysmon events)```
+```ATT&CK: T1048.003 | Severity: medium | Sigma id: 81d2d5f8-0e50-420f-af15-54e8ee87a6eb```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Legacy file-transfer scripts```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+((Image="*\\ftp.exe" CommandLine="*-s:*") OR (Image="*\\tftp.exe" CommandLine="* put *") OR (Image="*\\curl.exe" CommandLine="*ftp://*" CommandLine IN ("* -T *", "*--upload-file*")))
+| table _time host User ParentImage Image CommandLine

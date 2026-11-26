@@ -1,0 +1,29 @@
+title: 'Base64 Decoded and Piped to a Shell'
+id: 70eda598-f99d-487d-b0d5-a1335ab00a0c
+status: experimental
+description: 'Detects shell command lines that decode Base64 and pipe the result to sh or bash.'
+references:
+  - https://attack.mitre.org/techniques/T1140/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.stealth
+  - attack.t1140
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection_decode:
+    CommandLine|contains:
+      - 'base64 -d'
+      - 'base64 --decode'
+  selection_shell:
+    CommandLine|contains:
+      - '| sh'
+      - '|sh'
+      - '| bash'
+      - '|bash'
+  condition: all of selection_*
+falsepositives:
+  - 'Installers that ship encoded scripts'
+level: high

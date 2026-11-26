@@ -1,0 +1,22 @@
+title: 'Excel Opened with an XLL Add-in'
+id: 5cad6dc8-9b1e-4000-a726-7f236d8b404e
+status: experimental
+description: 'Detects Excel launched with an .xll file, the delivery and persistence method for Excel add-in malware.'
+references:
+  - https://attack.mitre.org/techniques/T1137/006/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.persistence
+  - attack.t1137.006
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    Image|endswith: '\excel.exe'
+    CommandLine|contains: '.xll'
+  condition: selection
+falsepositives:
+  - 'Finance or analytics teams using approved XLL add-ins'
+level: medium

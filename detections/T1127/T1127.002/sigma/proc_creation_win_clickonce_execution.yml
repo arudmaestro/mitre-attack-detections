@@ -1,0 +1,27 @@
+title: 'ClickOnce Application Launched via dfshim or dfsvc'
+id: c955ed70-a56d-4d37-b7a5-f1fc861791d6
+status: experimental
+description: 'Detects ClickOnce deployment being triggered with rundll32 dfshim.dll ShOpenVerbApplication, or processes started by the ClickOnce service (dfsvc.exe).'
+references:
+  - https://attack.mitre.org/techniques/T1127/002/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.stealth
+  - attack.execution
+  - attack.t1127.002
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_dfshim:
+    Image|endswith: '\rundll32.exe'
+    CommandLine|contains|all:
+      - 'dfshim'
+      - 'ShOpenVerbApplication'
+  selection_dfsvc_child:
+    ParentImage|endswith: '\dfsvc.exe'
+  condition: 1 of selection_*
+falsepositives:
+  - 'Legitimate ClickOnce business applications'
+level: low

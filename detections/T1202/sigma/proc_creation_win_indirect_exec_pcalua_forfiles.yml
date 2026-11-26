@@ -1,0 +1,26 @@
+title: 'Indirect Command Execution through pcalua or forfiles'
+id: 67f6c58f-d169-4a9a-8247-06fcee862ece
+status: experimental
+description: 'Detects programs started by the Program Compatibility Assistant (pcalua.exe -a) or by forfiles /c, which run commands without cmd.exe as the direct parent.'
+references:
+  - https://attack.mitre.org/techniques/T1202/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.stealth
+  - attack.t1202
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_pcalua:
+    ParentImage|endswith: '\pcalua.exe'
+  selection_forfiles:
+    ParentImage|endswith: '\forfiles.exe'
+  filter_forfiles_cmd:
+    Image|endswith: '\cmd.exe'
+  condition: selection_pcalua or (selection_forfiles and not filter_forfiles_cmd)
+falsepositives:
+  - 'Windows program compatibility prompts started by pcalua'
+  - 'Maintenance scripts that use forfiles to run a program per file'
+level: medium

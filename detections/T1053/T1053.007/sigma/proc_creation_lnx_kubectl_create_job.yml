@@ -1,0 +1,26 @@
+title: 'Kubernetes Job or CronJob Created with kubectl'
+id: 578e027b-4735-4751-bbe7-eb71c03075ff
+status: experimental
+description: 'Detects kubectl create job or create cronjob, used to run or schedule containers in a cluster.'
+references:
+  - https://attack.mitre.org/techniques/T1053/007/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.execution
+  - attack.persistence
+  - attack.privilege-escalation
+  - attack.t1053.007
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection:
+    Image|endswith: '/kubectl'
+    CommandLine|contains:
+      - 'create cronjob'
+      - 'create job'
+  condition: selection
+falsepositives:
+  - 'Platform engineers and CI/CD pipelines'
+level: low

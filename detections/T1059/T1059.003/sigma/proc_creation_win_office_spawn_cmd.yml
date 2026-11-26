@@ -1,0 +1,29 @@
+title: Windows Command Shell Spawned by Office Application
+id: 78aa7281-55f4-4240-b97f-62bb2bd70ddb
+status: experimental
+description: Detects cmd.exe launched by a Microsoft Office application, a common macro or exploit execution pattern.
+references:
+  - https://attack.mitre.org/techniques/T1059/003/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.execution
+  - attack.t1059.003
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_parent:
+    ParentImage|endswith:
+      - '\winword.exe'
+      - '\excel.exe'
+      - '\powerpnt.exe'
+      - '\outlook.exe'
+      - '\msaccess.exe'
+  selection_img:
+    Image|endswith:
+      - '\cmd.exe'
+  condition: all of selection_*
+falsepositives:
+  - Legitimate Office macros or add-ins that call cmd.exe
+level: high

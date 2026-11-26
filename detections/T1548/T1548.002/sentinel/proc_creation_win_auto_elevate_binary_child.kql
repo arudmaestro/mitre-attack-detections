@@ -1,0 +1,12 @@
+// Title: Auto-Elevating Windows Program Started a Child Process
+// ATT&CK: T1548.002 | Tactic: PrivilegeEscalation | Sigma id: 8521aaee-00d2-478f-aac3-3c4cb5369a24
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: High
+// False positives: Rare: troubleshooting tools started from Event Viewer
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where (InitiatingProcessFolderPath endswith "\\fodhelper.exe" or InitiatingProcessFolderPath endswith "\\computerdefaults.exe" or InitiatingProcessFolderPath endswith "\\wsreset.exe" or InitiatingProcessFolderPath endswith "\\eventvwr.exe") and (not((FolderPath endswith "\\conhost.exe" or FolderPath endswith "\\WerFault.exe" or FolderPath endswith "\\mmc.exe")))
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

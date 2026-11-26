@@ -1,0 +1,8 @@
+```Title: Exchange Transport Agent Installed or Enabled (raw Sysmon events)```
+```ATT&CK: T1505.002 | Severity: medium | Sigma id: 887d60ae-6268-4741-a7ac-31f32e85d702```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Exchange administrators installing anti-spam, archiving or signature agents```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(CommandLine IN ("*Install-TransportAgent*", "*Enable-TransportAgent*"))
+| table _time host User ParentImage Image CommandLine

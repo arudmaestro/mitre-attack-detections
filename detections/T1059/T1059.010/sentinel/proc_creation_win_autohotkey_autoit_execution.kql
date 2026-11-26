@@ -1,0 +1,12 @@
+// Title: AutoHotkey or AutoIt Script Execution
+// ATT&CK: T1059.010 | Tactic: Execution | Sigma id: 8d807637-9353-45c1-a691-8eaa67619e86
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Medium
+// False positives: Users and IT staff using AutoHotkey or AutoIt for automation
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where (FolderPath endswith "\\AutoHotkey.exe" or FolderPath endswith "\\AutoHotkey64.exe" or FolderPath endswith "\\AutoHotkeyU64.exe" or FolderPath endswith "\\AutoHotkeyU32.exe" or FolderPath endswith "\\AutoHotkeyA32.exe" or FolderPath endswith "\\AutoIt3.exe" or FolderPath endswith "\\AutoIt3_x64.exe") or (ProcessCommandLine contains ".ahk" or ProcessCommandLine contains ".au3")
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

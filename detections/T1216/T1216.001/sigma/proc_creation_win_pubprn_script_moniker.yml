@@ -1,0 +1,23 @@
+title: 'PubPrn.vbs Used to Run a Remote Script'
+id: 44fd4bff-cfcc-461d-b7bb-114a35d3fa36
+status: experimental
+description: 'Detects pubprn.vbs called with a script: moniker, which makes the signed printer-publishing script download and run a scriptlet (.sct).'
+references:
+  - https://attack.mitre.org/techniques/T1216/001/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.stealth
+  - attack.t1216.001
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains|all:
+      - 'pubprn.vbs'
+      - 'script:'
+  condition: selection
+falsepositives:
+  - 'None expected: printer publishing does not use script: monikers'
+level: high

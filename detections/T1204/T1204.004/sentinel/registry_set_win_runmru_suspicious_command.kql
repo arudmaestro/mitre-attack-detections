@@ -1,0 +1,14 @@
+// Title: Suspicious Command Typed in the Run Dialog
+// ATT&CK: T1204.004 | Tactic: Execution | Sigma id: 1fabd6b3-adfd-460d-9bc3-ef0624108f10
+// Data source: DeviceRegistryEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Medium
+// False positives: Administrators who start PowerShell from the Run dialog
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = InitiatingProcessAccountName, RegistryKey = RegistryKey, RegistryValue = RegistryValueName
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceRegistryEvents
+| where TimeGenerated > ago(1d)
+| where ActionType == "RegistryValueSet"
+| extend TargetObject = strcat(RegistryKey, "\\", RegistryValueName)
+| where TargetObject contains "\\Explorer\\RunMRU\\" and (RegistryValueData contains "powershell" or RegistryValueData contains "pwsh" or RegistryValueData contains "mshta" or RegistryValueData contains "curl" or RegistryValueData contains "certutil" or RegistryValueData contains "bitsadmin" or RegistryValueData contains "msiexec")
+| project TimeGenerated, DeviceName, ActionType, InitiatingProcessAccountName, InitiatingProcessFolderPath, InitiatingProcessCommandLine, RegistryKey, RegistryValueName, RegistryValueType, RegistryValueData

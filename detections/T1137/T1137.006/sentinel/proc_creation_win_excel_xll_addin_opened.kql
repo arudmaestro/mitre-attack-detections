@@ -1,0 +1,12 @@
+// Title: Excel Opened with an XLL Add-in
+// ATT&CK: T1137.006 | Tactic: Persistence | Sigma id: 5cad6dc8-9b1e-4000-a726-7f236d8b404e
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Medium
+// False positives: Finance or analytics teams using approved XLL add-ins
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where FolderPath endswith "\\excel.exe" and ProcessCommandLine contains ".xll"
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

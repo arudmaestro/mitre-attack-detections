@@ -1,0 +1,33 @@
+title: 'Outbound SMTP Connection from a Non-Mail Process'
+id: 1cdf491c-7b1d-4c92-8083-ea64b95fa2fd
+status: experimental
+description: 'Detects outbound connections to SMTP ports (25, 465, 587) from processes other than known mail clients and servers, a sign of mail-based C2 or exfiltration.'
+references:
+  - https://attack.mitre.org/techniques/T1071/003/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.command-and-control
+  - attack.t1071.003
+logsource:
+  category: network_connection
+  product: windows
+detection:
+  selection:
+    Initiated: 'true'
+    DestinationPort:
+      - 25
+      - 465
+      - 587
+  filter_mail_clients:
+    Image|endswith:
+      - '\outlook.exe'
+      - '\olk.exe'
+      - '\thunderbird.exe'
+      - '\EdgeTransport.exe'
+      - '\MSExchangeFrontendTransport.exe'
+      - '\MSExchangeTransport.exe'
+  condition: selection and not filter_mail_clients
+falsepositives:
+  - 'Applications, scanners and printers that send email directly (alerting, scan-to-email)'
+level: medium

@@ -1,0 +1,11 @@
+```Title: Winlogon Shell, Userinit or Notify Value Changed (CIM Endpoint.Registry)```
+```ATT&CK: T1547.004 | Severity: high | Sigma id: 5cb6a248-8800-40bc-9d16-520a2dac25c3```
+```Data source: CIM Endpoint.Registry data model. summariesonly=false works without acceleration; set true once the data model is accelerated.```
+```False positives: Kiosk / Shell Launcher configurations that replace the shell```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+| tstats summariesonly=false allow_old_summaries=true fillnull_value="null" count min(_time) as firstTime max(_time) as lastTime
+    from datamodel=Endpoint.Registry
+    where (Registry.registry_path="*\\Winlogon\\Shell" NOT Registry.registry_value_data="explorer.exe") OR (Registry.registry_path="*\\Winlogon\\Userinit" NOT (Registry.registry_value_data IN ("*\\userinit.exe,", "*\\userinit.exe"))) OR Registry.registry_path="*\\Winlogon\\Notify\\*"
+    by Registry.dest Registry.user Registry.process_guid Registry.process_id Registry.registry_path Registry.registry_value_name Registry.registry_value_data Registry.action
+| rename Registry.* as *
+| convert timeformat="%Y-%m-%dT%H:%M:%S" ctime(firstTime) ctime(lastTime)

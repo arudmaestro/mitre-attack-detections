@@ -1,0 +1,13 @@
+// Title: AWS Snapshot or Image Sharing Permissions Modified
+// ATT&CK: T1537 | Tactic: Exfiltration | Sigma id: 74e13d4e-41e6-4a89-99f9-8317a5936630
+// Data source: AWSCloudTrail (Amazon Web Services connector)
+// Severity: Medium
+// False positives: Backup and AMI-sharing pipelines between your own accounts (allowlist their account IDs)
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Account = UserIdentityArn, IP = SourceIpAddress
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+AWSCloudTrail
+| where TimeGenerated > ago(1d)
+| where EventSource in ("ec2.amazonaws.com", "rds.amazonaws.com")
+| where EventName in ("ModifySnapshotAttribute", "ModifyImageAttribute", "ModifyDBSnapshotAttribute", "ModifyDBClusterSnapshotAttribute")
+| project TimeGenerated, EventSource, EventName, UserIdentityArn, SourceIpAddress, AWSRegion, ErrorCode, RequestParameters

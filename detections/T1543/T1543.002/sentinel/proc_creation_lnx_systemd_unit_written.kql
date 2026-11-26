@@ -1,0 +1,12 @@
+// Title: Systemd Unit File Written from the Command Line
+// ATT&CK: T1543.002 | Tactic: Persistence, PrivilegeEscalation | Sigma id: 675c0c42-a179-41f8-8689-81785ddc49c2
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Low
+// False positives: Configuration management (Ansible, Puppet) and administrators deploying services
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where (FolderPath endswith "/cp" or FolderPath endswith "/mv" or FolderPath endswith "/tee" or FolderPath endswith "/ln" or FolderPath endswith "/install" or FolderPath endswith "/sed") and (ProcessCommandLine contains "/etc/systemd/system/" or ProcessCommandLine contains "/lib/systemd/system/" or ProcessCommandLine contains "/run/systemd/system/" or ProcessCommandLine contains "/.config/systemd/user/")
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

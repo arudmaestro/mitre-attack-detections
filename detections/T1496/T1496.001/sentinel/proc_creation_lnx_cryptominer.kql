@@ -1,0 +1,12 @@
+// Title: Cryptocurrency Miner Command Line on Linux
+// ATT&CK: T1496.001 | Tactic: Impact | Sigma id: 87ca18d0-50b7-4005-881b-3300e3c68033
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: High
+// False positives: Authorised mining or miner research systems
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where ProcessCommandLine contains "stratum+tcp://" or ProcessCommandLine contains "stratum+ssl://" or ProcessCommandLine contains "stratum2+tcp://" or ProcessCommandLine contains "--donate-level" or ProcessCommandLine contains "xmrig"
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

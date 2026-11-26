@@ -1,0 +1,22 @@
+title: 'Silent Screen Capture on macOS'
+id: 00fc8585-6b7d-4ca5-9fbf-57bcccab0067
+status: experimental
+description: 'Detects screencapture run with -x (no sound), typical of scripted, covert screenshots.'
+references:
+  - https://attack.mitre.org/techniques/T1113/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.collection
+  - attack.t1113
+logsource:
+  category: process_creation
+  product: macos
+detection:
+  selection:
+    Image|endswith: '/screencapture'
+    CommandLine|contains: ' -x'
+  condition: selection
+falsepositives:
+  - 'Automation or monitoring scripts taking screenshots'
+level: medium

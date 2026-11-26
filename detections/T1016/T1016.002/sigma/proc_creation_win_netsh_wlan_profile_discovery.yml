@@ -1,0 +1,25 @@
+title: 'Wi-Fi Profile Discovery via netsh'
+id: b9ae19bb-8921-45cf-829a-699d936b381b
+status: experimental
+description: 'Detects netsh wlan show profile(s), used to list saved Wi-Fi networks and, with key=clear, reveal their passwords.'
+references:
+  - https://attack.mitre.org/techniques/T1016/002/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.discovery
+  - attack.t1016.002
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    Image|endswith: '\netsh.exe'
+    CommandLine|contains|all:
+      - 'wlan'
+      - 'show'
+      - 'profile'
+  condition: selection
+falsepositives:
+  - Help desk and users troubleshooting Wi-Fi
+level: medium

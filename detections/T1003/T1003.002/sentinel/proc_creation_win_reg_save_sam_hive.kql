@@ -1,0 +1,12 @@
+// Title: SAM Registry Hive Saved via reg.exe
+// ATT&CK: T1003.002 | Tactic: CredentialAccess | Sigma id: dc3d5d1a-6e00-4678-b117-00a34535d40d
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: High
+// False positives: Backup or forensic tooling that exports hives
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where FolderPath endswith "\\reg.exe" and (ProcessCommandLine contains " save " or ProcessCommandLine contains " export ") and (ProcessCommandLine contains "hklm\\sam" or ProcessCommandLine contains "hkey_local_machine\\sam")
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

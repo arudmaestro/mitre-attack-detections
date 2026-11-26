@@ -1,0 +1,12 @@
+// Title: XDG Autostart Entry Written from the Command Line
+// ATT&CK: T1547.013 | Tactic: Persistence, PrivilegeEscalation | Sigma id: 8ab9ec94-c2b5-4709-9770-e999d7988b45
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Medium
+// False positives: Desktop applications and installers adding autostart entries
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where (FolderPath endswith "/cp" or FolderPath endswith "/mv" or FolderPath endswith "/tee" or FolderPath endswith "/ln" or FolderPath endswith "/install" or FolderPath endswith "/sed") and (ProcessCommandLine contains "/.config/autostart/" or ProcessCommandLine contains "/etc/xdg/autostart/")
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

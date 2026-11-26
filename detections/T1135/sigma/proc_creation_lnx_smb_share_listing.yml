@@ -1,0 +1,22 @@
+title: 'SMB Share Listing with smbclient'
+id: 3e9bf9f9-5f58-4dc0-ba82-71faa22319b9
+status: experimental
+description: 'Detects smbclient listing the shares of a host (-L).'
+references:
+  - https://attack.mitre.org/techniques/T1135/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.discovery
+  - attack.t1135
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection:
+    Image|endswith: '/smbclient'
+    CommandLine|contains: ' -L'
+  condition: selection
+falsepositives:
+  - 'Administrators troubleshooting file shares'
+level: low

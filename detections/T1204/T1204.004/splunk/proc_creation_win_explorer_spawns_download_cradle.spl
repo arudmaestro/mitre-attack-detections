@@ -1,0 +1,8 @@
+```Title: Download Command Started Directly by Explorer (raw Sysmon events)```
+```ATT&CK: T1204.004 | Severity: high | Sigma id: 8c28d2bd-381f-42f2-91e4-85902c0c0a99```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Administrators running install one-liners (e.g. irm ... | iex) from the Run dialog```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(ParentImage="*\\explorer.exe" (Image="*\\mshta.exe" CommandLine="*http*") OR (Image IN ("*\\powershell.exe", "*\\pwsh.exe") CommandLine IN ("*iwr *", "*irm *", "*Invoke-WebRequest*", "*Invoke-RestMethod*", "*DownloadString*", "*Net.WebClient*", "*Start-BitsTransfer*")))
+| table _time host User ParentImage Image CommandLine

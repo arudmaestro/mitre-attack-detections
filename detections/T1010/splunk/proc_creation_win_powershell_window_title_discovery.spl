@@ -1,0 +1,8 @@
+```Title: Application Window Discovery via PowerShell MainWindowTitle (raw Sysmon events)```
+```ATT&CK: T1010 | Severity: low | Sigma id: 10b9d3e0-fbfa-4a37-a4ad-b827f250cb1c```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Administrative and monitoring scripts```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity low.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(Image IN ("*\\powershell.exe", "*\\pwsh.exe") CommandLine="*MainWindowTitle*")
+| table _time host User ParentImage Image CommandLine

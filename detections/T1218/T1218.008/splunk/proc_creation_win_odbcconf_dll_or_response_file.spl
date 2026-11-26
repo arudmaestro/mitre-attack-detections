@@ -1,0 +1,8 @@
+```Title: Odbcconf Registering a DLL or Using a Response File (raw Sysmon events)```
+```ATT&CK: T1218.008 | Severity: medium | Sigma id: 2bc82bfc-ff6a-4322-a9fb-8304f100ef0a```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Database driver installers registering ODBC driver DLLs```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(Image="*\\odbcconf.exe" CommandLine IN ("*regsvr*", "*.rsp*"))
+| table _time host User ParentImage Image CommandLine

@@ -1,0 +1,12 @@
+// Title: Screen Capture from the Command Line on Linux
+// ATT&CK: T1113 | Tactic: Collection | Sigma id: 206d69e4-867e-4b04-8725-a3a4d9654c3f
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Low
+// False positives: Users taking screenshots from scripts
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where (FolderPath endswith "/xwd" and ProcessCommandLine contains "-root") or (FolderPath endswith "/import" and ProcessCommandLine contains "-window root") or FolderPath endswith "/scrot"
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

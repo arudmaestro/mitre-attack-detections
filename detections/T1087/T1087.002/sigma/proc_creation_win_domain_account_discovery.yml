@@ -1,0 +1,37 @@
+title: 'Domain Account Discovery'
+id: bc88891d-2a87-4052-a1c0-e679fab2b6df
+status: experimental
+description: 'Detects domain user enumeration with net user /domain, Get-ADUser, PowerView (Get-DomainUser, Get-NetUser), dsquery user, or AdFind person queries.'
+references:
+  - https://attack.mitre.org/techniques/T1087/002/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.discovery
+  - attack.t1087.002
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_net:
+    Image|endswith:
+      - '\net.exe'
+      - '\net1.exe'
+    CommandLine|contains|all:
+      - 'user'
+      - '/domain'
+  filter_net:
+    CommandLine|contains:
+      - '/add'
+      - '/delete'
+  selection_tools:
+    CommandLine|contains:
+      - 'Get-ADUser'
+      - 'Get-DomainUser'
+      - 'Get-NetUser'
+      - 'dsquery user'
+      - 'objectcategory=person'
+  condition: (selection_net and not filter_net) or selection_tools
+falsepositives:
+  - 'Administrators and identity management scripts'
+level: low

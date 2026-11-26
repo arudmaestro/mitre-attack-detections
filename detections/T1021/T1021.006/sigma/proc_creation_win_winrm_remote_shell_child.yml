@@ -1,0 +1,23 @@
+title: 'Process Spawned by WinRM Remote Shell Host'
+id: 179631d6-eaf8-47c8-afc5-b32d78914132
+status: experimental
+description: 'Detects processes started by wsmprovhost.exe or winrshost.exe, which run commands for remote PowerShell sessions and WinRS.'
+references:
+  - https://attack.mitre.org/techniques/T1021/006/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.lateral-movement
+  - attack.t1021.006
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    ParentImage|endswith:
+      - '\wsmprovhost.exe'
+      - '\winrshost.exe'
+  condition: selection
+falsepositives:
+  - Administrators and management tools using PowerShell remoting
+level: medium

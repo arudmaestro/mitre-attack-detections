@@ -1,0 +1,8 @@
+```Title: Executable with a Document Double Extension (raw Sysmon events)```
+```ATT&CK: T1036.007 | Severity: high | Sigma id: 29b39d5e-361c-4282-a0d6-e2957432ff1e```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: None expected```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(Image IN ("*.pdf.exe", "*.doc.exe", "*.docx.exe", "*.xls.exe", "*.xlsx.exe", "*.ppt.exe", "*.pptx.exe", "*.rtf.exe", "*.txt.exe", "*.jpg.exe", "*.png.exe", "*.pdf.scr", "*.doc.scr", "*.docx.scr"))
+| table _time host User ParentImage Image CommandLine

@@ -1,0 +1,12 @@
+// Title: Virtual Machines Enumerated on a Windows Host
+// ATT&CK: T1673 | Tactic: Discovery | Sigma id: 0bdbb15f-cd22-4348-a15d-6c25a2bacca9
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Low
+// False positives: Hyper-V and virtualisation administrators, backup software
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where ProcessCommandLine contains "Get-VM" or ProcessCommandLine contains "VBoxManage list" or ProcessCommandLine contains "VBoxManage.exe list" or ProcessCommandLine contains "vmrun list" or ProcessCommandLine contains "vmrun.exe list"
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

@@ -1,0 +1,8 @@
+```Title: AWS Service Quota Increase Requested (AWS CloudTrail)```
+```ATT&CK: T1578.005 | Severity: medium | Sigma id: 46d64d2f-d30d-4b44-87f3-b9c067003d46```
+```Data source: AWS CloudTrail (Splunk Add-on for AWS). Change index to where your CloudTrail data lives.```
+```False positives: Planned capacity increases by cloud operations teams```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=aws sourcetype="aws:cloudtrail"
+(eventSource="servicequotas.amazonaws.com" eventName="RequestServiceQuotaIncrease")
+| table _time eventSource eventName userIdentity.arn sourceIPAddress awsRegion errorCode

@@ -1,0 +1,30 @@
+title: 'Guest Account Enabled via net user'
+id: 0f479594-8424-46d8-983b-5a8118c36c74
+status: experimental
+description: 'Detects the built-in Guest account being activated with net user guest /active:yes.'
+references:
+  - https://attack.mitre.org/techniques/T1078/001/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.stealth
+  - attack.persistence
+  - attack.privilege-escalation
+  - attack.initial-access
+  - attack.t1078.001
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_img:
+    Image|endswith:
+      - '\net.exe'
+      - '\net1.exe'
+  selection_cli:
+    CommandLine|contains|all:
+      - 'guest'
+      - '/active:yes'
+  condition: all of selection_*
+falsepositives:
+  - 'Rare: legacy kiosk configuration'
+level: high

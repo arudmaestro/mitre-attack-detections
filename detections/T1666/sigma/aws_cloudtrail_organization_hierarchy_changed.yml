@@ -1,0 +1,25 @@
+title: 'AWS Account Left, Removed or Moved in the Organization'
+id: 7d04dfbf-7907-4672-93ae-7a0dbd0f2ba9
+status: experimental
+description: 'Detects LeaveOrganization, RemoveAccountFromOrganization and MoveAccount; moving an account out of the organization or into another OU drops its service control policies and central logging.'
+references:
+  - https://attack.mitre.org/techniques/T1666/
+author: Detection Engineering Team
+date: 2026-11-25
+tags:
+  - attack.defense-impairment
+  - attack.t1666
+logsource:
+  product: aws
+  service: cloudtrail
+detection:
+  selection:
+    eventSource: 'organizations.amazonaws.com'
+    eventName:
+      - 'LeaveOrganization'
+      - 'RemoveAccountFromOrganization'
+      - 'MoveAccount'
+  condition: selection
+falsepositives:
+  - 'Cloud platform teams reorganising accounts'
+level: high

@@ -1,0 +1,12 @@
+// Title: Tunneling Tool Executed on Linux
+// ATT&CK: T1572 | Tactic: CommandAndControl | Sigma id: d3b8a49b-2cd2-4a73-8288-bc6f96b4c81c
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: High
+// False positives: Developers using ngrok for testing; sanctioned tunnels
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where FolderPath endswith "/ngrok" or FolderPath endswith "/chisel" or FolderPath endswith "/frpc" or FolderPath endswith "/iodine" or FolderPath endswith "/dnscat"
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

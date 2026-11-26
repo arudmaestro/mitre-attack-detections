@@ -1,0 +1,30 @@
+title: 'Regasm or Regsvcs Loading an Assembly from a User-Writable Folder'
+id: cb726946-3b94-4ce3-91a4-45f54078d832
+status: experimental
+description: 'Detects RegAsm.exe or RegSvcs.exe registering an assembly located in Temp, AppData, Downloads or the public profile; the assembly''s registration code runs during the call.'
+references:
+  - https://attack.mitre.org/techniques/T1218/009/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.stealth
+  - attack.t1218.009
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_img:
+    Image|endswith:
+      - '\RegAsm.exe'
+      - '\RegSvcs.exe'
+  selection_path:
+    CommandLine|contains:
+      - '\AppData\Local\Temp\'
+      - '\AppData\Roaming\'
+      - '\Downloads\'
+      - '\Users\Public\'
+  condition: all of selection_*
+falsepositives:
+  - 'Developers registering COM assemblies they built in a user folder'
+  - 'Installers registering assemblies from a temporary folder'
+level: medium

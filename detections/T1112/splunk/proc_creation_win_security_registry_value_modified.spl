@@ -1,0 +1,8 @@
+```Title: Security-Relevant Registry Value Changed from the Command Line (raw Sysmon events)```
+```ATT&CK: T1112 | Severity: high | Sigma id: 74d98b28-b65b-4cc4-98e9-975d3624714f```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Administrators or management tools changing these settings intentionally```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(CommandLine IN ("*DisableAntiSpyware*", "*DisableRealtimeMonitoring*", "*EnableLUA*", "*LocalAccountTokenFilterPolicy*", "*UseLogonCredential*", "*DisableRestrictedAdmin*") CommandLine IN ("* add *", "*Set-ItemProperty*", "*New-ItemProperty*", "*Set-MpPreference*"))
+| table _time host User ParentImage Image CommandLine

@@ -1,0 +1,13 @@
+// Title: Service Created or Changed to Run a Script Host or a File in a User Folder
+// ATT&CK: T1543.003 | Tactic: Persistence, PrivilegeEscalation | Sigma id: 913cef8b-9412-4d5b-b27f-5b8410e796cd
+// Data source: SecurityEvent 4688 (Windows Security Events connector; needs process creation and command-line auditing enabled)
+// Severity: High
+// False positives: Software installers that wrap services in a script (rare)
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = Computer, Account = SubjectUserName
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+SecurityEvent
+| where TimeGenerated > ago(1d)
+| where EventID == 4688
+| where ((NewProcessName endswith "\\sc.exe" and (CommandLine contains "create" or CommandLine contains "config")) or CommandLine contains "New-Service") and (CommandLine contains "powershell" or CommandLine contains "pwsh" or CommandLine contains "mshta" or CommandLine contains "wscript" or CommandLine contains "cscript" or CommandLine contains "regsvr32" or CommandLine contains "cmd.exe /c" or CommandLine contains "cmd /c" or CommandLine contains "%COMSPEC%" or CommandLine contains "\\AppData\\Local\\Temp\\" or CommandLine contains "\\Users\\Public\\")
+| project TimeGenerated, Computer, SubjectUserName, ParentProcessName, NewProcessName, CommandLine

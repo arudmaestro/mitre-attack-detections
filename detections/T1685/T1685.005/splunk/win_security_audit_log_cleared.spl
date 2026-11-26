@@ -1,0 +1,8 @@
+```Title: Security Audit Log Cleared (1102) (raw Windows Security events)```
+```ATT&CK: T1685.005 | Severity: high | Sigma id: b6f5fdf5-bb6b-4d0e-a999-24d54d4860a3```
+```Data source: Windows Security EventCode 1102 (Splunk Add-on for Microsoft Windows). Change index to where your Security logs live.```
+```False positives: Administrators clearing the Security log on test machines```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+index=wineventlog source IN ("XmlWinEventLog:Security", "WinEventLog:Security")
+(EventCode=1102)
+| table _time host EventCode SubjectUserName SubjectDomainName TargetUserName TargetDomainName MemberName

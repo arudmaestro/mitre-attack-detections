@@ -1,0 +1,8 @@
+```Title: AWS Lambda Function URL Created Without Authentication (AWS CloudTrail)```
+```ATT&CK: T1648 | Severity: medium | Sigma id: ef64c21e-8b6a-408c-b4d4-3ac1d95c8fc5```
+```Data source: AWS CloudTrail (Splunk Add-on for AWS). Change index to where your CloudTrail data lives.```
+```False positives: Public webhooks and APIs deliberately built on Lambda function URLs```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=aws sourcetype="aws:cloudtrail"
+(eventSource="lambda.amazonaws.com" eventName IN ("CreateFunctionUrlConfig20211031", "UpdateFunctionUrlConfig20211031") requestParameters.authType="*NONE*")
+| table _time eventSource eventName userIdentity.arn sourceIPAddress awsRegion errorCode

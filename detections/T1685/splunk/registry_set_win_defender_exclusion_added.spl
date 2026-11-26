@@ -1,0 +1,8 @@
+```Title: Microsoft Defender Exclusion Added in the Registry (raw Sysmon events)```
+```ATT&CK: T1685 | Severity: medium | Sigma id: cbf970af-cea9-4f4d-9438-21b11079043b```
+```Data source: Sysmon EventCode 13 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Group Policy / Intune exclusion deployment and security-product installers```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=13
+(TargetObject="*\\Windows Defender\\Exclusions\\*")
+| table _time host User Image EventType TargetObject Details

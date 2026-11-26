@@ -1,0 +1,29 @@
+title: Python One-Liner with Socket or PTY Shell Primitives
+id: 8d6d7913-9cd6-4c8a-8a36-3b0460b32336
+status: experimental
+description: Detects python launched with an inline command (-c) that uses socket, pty.spawn or os.dup2, common in reverse shell one-liners.
+references:
+  - https://attack.mitre.org/techniques/T1059/006/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.execution
+  - attack.t1059.006
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection_img:
+    Image|contains: '/python'
+  selection_cli:
+    CommandLine|contains:
+      - ' -c '
+  selection_cli2:
+    CommandLine|contains:
+      - 'import socket'
+      - 'pty.spawn'
+      - 'os.dup2'
+  condition: all of selection_*
+falsepositives:
+  - Developer or admin one-liners that use sockets for connectivity checks
+level: high

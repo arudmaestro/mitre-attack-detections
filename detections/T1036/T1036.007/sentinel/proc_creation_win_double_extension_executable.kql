@@ -1,0 +1,12 @@
+// Title: Executable with a Document Double Extension
+// ATT&CK: T1036.007 | Tactic: Stealth | Sigma id: 29b39d5e-361c-4282-a0d6-e2957432ff1e
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: High
+// False positives: None expected
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where FolderPath endswith ".pdf.exe" or FolderPath endswith ".doc.exe" or FolderPath endswith ".docx.exe" or FolderPath endswith ".xls.exe" or FolderPath endswith ".xlsx.exe" or FolderPath endswith ".ppt.exe" or FolderPath endswith ".pptx.exe" or FolderPath endswith ".rtf.exe" or FolderPath endswith ".txt.exe" or FolderPath endswith ".jpg.exe" or FolderPath endswith ".png.exe" or FolderPath endswith ".pdf.scr" or FolderPath endswith ".doc.scr" or FolderPath endswith ".docx.scr"
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

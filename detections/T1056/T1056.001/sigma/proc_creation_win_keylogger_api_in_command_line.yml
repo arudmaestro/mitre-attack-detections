@@ -1,0 +1,26 @@
+title: 'Keylogging API or Module Referenced in Command Line'
+id: df15f795-96ad-4a1f-8867-c42cb1595d78
+status: experimental
+description: 'Detects command lines referencing keyboard-capture APIs (GetAsyncKeyState, SetWindowsHookEx, GetKeyboardState) or the PowerSploit Get-Keystrokes module.'
+references:
+  - https://attack.mitre.org/techniques/T1056/001/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.collection
+  - attack.credential-access
+  - attack.t1056.001
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'GetAsyncKeyState'
+      - 'SetWindowsHookEx'
+      - 'GetKeyboardState'
+      - 'Get-Keystrokes'
+  condition: selection
+falsepositives:
+  - 'Accessibility or automation scripts that read keyboard state'
+level: medium

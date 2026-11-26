@@ -1,0 +1,34 @@
+title: 'Web Server Process Spawning a Shell on Windows'
+id: 7e69f172-7228-438e-84c0-0c2b8b89f96b
+status: experimental
+description: 'Detects IIS, Apache, nginx, PHP or Tomcat processes starting cmd, PowerShell or whoami, a sign of exploitation or a web shell.'
+references:
+  - https://attack.mitre.org/techniques/T1190/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.initial-access
+  - attack.t1190
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_parent:
+    ParentImage|endswith:
+      - '\w3wp.exe'
+      - '\httpd.exe'
+      - '\nginx.exe'
+      - '\php-cgi.exe'
+      - '\tomcat.exe'
+      - '\tomcat8.exe'
+      - '\tomcat9.exe'
+  selection_child:
+    Image|endswith:
+      - '\cmd.exe'
+      - '\powershell.exe'
+      - '\pwsh.exe'
+      - '\whoami.exe'
+  condition: all of selection_*
+falsepositives:
+  - 'Web applications that legitimately call command-line tools'
+level: high

@@ -1,0 +1,8 @@
+```Title: Driver Signature Enforcement Weakened with bcdedit (raw Sysmon events)```
+```ATT&CK: T1553.006 | Severity: high | Sigma id: e11ebf1a-7a9f-4ba4-8088-aeea7b29a0a7```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Driver developers on test machines```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(Image="*\\bcdedit.exe" CommandLine IN ("*testsigning*", "*nointegritychecks*"))
+| table _time host User ParentImage Image CommandLine

@@ -1,0 +1,8 @@
+```Title: UAC Bypass Handler Registered (ms-settings, mscfile, exefile, Folder) (raw Sysmon events)```
+```ATT&CK: T1548.002 | Severity: high | Sigma id: 8312ef15-078b-44d1-96b1-fa35e0c8c0a2```
+```Data source: Sysmon EventCode 13 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Rare: software that re-registers system file handlers (review the writing process)```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=13
+(TargetObject IN ("*\\ms-settings\\shell\\open\\command\\*", "*\\mscfile\\shell\\open\\command\\*", "*\\exefile\\shell\\open\\command\\*", "*\\Folder\\shell\\open\\command\\*", "*\\Launcher.SystemSettings\\shell\\open\\command\\*"))
+| table _time host User Image EventType TargetObject Details

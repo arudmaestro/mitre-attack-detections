@@ -1,0 +1,13 @@
+// Title: Auto-Elevating Windows Program Started a Child Process
+// ATT&CK: T1548.002 | Tactic: PrivilegeEscalation | Sigma id: 8521aaee-00d2-478f-aac3-3c4cb5369a24
+// Data source: SecurityEvent 4688 (Windows Security Events connector; needs process creation and command-line auditing enabled)
+// Severity: High
+// False positives: Rare: troubleshooting tools started from Event Viewer
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = Computer, Account = SubjectUserName
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+SecurityEvent
+| where TimeGenerated > ago(1d)
+| where EventID == 4688
+| where (ParentProcessName endswith "\\fodhelper.exe" or ParentProcessName endswith "\\computerdefaults.exe" or ParentProcessName endswith "\\wsreset.exe" or ParentProcessName endswith "\\eventvwr.exe") and (not((NewProcessName endswith "\\conhost.exe" or NewProcessName endswith "\\WerFault.exe" or NewProcessName endswith "\\mmc.exe")))
+| project TimeGenerated, Computer, SubjectUserName, ParentProcessName, NewProcessName, CommandLine

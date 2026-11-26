@@ -1,0 +1,8 @@
+```Title: Renamed Windows Utility (OriginalFileName Mismatch) (raw Sysmon events)```
+```ATT&CK: T1036.003 | Severity: high | Sigma id: 088f58e3-432d-4b45-a4dd-1ea178e58172```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Software that ships a renamed copy of a Windows utility```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+((OriginalFileName="Cmd.Exe" NOT Image="*\\cmd.exe") OR (OriginalFileName="PowerShell.EXE" NOT Image="*\\powershell.exe") OR (OriginalFileName="CertUtil.exe" NOT Image="*\\certutil.exe") OR (OriginalFileName="RUNDLL32.EXE" NOT Image="*\\rundll32.exe") OR (OriginalFileName="MSHTA.EXE" NOT Image="*\\mshta.exe") OR (OriginalFileName="REGSVR32.EXE" NOT Image="*\\regsvr32.exe"))
+| table _time host User ParentImage Image CommandLine

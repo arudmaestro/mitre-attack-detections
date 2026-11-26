@@ -1,0 +1,23 @@
+title: 'Terminal Services ServiceDll Changed'
+id: fc8a5f1f-f361-4a6f-a563-e1e585196a95
+status: experimental
+description: 'Detects the Remote Desktop service (TermService) ServiceDll being set to anything other than termsrv.dll, which loads an attacker DLL into the RDP service.'
+references:
+  - https://attack.mitre.org/techniques/T1505/005/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.persistence
+  - attack.t1505.005
+logsource:
+  category: registry_set
+  product: windows
+detection:
+  selection:
+    TargetObject|endswith: '\Services\TermService\Parameters\ServiceDll'
+  filter_default:
+    Details|endswith: '\System32\termsrv.dll'
+  condition: selection and not filter_default
+falsepositives:
+  - 'Third-party RDP enhancement products that replace termsrv.dll (rare)'
+level: high

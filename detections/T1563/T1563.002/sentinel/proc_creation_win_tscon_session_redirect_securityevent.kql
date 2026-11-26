@@ -1,0 +1,13 @@
+// Title: RDP Session Connected to Another Session with tscon
+// ATT&CK: T1563.002 | Tactic: LateralMovement | Sigma id: 07d06103-89e8-46cd-8984-b37aa58a5509
+// Data source: SecurityEvent 4688 (Windows Security Events connector; needs process creation and command-line auditing enabled)
+// Severity: High
+// False positives: Administrators reconnecting their own sessions (rare)
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = Computer, Account = SubjectUserName
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+SecurityEvent
+| where TimeGenerated > ago(1d)
+| where EventID == 4688
+| where NewProcessName endswith "\\tscon.exe" and CommandLine contains "/dest:"
+| project TimeGenerated, Computer, SubjectUserName, ParentProcessName, NewProcessName, CommandLine

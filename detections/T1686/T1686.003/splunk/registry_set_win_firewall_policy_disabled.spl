@@ -1,0 +1,8 @@
+```Title: Windows Firewall Profile Disabled in the Registry (raw Sysmon events)```
+```ATT&CK: T1686.003 | Severity: high | Sigma id: 9ddb483d-2b03-4f36-bca7-968dfb9c6276```
+```Data source: Sysmon EventCode 13 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Group Policy deliberately turning off a profile; third-party firewalls replacing Windows Firewall```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=13
+(TargetObject="*\\FirewallPolicy\\*" TargetObject="*\\EnableFirewall" Details="DWORD (0x00000000)")
+| table _time host User Image EventType TargetObject Details

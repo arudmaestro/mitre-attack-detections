@@ -1,0 +1,12 @@
+// Title: SSH Reverse or Dynamic Port Forwarding on Linux
+// ATT&CK: T1572 | Tactic: CommandAndControl | Sigma id: 593e3979-b66f-4102-a728-9e52aa454410
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Low
+// False positives: Administrators and developers using SSH forwarding
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where FolderPath endswith "/ssh" and (ProcessCommandLine contains " -R " or ProcessCommandLine contains " -D ")
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

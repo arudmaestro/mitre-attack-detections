@@ -1,0 +1,36 @@
+title: 'Windows System Process Name Running Outside System Folders'
+id: 0e1dc5e6-a2c9-4c3c-aa35-1fb99ec2f566
+status: experimental
+description: 'Detects processes named like core Windows binaries (svchost, lsass, services, csrss, smss, wininit, winlogon, spoolsv, taskhostw) running from outside System32, SysWOW64 or WinSxS.'
+references:
+  - https://attack.mitre.org/techniques/T1036/005/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.stealth
+  - attack.t1036.005
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    Image|endswith:
+      - '\svchost.exe'
+      - '\lsass.exe'
+      - '\services.exe'
+      - '\csrss.exe'
+      - '\smss.exe'
+      - '\wininit.exe'
+      - '\winlogon.exe'
+      - '\spoolsv.exe'
+      - '\taskhostw.exe'
+  filter_system:
+    Image|startswith:
+      - 'C:\Windows\System32\'
+      - 'C:\Windows\SysWOW64\'
+      - 'C:\Windows\WinSxS\'
+  condition: selection and not filter_system
+falsepositives:
+  - 'Windows installed on a drive other than C:'
+  - 'Security tools that copy system binaries for analysis'
+level: high

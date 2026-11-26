@@ -1,0 +1,12 @@
+// Title: SID History Added to an Account
+// ATT&CK: T1134.005 | Tactic: Stealth, PrivilegeEscalation | Sigma id: 03034695-d015-4424-80dc-8b7182ac783f
+// Data source: SecurityEvent 4765, 4766 (Windows Security Events connector)
+// Severity: High
+// False positives: Domain migrations that use SID History (ADMT)
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = Computer, Account = SubjectUserName
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+SecurityEvent
+| where TimeGenerated > ago(1d)
+| where EventID in (4765, 4766)
+| project TimeGenerated, Computer, EventID, Activity, SubjectUserName, SubjectDomainName, TargetUserName, TargetDomainName, MemberName

@@ -1,0 +1,8 @@
+```Title: Custom Shim Database Registered in the Registry (raw Sysmon events)```
+```ATT&CK: T1546.011 | Severity: medium | Sigma id: cbd5d312-fb19-4f81-a0b0-416720fcc649```
+```Data source: Sysmon EventCode 13 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Software installers that ship compatibility fixes```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=13
+(TargetObject IN ("*\\AppCompatFlags\\InstalledSDB\\*", "*\\AppCompatFlags\\Custom\\*"))
+| table _time host User Image EventType TargetObject Details

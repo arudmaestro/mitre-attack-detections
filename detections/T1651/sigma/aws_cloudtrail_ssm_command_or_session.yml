@@ -1,0 +1,24 @@
+title: 'AWS Systems Manager Command or Session Started'
+id: 6d1487ae-add5-43f6-8ae7-352baea3114f
+status: experimental
+description: 'Detects SSM SendCommand and StartSession, which run commands or open a shell on EC2 instances through the SSM agent, without network access to the instance.'
+references:
+  - https://attack.mitre.org/techniques/T1651/
+author: Detection Engineering Team
+date: 2026-11-25
+tags:
+  - attack.execution
+  - attack.t1651
+logsource:
+  product: aws
+  service: cloudtrail
+detection:
+  selection:
+    eventSource: 'ssm.amazonaws.com'
+    eventName:
+      - 'SendCommand'
+      - 'StartSession'
+  condition: selection
+falsepositives:
+  - 'Operations teams and automation (patching, Ansible / SSM documents) using Systems Manager'
+level: low

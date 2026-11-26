@@ -1,0 +1,8 @@
+```Title: File Copied to a Remote Admin Share (raw Sysmon events)```
+```ATT&CK: T1570 | Severity: medium | Sigma id: 8566a182-f84c-4e4e-9e3f-0c02aa5edadf```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Software deployment and administrators copying files to servers through admin shares```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(CommandLine IN ("*copy *", "*xcopy*", "*robocopy*", "*move *", "*Copy-Item*") CommandLine IN ("*\\C$\\*", "*\\ADMIN$\\*"))
+| table _time host User ParentImage Image CommandLine

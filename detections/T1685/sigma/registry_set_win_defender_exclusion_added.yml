@@ -1,0 +1,21 @@
+title: 'Microsoft Defender Exclusion Added in the Registry'
+id: cbf970af-cea9-4f4d-9438-21b11079043b
+status: experimental
+description: 'Detects a value written under Windows Defender\Exclusions (Paths, Extensions, Processes, IpAddresses), i.e. a new Defender exclusion made by any program or policy.'
+references:
+  - https://attack.mitre.org/techniques/T1685/
+author: Detection Engineering Team
+date: 2026-11-25
+tags:
+  - attack.defense-impairment
+  - attack.t1685
+logsource:
+  category: registry_set
+  product: windows
+detection:
+  selection:
+    TargetObject|contains: '\Windows Defender\Exclusions\'
+  condition: selection
+falsepositives:
+  - 'Group Policy / Intune exclusion deployment and security-product installers'
+level: medium

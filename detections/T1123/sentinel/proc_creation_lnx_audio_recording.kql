@@ -1,0 +1,12 @@
+// Title: Audio Recording Tool Executed on Linux
+// ATT&CK: T1123 | Tactic: Collection | Sigma id: 53e7a1f7-dfce-43a0-97b4-897c0a804ba8
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Low
+// False positives: Users recording audio, conferencing troubleshooting
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where FolderPath endswith "/arecord" or FolderPath endswith "/parecord"
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

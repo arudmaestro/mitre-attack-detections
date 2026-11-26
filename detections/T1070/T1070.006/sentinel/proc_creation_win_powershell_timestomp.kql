@@ -1,0 +1,12 @@
+// Title: File Timestamps Modified with PowerShell
+// ATT&CK: T1070.006 | Tactic: Stealth | Sigma id: 3a09dfd0-5304-480c-b24d-93471881ca1a
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Medium
+// False positives: Scripts that preserve or reset timestamps (backups, build tools)
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where (FolderPath endswith "\\powershell.exe" or FolderPath endswith "\\pwsh.exe") and (ProcessCommandLine contains "CreationTime" or ProcessCommandLine contains "LastWriteTime" or ProcessCommandLine contains "LastAccessTime") and ProcessCommandLine contains "="
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

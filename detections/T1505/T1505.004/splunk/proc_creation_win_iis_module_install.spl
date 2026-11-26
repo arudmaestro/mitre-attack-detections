@@ -1,0 +1,8 @@
+```Title: IIS Native or Managed Module Installed (raw Sysmon events)```
+```ATT&CK: T1505.004 | Severity: medium | Sigma id: 8f346254-6b2d-41ed-9416-c8a0af5f3a0f```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: IIS administrators and application installers adding modules```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+((Image="*\\appcmd.exe" CommandLine IN ("*install module*", "*add module*", "*globalModules*")) OR CommandLine IN ("*New-WebGlobalModule*", "*Enable-WebGlobalModule*"))
+| table _time host User ParentImage Image CommandLine

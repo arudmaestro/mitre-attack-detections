@@ -1,0 +1,29 @@
+title: 'Sudoers File Written from the Command Line on macOS'
+id: 451a467e-ff42-475f-831a-dfd3b25c5279
+status: experimental
+description: 'Detects cp, mv, tee, ln, install or sed writing to /etc/sudoers or /etc/sudoers.d, used to grant NOPASSWD rules or lengthen sudo caching (timestamp_timeout).'
+references:
+  - https://attack.mitre.org/techniques/T1548/003/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.privilege-escalation
+  - attack.t1548.003
+logsource:
+  category: process_creation
+  product: macos
+detection:
+  selection_img:
+    Image|endswith:
+      - '/cp'
+      - '/mv'
+      - '/tee'
+      - '/ln'
+      - '/install'
+      - '/sed'
+  selection_path:
+    CommandLine|contains: '/etc/sudoers'
+  condition: all of selection_*
+falsepositives:
+  - 'MDM scripts and administrators changing sudo rules'
+level: medium

@@ -1,0 +1,33 @@
+title: JScript Executed from User-Writable Path
+id: 9539797b-f314-4735-88be-258ea47c2bc3
+status: experimental
+description: Detects wscript.exe or cscript.exe running a .js or .jse file from a user-writable directory.
+references:
+  - https://attack.mitre.org/techniques/T1059/007/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.execution
+  - attack.t1059.007
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_img:
+    Image|endswith:
+      - '\wscript.exe'
+      - '\cscript.exe'
+  selection_cli:
+    CommandLine|contains:
+      - '.js'
+  selection_cli2:
+    CommandLine|contains:
+      - '\AppData\'
+      - '\Temp\'
+      - '\Users\Public\'
+      - '\Downloads\'
+  condition: all of selection_*
+falsepositives:
+  - Legitimate scripts in Temp or Downloads
+  - Command lines containing .json paths
+level: medium

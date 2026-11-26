@@ -1,0 +1,12 @@
+// Title: Partition Table or File System Signatures Wiped on Linux
+// ATT&CK: T1561.002 | Tactic: Impact | Sigma id: bf8c8e94-29e4-40eb-9f30-5f5ad8f1737f
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: High
+// False positives: Provisioning, OS installation and disk re-use scripts
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where (FolderPath endswith "/wipefs" and (ProcessCommandLine contains " -a" or ProcessCommandLine contains " --all")) or (FolderPath endswith "/sgdisk" and (ProcessCommandLine contains "--zap" or ProcessCommandLine contains " -Z"))
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

@@ -1,0 +1,12 @@
+// Title: Pass-the-Ticket Tool Command Line
+// ATT&CK: T1550.003 | Tactic: LateralMovement | Sigma id: 810de0fd-6ae8-4a7c-8bf9-5325d1959070
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: High
+// False positives: Penetration tests and red-team exercises
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where ProcessCommandLine contains "kerberos::ptt" or ProcessCommandLine contains " ptt " or ProcessCommandLine contains "/ptt"
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

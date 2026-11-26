@@ -1,0 +1,35 @@
+title: 'Executable with a Document Double Extension'
+id: 29b39d5e-361c-4282-a0d6-e2957432ff1e
+status: experimental
+description: 'Detects processes whose image name has a document or image extension followed by .exe or .scr (e.g. invoice.pdf.exe).'
+references:
+  - https://attack.mitre.org/techniques/T1036/007/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.stealth
+  - attack.t1036.007
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    Image|endswith:
+      - '.pdf.exe'
+      - '.doc.exe'
+      - '.docx.exe'
+      - '.xls.exe'
+      - '.xlsx.exe'
+      - '.ppt.exe'
+      - '.pptx.exe'
+      - '.rtf.exe'
+      - '.txt.exe'
+      - '.jpg.exe'
+      - '.png.exe'
+      - '.pdf.scr'
+      - '.doc.scr'
+      - '.docx.scr'
+  condition: selection
+falsepositives:
+  - 'None expected'
+level: high

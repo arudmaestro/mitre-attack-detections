@@ -1,0 +1,13 @@
+// Title: File Written to the Startup Folder from the Command Line
+// ATT&CK: T1547.001 | Tactic: Persistence, PrivilegeEscalation | Sigma id: 61cd67b8-a2e4-425c-b46b-4174fa9cd1da
+// Data source: SecurityEvent 4688 (Windows Security Events connector; needs process creation and command-line auditing enabled)
+// Severity: Medium
+// False positives: Login scripts and installers that place shortcuts in the Startup folder
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = Computer, Account = SubjectUserName
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+SecurityEvent
+| where TimeGenerated > ago(1d)
+| where EventID == 4688
+| where (NewProcessName endswith "\\cmd.exe" or NewProcessName endswith "\\powershell.exe" or NewProcessName endswith "\\pwsh.exe" or NewProcessName endswith "\\wscript.exe" or NewProcessName endswith "\\cscript.exe" or NewProcessName endswith "\\xcopy.exe" or NewProcessName endswith "\\robocopy.exe" or NewProcessName endswith "\\certutil.exe" or NewProcessName endswith "\\bitsadmin.exe" or NewProcessName endswith "\\curl.exe") and CommandLine contains "\\Start Menu\\Programs\\Startup"
+| project TimeGenerated, Computer, SubjectUserName, ParentProcessName, NewProcessName, CommandLine

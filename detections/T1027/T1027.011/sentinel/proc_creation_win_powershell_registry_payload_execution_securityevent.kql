@@ -1,0 +1,13 @@
+// Title: PowerShell Executing Payload Stored in the Registry
+// ATT&CK: T1027.011 | Tactic: Stealth | Sigma id: d30d59a9-7d38-4bca-a3e7-5701d5d75161
+// Data source: SecurityEvent 4688 (Windows Security Events connector; needs process creation and command-line auditing enabled)
+// Severity: High
+// False positives: Management scripts that keep encoded configuration in the registry
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = Computer, Account = SubjectUserName
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+SecurityEvent
+| where TimeGenerated > ago(1d)
+| where EventID == 4688
+| where (NewProcessName endswith "\\powershell.exe" or NewProcessName endswith "\\pwsh.exe") and (CommandLine contains "Get-ItemProperty" or CommandLine contains "gp ") and (CommandLine contains "HKCU:" or CommandLine contains "HKLM:" or CommandLine contains "Registry::") and (CommandLine contains "FromBase64String" or CommandLine contains "IEX" or CommandLine contains "Invoke-Expression")
+| project TimeGenerated, Computer, SubjectUserName, ParentProcessName, NewProcessName, CommandLine

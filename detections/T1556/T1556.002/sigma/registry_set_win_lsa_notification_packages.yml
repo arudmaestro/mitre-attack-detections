@@ -1,0 +1,25 @@
+title: 'LSA Password Filter (Notification Packages) Changed'
+id: d417c183-4902-4ae9-9d23-30a99107f5c6
+status: experimental
+description: 'Detects a change to the LSA ''Notification Packages'' value; listed password filter DLLs are loaded into LSASS and receive every new password in plaintext.'
+references:
+  - https://attack.mitre.org/techniques/T1556/002/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.defense-impairment
+  - attack.persistence
+  - attack.credential-access
+  - attack.t1556.002
+logsource:
+  category: registry_set
+  product: windows
+detection:
+  selection:
+    TargetObject|endswith: '\Control\Lsa\Notification Packages'
+  filter_lsass:
+    Image|endswith: '\lsass.exe'
+  condition: selection and not filter_lsass
+falsepositives:
+  - 'Password policy and synchronisation products (e.g. Entra Password Protection DC agent, Specops, password sync tools)'
+level: high

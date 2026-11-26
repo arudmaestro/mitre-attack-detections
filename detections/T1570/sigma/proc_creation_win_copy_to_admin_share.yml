@@ -1,0 +1,30 @@
+title: 'File Copied to a Remote Admin Share'
+id: 8566a182-f84c-4e4e-9e3f-0c02aa5edadf
+status: experimental
+description: 'Detects copy, xcopy, robocopy, move or Copy-Item command lines that write to a C$ or ADMIN$ share, the usual way tools and payloads are pushed to other hosts before remote execution.'
+references:
+  - https://attack.mitre.org/techniques/T1570/
+author: Detection Engineering Team
+date: 2026-11-25
+tags:
+  - attack.lateral-movement
+  - attack.t1570
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_copy:
+    CommandLine|contains:
+      - 'copy '
+      - 'xcopy'
+      - 'robocopy'
+      - 'move '
+      - 'Copy-Item'
+  selection_share:
+    CommandLine|contains:
+      - '\C$\'
+      - '\ADMIN$\'
+  condition: all of selection_*
+falsepositives:
+  - 'Software deployment and administrators copying files to servers through admin shares'
+level: medium

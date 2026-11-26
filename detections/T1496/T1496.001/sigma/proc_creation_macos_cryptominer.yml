@@ -1,0 +1,26 @@
+title: 'Cryptocurrency Miner Command Line on macOS'
+id: 748115b9-fc36-4bfd-b604-87e03d59179b
+status: experimental
+description: 'Detects cryptocurrency miner command lines: mining pool URLs (stratum+tcp/ssl), the XMRig --donate-level option or the xmrig name.'
+references:
+  - https://attack.mitre.org/techniques/T1496/001/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.impact
+  - attack.t1496.001
+logsource:
+  category: process_creation
+  product: macos
+detection:
+  selection:
+    CommandLine|contains:
+      - 'stratum+tcp://'
+      - 'stratum+ssl://'
+      - 'stratum2+tcp://'
+      - '--donate-level'
+      - 'xmrig'
+  condition: selection
+falsepositives:
+  - 'Authorised mining or miner research systems'
+level: high

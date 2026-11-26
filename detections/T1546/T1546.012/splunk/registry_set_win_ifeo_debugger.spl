@@ -1,0 +1,8 @@
+```Title: Image File Execution Options Debugger Set (raw Sysmon events)```
+```ATT&CK: T1546.012 | Severity: medium | Sigma id: 8947fb4e-984d-4be0-a9ac-a0be05d4c27d```
+```Data source: Sysmon EventCode 13 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Developers and admins setting debuggers (e.g. replacing Task Manager with Process Explorer)```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=13
+(TargetObject="*\\Image File Execution Options\\*" TargetObject="*\\Debugger" NOT (Details IN ("*procexp*", "*vsjitdebugger.exe*")))
+| table _time host User Image EventType TargetObject Details

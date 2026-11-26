@@ -1,0 +1,8 @@
+```Title: Process Spawned by WinRM Remote Shell Host (raw Sysmon events)```
+```ATT&CK: T1021.006 | Severity: medium | Sigma id: 179631d6-eaf8-47c8-afc5-b32d78914132```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Administrators and management tools using PowerShell remoting```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(ParentImage IN ("*\\wsmprovhost.exe", "*\\winrshost.exe"))
+| table _time host User ParentImage Image CommandLine

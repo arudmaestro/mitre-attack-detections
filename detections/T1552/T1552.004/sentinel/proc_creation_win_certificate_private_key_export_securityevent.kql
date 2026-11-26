@@ -1,0 +1,13 @@
+// Title: Certificate Private Key Export from the Command Line
+// ATT&CK: T1552.004 | Tactic: CredentialAccess | Sigma id: ae7c5f56-3701-421b-b67b-d57b4773d1cb
+// Data source: SecurityEvent 4688 (Windows Security Events connector; needs process creation and command-line auditing enabled)
+// Severity: Medium
+// False positives: Administrators backing up or migrating certificates
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = Computer, Account = SubjectUserName
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+SecurityEvent
+| where TimeGenerated > ago(1d)
+| where EventID == 4688
+| where CommandLine contains "Export-PfxCertificate" or CommandLine contains "exportPFX" or CommandLine contains "crypto::capi" or CommandLine contains "crypto::certificates" or CommandLine contains "crypto::cng"
+| project TimeGenerated, Computer, SubjectUserName, ParentProcessName, NewProcessName, CommandLine

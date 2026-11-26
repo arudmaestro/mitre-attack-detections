@@ -1,0 +1,28 @@
+title: 'Shell History Cleared or Disabled on Linux'
+id: 38e387fc-7d45-4b6a-9fb1-564f7875c4b0
+status: experimental
+description: 'Detects command lines that delete, truncate or disable shell history (.bash_history, .zsh_history, HISTFILE, HISTSIZE=0, history -c).'
+references:
+  - https://attack.mitre.org/techniques/T1070/003/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.stealth
+  - attack.t1070.003
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection:
+    CommandLine|contains:
+      - '.bash_history'
+      - '.zsh_history'
+      - 'HISTFILE'
+      - 'HISTSIZE=0'
+      - 'HISTFILESIZE=0'
+      - 'history -c'
+  condition: selection
+falsepositives:
+  - 'Users viewing their own history file'
+  - 'Hardening scripts'
+level: medium

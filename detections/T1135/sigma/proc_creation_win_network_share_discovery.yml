@@ -1,0 +1,36 @@
+title: 'Network Share Discovery on Windows'
+id: 4941689f-92eb-4466-adf8-2ff4646b022a
+status: experimental
+description: 'Detects share enumeration with net view against a host, net share, Get-SmbShare, or PowerView share-finding functions.'
+references:
+  - https://attack.mitre.org/techniques/T1135/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.discovery
+  - attack.t1135
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_net_view:
+    Image|endswith:
+      - '\net.exe'
+      - '\net1.exe'
+    CommandLine|contains|all:
+      - ' view'
+      - '\\'
+  selection_net_share:
+    Image|endswith:
+      - '\net.exe'
+      - '\net1.exe'
+    CommandLine|endswith: ' share'
+  selection_ps:
+    CommandLine|contains:
+      - 'Get-SmbShare'
+      - 'Invoke-ShareFinder'
+      - 'Find-DomainShare'
+  condition: 1 of selection_*
+falsepositives:
+  - 'Administrators and IT inventory scripts'
+level: low

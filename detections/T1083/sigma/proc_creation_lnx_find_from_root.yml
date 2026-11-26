@@ -1,0 +1,22 @@
+title: 'Filesystem Search from Root with find'
+id: 7e93a029-ae03-4c2f-86dd-f89243ecdabc
+status: experimental
+description: 'Detects find searching the whole filesystem from /.'
+references:
+  - https://attack.mitre.org/techniques/T1083/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.discovery
+  - attack.t1083
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection:
+    Image|endswith: '/find'
+    CommandLine|contains: 'find / '
+  condition: selection
+falsepositives:
+  - 'Administrators, backup and search tools'
+level: low

@@ -1,0 +1,12 @@
+// Title: User Account Created (Windows Security 4720)
+// ATT&CK: T1136 | Tactic: Persistence | Sigma id: 48b471e6-f2a5-41db-874d-77428cb58fbf
+// Data source: SecurityEvent 4720 (Windows Security Events connector)
+// Severity: Low
+// False positives: Normal account provisioning by administrators and identity management systems
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = Computer, Account = SubjectUserName
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+SecurityEvent
+| where TimeGenerated > ago(1d)
+| where EventID == 4720
+| project TimeGenerated, Computer, SubjectUserName, SubjectDomainName, TargetUserName, TargetDomainName

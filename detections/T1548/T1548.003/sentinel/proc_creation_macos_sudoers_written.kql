@@ -1,0 +1,12 @@
+// Title: Sudoers File Written from the Command Line on macOS
+// ATT&CK: T1548.003 | Tactic: PrivilegeEscalation | Sigma id: 451a467e-ff42-475f-831a-dfd3b25c5279
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Medium
+// False positives: MDM scripts and administrators changing sudo rules
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where (FolderPath endswith "/cp" or FolderPath endswith "/mv" or FolderPath endswith "/tee" or FolderPath endswith "/ln" or FolderPath endswith "/install" or FolderPath endswith "/sed") and ProcessCommandLine contains "/etc/sudoers"
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

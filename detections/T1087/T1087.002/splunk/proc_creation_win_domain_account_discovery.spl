@@ -1,0 +1,8 @@
+```Title: Domain Account Discovery (raw Sysmon events)```
+```ATT&CK: T1087.002 | Severity: low | Sigma id: bc88891d-2a87-4052-a1c0-e679fab2b6df```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Administrators and identity management scripts```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity low.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+((Image IN ("*\\net.exe", "*\\net1.exe") CommandLine="*user*" CommandLine="*/domain*" NOT (CommandLine IN ("*/add*", "*/delete*"))) OR CommandLine IN ("*Get-ADUser*", "*Get-DomainUser*", "*Get-NetUser*", "*dsquery user*", "*objectcategory=person*"))
+| table _time host User ParentImage Image CommandLine

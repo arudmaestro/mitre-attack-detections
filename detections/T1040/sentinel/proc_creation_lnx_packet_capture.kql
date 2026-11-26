@@ -1,0 +1,12 @@
+// Title: Packet Capture Tool Executed on Linux
+// ATT&CK: T1040 | Tactic: CredentialAccess, Discovery | Sigma id: aaa55eb1-86b7-401c-a93b-1cdc90f5940b
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Low
+// False positives: Administrators troubleshooting network issues
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where FolderPath endswith "/tcpdump" or FolderPath endswith "/tshark" or FolderPath endswith "/dumpcap" or FolderPath endswith "/tcpflow" or FolderPath endswith "/ngrep"
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

@@ -1,0 +1,12 @@
+// Title: Systemd Timer Enabled or Transient Timer Created
+// ATT&CK: T1053.006 | Tactic: Execution, Persistence, PrivilegeEscalation | Sigma id: ca8cef7c-7dd7-4f01-88e6-686a26206dc8
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Low
+// False positives: Package installation scripts enabling vendor timers; Administrators
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where ((FolderPath endswith "/systemctl" and ProcessCommandLine contains ".timer") and (ProcessCommandLine contains " enable" or ProcessCommandLine contains " start")) or (FolderPath endswith "/systemd-run" and (ProcessCommandLine contains "--on-calendar" or ProcessCommandLine contains "--on-active" or ProcessCommandLine contains "--on-boot" or ProcessCommandLine contains "--on-startup" or ProcessCommandLine contains "--on-unit-active"))
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

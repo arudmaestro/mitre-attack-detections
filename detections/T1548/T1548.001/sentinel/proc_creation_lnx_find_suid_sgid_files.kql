@@ -1,0 +1,12 @@
+// Title: Setuid or Setgid Files Searched with find on Linux
+// ATT&CK: T1548.001 | Tactic: PrivilegeEscalation | Sigma id: bc7a1eb0-11aa-4535-832b-dba3ca8fb076
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Low
+// False positives: Hardening and compliance scans that list setuid files
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where FolderPath endswith "/find" and ProcessCommandLine contains "-perm" and (ProcessCommandLine contains "4000" or ProcessCommandLine contains "2000" or ProcessCommandLine contains "6000" or ProcessCommandLine contains "u=s" or ProcessCommandLine contains "g=s")
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

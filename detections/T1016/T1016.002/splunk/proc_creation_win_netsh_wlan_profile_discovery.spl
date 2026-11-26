@@ -1,0 +1,8 @@
+```Title: Wi-Fi Profile Discovery via netsh (raw Sysmon events)```
+```ATT&CK: T1016.002 | Severity: medium | Sigma id: b9ae19bb-8921-45cf-829a-699d936b381b```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Help desk and users troubleshooting Wi-Fi```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(Image="*\\netsh.exe" CommandLine="*wlan*" CommandLine="*show*" CommandLine="*profile*")
+| table _time host User ParentImage Image CommandLine

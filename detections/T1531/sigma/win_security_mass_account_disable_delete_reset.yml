@@ -1,0 +1,47 @@
+title: 'User account password reset, disabled or deleted (4724/4725/4726)'
+id: f22976bb-89f2-4814-b5a5-e01c83763987
+name: win_security_mass_account_disable_delete_reset_events
+status: experimental
+description: 'Base events for: Many Accounts Reset, Disabled or Deleted by One Account'
+references:
+  - https://attack.mitre.org/techniques/T1531/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.impact
+  - attack.t1531
+logsource:
+  product: windows
+  service: security
+detection:
+  selection:
+    EventID:
+      - 4724
+      - 4725
+      - 4726
+  condition: selection
+level: informational
+---
+title: 'Many Accounts Reset, Disabled or Deleted by One Account'
+id: b883a878-5f44-41fd-972a-df23732e8cbb
+status: experimental
+description: 'Detects one account resetting passwords (4724), disabling (4725) or deleting (4726) at least 5 user accounts within 10 minutes, as done to lock defenders and users out during an attack.'
+references:
+  - https://attack.mitre.org/techniques/T1531/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.impact
+  - attack.t1531
+correlation:
+  type: event_count
+  rules:
+    - win_security_mass_account_disable_delete_reset_events
+  group-by:
+    - SubjectUserName
+  timespan: 10m
+  condition:
+    gte: 5
+falsepositives:
+  - 'Bulk offboarding and identity-management synchronisation (exclude their service accounts)'
+level: high

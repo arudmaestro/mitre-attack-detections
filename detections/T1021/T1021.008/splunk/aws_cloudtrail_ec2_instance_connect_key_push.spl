@@ -1,0 +1,8 @@
+```Title: AWS EC2 Instance Connect SSH Key Pushed (AWS CloudTrail)```
+```ATT&CK: T1021.008 | Severity: low | Sigma id: 624e5dde-bedb-4584-93a8-78736fb2b238```
+```Data source: AWS CloudTrail (Splunk Add-on for AWS). Change index to where your CloudTrail data lives.```
+```False positives: Administrators using EC2 Instance Connect or the serial console```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity low.```
+index=aws sourcetype="aws:cloudtrail"
+(eventSource="ec2-instance-connect.amazonaws.com" eventName IN ("SendSSHPublicKey", "SendSerialConsoleSSHPublicKey"))
+| table _time eventSource eventName userIdentity.arn sourceIPAddress awsRegion errorCode

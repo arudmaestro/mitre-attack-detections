@@ -1,0 +1,23 @@
+title: 'AD CS Certificate Abuse Tool Command Line on Linux'
+id: aa208c96-9f3d-4055-a8db-8c16d257cfbe
+status: experimental
+description: 'Detects Certipy and PKINITtools gettgtpkinit, used to find and abuse vulnerable AD CS templates and to get Kerberos tickets with certificates.'
+references:
+  - https://attack.mitre.org/techniques/T1649/
+author: Detection Engineering Team
+date: 2026-11-25
+tags:
+  - attack.credential-access
+  - attack.t1649
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection:
+    CommandLine|contains:
+      - 'certipy'
+      - 'gettgtpkinit'
+  condition: selection
+falsepositives:
+  - 'Penetration tests and red-team exercises'
+level: high

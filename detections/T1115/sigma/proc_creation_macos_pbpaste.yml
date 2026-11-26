@@ -1,0 +1,21 @@
+title: 'Clipboard Read with pbpaste'
+id: f992cd77-92b1-4ec1-b4f0-8cca8d04f1a0
+status: experimental
+description: 'Detects pbpaste reading the macOS clipboard.'
+references:
+  - https://attack.mitre.org/techniques/T1115/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.collection
+  - attack.t1115
+logsource:
+  category: process_creation
+  product: macos
+detection:
+  selection:
+    Image|endswith: '/pbpaste'
+  condition: selection
+falsepositives:
+  - 'Users and scripts using the clipboard from the terminal'
+level: low

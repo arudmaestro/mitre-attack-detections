@@ -1,0 +1,14 @@
+// Title: Startup Folder Location Changed
+// ATT&CK: T1547.001 | Tactic: Persistence, PrivilegeEscalation | Sigma id: 1607470a-f816-4bcf-9a3d-678ef2697138
+// Data source: DeviceRegistryEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: High
+// False positives: Folder redirection policies
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = InitiatingProcessAccountName, RegistryKey = RegistryKey, RegistryValue = RegistryValueName
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceRegistryEvents
+| where TimeGenerated > ago(1d)
+| where ActionType == "RegistryValueSet"
+| extend TargetObject = strcat(RegistryKey, "\\", RegistryValueName)
+| where (TargetObject endswith "\\User Shell Folders\\Startup" or TargetObject endswith "\\User Shell Folders\\Common Startup") and (not(RegistryValueData endswith "\\Start Menu\\Programs\\Startup"))
+| project TimeGenerated, DeviceName, ActionType, InitiatingProcessAccountName, InitiatingProcessFolderPath, InitiatingProcessCommandLine, RegistryKey, RegistryValueName, RegistryValueType, RegistryValueData

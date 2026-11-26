@@ -1,0 +1,8 @@
+```Title: Virtual Machines Enumerated on a Windows Host (raw Sysmon events)```
+```ATT&CK: T1673 | Severity: low | Sigma id: 0bdbb15f-cd22-4348-a15d-6c25a2bacca9```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Hyper-V and virtualisation administrators, backup software```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity low.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(CommandLine IN ("*Get-VM*", "*VBoxManage list*", "*VBoxManage.exe list*", "*vmrun list*", "*vmrun.exe list*"))
+| table _time host User ParentImage Image CommandLine

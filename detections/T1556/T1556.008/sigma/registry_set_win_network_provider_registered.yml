@@ -1,0 +1,30 @@
+title: 'Network Provider DLL Registered'
+id: 859391e9-b773-48be-973b-8d7580f26da4
+status: experimental
+description: 'Detects a NetworkProvider ProviderPath value other than the built-in Windows providers; network provider DLLs receive the user''s plaintext password at every logon (e.g. NPPSpy).'
+references:
+  - https://attack.mitre.org/techniques/T1556/008/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.defense-impairment
+  - attack.persistence
+  - attack.credential-access
+  - attack.t1556.008
+logsource:
+  category: registry_set
+  product: windows
+detection:
+  selection:
+    TargetObject|contains: '\Services\'
+    TargetObject|endswith: '\NetworkProvider\ProviderPath'
+  filter_builtin:
+    Details|endswith:
+      - '\System32\ntlanman.dll'
+      - '\System32\drprov.dll'
+      - '\System32\davclnt.dll'
+      - '\System32\p9np.dll'
+  condition: selection and not filter_builtin
+falsepositives:
+  - 'VPN, remote-access and storage clients that install a network provider (e.g. Citrix, VMware, Cisco)'
+level: high

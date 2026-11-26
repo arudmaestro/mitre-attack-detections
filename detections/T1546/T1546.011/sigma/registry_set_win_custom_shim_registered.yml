@@ -1,0 +1,24 @@
+title: 'Custom Shim Database Registered in the Registry'
+id: cbd5d312-fb19-4f81-a0b0-416720fcc649
+status: experimental
+description: 'Detects values written under AppCompatFlags\InstalledSDB or AppCompatFlags\Custom, where installed shim databases are registered.'
+references:
+  - https://attack.mitre.org/techniques/T1546/011/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.privilege-escalation
+  - attack.persistence
+  - attack.t1546.011
+logsource:
+  category: registry_set
+  product: windows
+detection:
+  selection:
+    TargetObject|contains:
+      - '\AppCompatFlags\InstalledSDB\'
+      - '\AppCompatFlags\Custom\'
+  condition: selection
+falsepositives:
+  - 'Software installers that ship compatibility fixes'
+level: medium

@@ -1,0 +1,12 @@
+// Title: PowerShell Executing Payload Stored in the Registry
+// ATT&CK: T1027.011 | Tactic: Stealth | Sigma id: d30d59a9-7d38-4bca-a3e7-5701d5d75161
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: High
+// False positives: Management scripts that keep encoded configuration in the registry
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where (FolderPath endswith "\\powershell.exe" or FolderPath endswith "\\pwsh.exe") and (ProcessCommandLine contains "Get-ItemProperty" or ProcessCommandLine contains "gp ") and (ProcessCommandLine contains "HKCU:" or ProcessCommandLine contains "HKLM:" or ProcessCommandLine contains "Registry::") and (ProcessCommandLine contains "FromBase64String" or ProcessCommandLine contains "IEX" or ProcessCommandLine contains "Invoke-Expression")
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

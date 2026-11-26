@@ -1,0 +1,25 @@
+title: 'Raw Disk or Volume Device Access in Command Line'
+id: e47ffc0c-2032-445b-a02a-845b2df2b053
+status: experimental
+description: 'Detects command lines opening raw devices (\\.\PhysicalDriveN, \\.\HarddiskVolumeN, \\.\C:), used to read locked files and bypass file-system controls.'
+references:
+  - https://attack.mitre.org/techniques/T1006/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.stealth
+  - attack.t1006
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - '\.\PhysicalDrive'
+      - '\.\HarddiskVolume'
+      - '\.\C:'
+  condition: selection
+falsepositives:
+  - Disk imaging, backup and forensic tools
+  - Disk management scripts
+level: medium

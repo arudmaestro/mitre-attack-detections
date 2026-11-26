@@ -1,0 +1,8 @@
+```Title: WMIC Process Call Create (raw Sysmon events)```
+```ATT&CK: T1047 | Severity: medium | Sigma id: dc106254-94b9-48dc-b2ed-a7f79bd2d5ec```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Legacy admin scripts and software deployment tools```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(Image="*\\wmic.exe" CommandLine="*process*" CommandLine="*call*" CommandLine="*create*")
+| table _time host User ParentImage Image CommandLine

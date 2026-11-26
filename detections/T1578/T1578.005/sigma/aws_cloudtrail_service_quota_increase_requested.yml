@@ -1,0 +1,22 @@
+title: 'AWS Service Quota Increase Requested'
+id: 46d64d2f-d30d-4b44-87f3-b9c067003d46
+status: experimental
+description: 'Detects RequestServiceQuotaIncrease, used before mass instance creation (e.g. for cryptomining) to raise vCPU or instance limits.'
+references:
+  - https://attack.mitre.org/techniques/T1578/005/
+author: Detection Engineering Team
+date: 2026-11-25
+tags:
+  - attack.defense-impairment
+  - attack.t1578.005
+logsource:
+  product: aws
+  service: cloudtrail
+detection:
+  selection:
+    eventSource: 'servicequotas.amazonaws.com'
+    eventName: 'RequestServiceQuotaIncrease'
+  condition: selection
+falsepositives:
+  - 'Planned capacity increases by cloud operations teams'
+level: medium

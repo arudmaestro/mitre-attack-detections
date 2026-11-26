@@ -1,0 +1,8 @@
+```Title: Web Browser Spawning a Shell or Script Host (raw Sysmon events)```
+```ATT&CK: T1203 | Severity: medium | Sigma id: ac422a4d-2cdf-4fe1-9257-1789f0e4c30d```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Browser extensions with native-messaging hosts that are scripts; Users opening downloaded .bat/.cmd/.hta files directly from the browser's download bar```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(ParentImage IN ("*\\chrome.exe", "*\\msedge.exe", "*\\firefox.exe", "*\\brave.exe", "*\\iexplore.exe") Image IN ("*\\cmd.exe", "*\\powershell.exe", "*\\pwsh.exe", "*\\wscript.exe", "*\\cscript.exe", "*\\mshta.exe", "*\\rundll32.exe", "*\\regsvr32.exe") NOT CommandLine="*chrome-extension://*")
+| table _time host User ParentImage Image CommandLine

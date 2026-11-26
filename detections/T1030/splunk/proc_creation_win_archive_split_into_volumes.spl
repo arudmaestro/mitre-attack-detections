@@ -1,0 +1,8 @@
+```Title: Archive Split into Fixed-Size Volumes with 7-Zip or RAR (raw Sysmon events)```
+```ATT&CK: T1030 | Severity: low | Sigma id: 8022f68e-0eab-4d7e-9647-f693f08474ea```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Users or backup jobs splitting large archives```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity low.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(Image IN ("*\\7z.exe", "*\\7za.exe", "*\\7zr.exe", "*\\rar.exe", "*\\winrar.exe") CommandLine="* -v*")
+| table _time host User ParentImage Image CommandLine

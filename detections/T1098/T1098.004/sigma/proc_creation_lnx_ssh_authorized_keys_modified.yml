@@ -1,0 +1,23 @@
+title: 'SSH authorized_keys Referenced in Command Line'
+id: 6bfbbb0d-5a52-45b1-ab9d-ba8aaf31d51a
+status: experimental
+description: 'Detects command lines writing to or referencing an SSH authorized_keys file, used to add an attacker''s key for persistent access.'
+references:
+  - https://attack.mitre.org/techniques/T1098/004/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.persistence
+  - attack.privilege-escalation
+  - attack.t1098.004
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection:
+    CommandLine|contains: 'authorized_keys'
+  condition: selection
+falsepositives:
+  - 'ssh-copy-id and configuration management deploying keys'
+  - 'Users viewing their own keys'
+level: medium

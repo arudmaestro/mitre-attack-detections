@@ -1,0 +1,13 @@
+// Title: AADInternals Hybrid Identity Backdoor Command
+// ATT&CK: T1556.007 | Tactic: DefenseImpairment, Persistence, CredentialAccess | Sigma id: becbac53-6c27-4eb2-b0cb-0687feaa5379
+// Data source: SecurityEvent 4688 (Windows Security Events connector; needs process creation and command-line auditing enabled)
+// Severity: High
+// False positives: Penetration tests and red-team exercises
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = Computer, Account = SubjectUserName
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+SecurityEvent
+| where TimeGenerated > ago(1d)
+| where EventID == 4688
+| where CommandLine contains "Install-AADIntPTASpy" or CommandLine contains "Register-AADIntPTAAgent" or CommandLine contains "Set-AADIntPassThroughAuthentication" or CommandLine contains "Set-AADIntDesktopSSO"
+| project TimeGenerated, Computer, SubjectUserName, ParentProcessName, NewProcessName, CommandLine

@@ -1,0 +1,8 @@
+```Title: Excel Opened with an XLL Add-in (raw Sysmon events)```
+```ATT&CK: T1137.006 | Severity: medium | Sigma id: 5cad6dc8-9b1e-4000-a726-7f236d8b404e```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Finance or analytics teams using approved XLL add-ins```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(Image="*\\excel.exe" CommandLine="*.xll*")
+| table _time host User ParentImage Image CommandLine

@@ -1,0 +1,8 @@
+```Title: NTDS.dit Access via ntdsutil or Command Line (raw Sysmon events)```
+```ATT&CK: T1003.003 | Severity: high | Sigma id: 377519b9-a636-4ae1-b19d-39b7392e7e26```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: AD backup or disaster recovery procedures (IFM media creation); Backup software referencing ntds.dit```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+((Image="*\\ntdsutil.exe" CommandLine IN ("*ifm*", "*ac i ntds*", "*activate instance ntds*")) OR CommandLine="*ntds.dit*")
+| table _time host User ParentImage Image CommandLine

@@ -1,0 +1,8 @@
+```Title: AWS Systems Manager Command or Session Started (AWS CloudTrail)```
+```ATT&CK: T1651 | Severity: low | Sigma id: 6d1487ae-add5-43f6-8ae7-352baea3114f```
+```Data source: AWS CloudTrail (Splunk Add-on for AWS). Change index to where your CloudTrail data lives.```
+```False positives: Operations teams and automation (patching, Ansible / SSM documents) using Systems Manager```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity low.```
+index=aws sourcetype="aws:cloudtrail"
+(eventSource="ssm.amazonaws.com" eventName IN ("SendCommand", "StartSession"))
+| table _time eventSource eventName userIdentity.arn sourceIPAddress awsRegion errorCode

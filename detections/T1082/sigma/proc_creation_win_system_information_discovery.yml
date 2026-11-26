@@ -1,0 +1,28 @@
+title: 'System Information Discovery on Windows'
+id: bd0fc0ab-d621-4e28-9cb2-ef37c66f1c46
+status: experimental
+description: 'Detects systeminfo.exe and WMIC queries for OS, computer system, BIOS or product details.'
+references:
+  - https://attack.mitre.org/techniques/T1082/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.discovery
+  - attack.t1082
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_systeminfo:
+    Image|endswith: '\systeminfo.exe'
+  selection_wmic:
+    Image|endswith: '\wmic.exe'
+    CommandLine|contains:
+      - 'os get'
+      - 'computersystem'
+      - 'bios get'
+      - 'csproduct'
+  condition: 1 of selection_*
+falsepositives:
+  - 'Administrators, inventory and support tools'
+level: low

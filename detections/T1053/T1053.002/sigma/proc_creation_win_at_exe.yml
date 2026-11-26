@@ -1,0 +1,23 @@
+title: 'Legacy at.exe Scheduler Executed'
+id: b910b16f-f4e6-482e-a61f-fac31a0a9d5d
+status: experimental
+description: 'Detects execution of at.exe, the deprecated Windows job scheduler still abused for execution and persistence.'
+references:
+  - https://attack.mitre.org/techniques/T1053/002/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.execution
+  - attack.persistence
+  - attack.privilege-escalation
+  - attack.t1053.002
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    Image|endswith: '\at.exe'
+  condition: selection
+falsepositives:
+  - 'Very old scripts that still call at.exe'
+level: medium

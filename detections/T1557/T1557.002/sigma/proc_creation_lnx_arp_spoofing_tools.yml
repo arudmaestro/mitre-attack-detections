@@ -1,0 +1,25 @@
+title: 'ARP Spoofing Tool Executed'
+id: ca3b7c0d-c092-457b-bf43-d645e8c6bd62
+status: experimental
+description: 'Detects arpspoof, ettercap and bettercap, tools that send forged ARP replies to place the host between other devices on the local network.'
+references:
+  - https://attack.mitre.org/techniques/T1557/002/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.credential-access
+  - attack.collection
+  - attack.t1557.002
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection:
+    Image|endswith:
+      - '/arpspoof'
+      - '/ettercap'
+      - '/bettercap'
+  condition: selection
+falsepositives:
+  - 'Network testing and penetration tests'
+level: high

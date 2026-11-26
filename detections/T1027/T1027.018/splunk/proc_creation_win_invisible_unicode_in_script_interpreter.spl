@@ -1,0 +1,8 @@
+```Title: Invisible Unicode Characters in Script Interpreter Command Line (raw Sysmon events)```
+```ATT&CK: T1027.018 | Severity: medium | Sigma id: 7879736f-4774-4c34-abf7-76bb4c9097ba```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Scripts handling text in languages that use zero-width joiners (e.g. Persian, Indic scripts) or emoji```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(Image IN ("*\\powershell.exe", "*\\pwsh.exe", "*\\cmd.exe", "*\\wscript.exe", "*\\cscript.exe", "*\\mshta.exe") CommandLine IN ("*​*", "*‌*", "*‍*", "*⁠*"))
+| table _time host User ParentImage Image CommandLine

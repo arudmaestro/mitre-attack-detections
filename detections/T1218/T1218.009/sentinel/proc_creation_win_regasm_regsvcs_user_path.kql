@@ -1,0 +1,12 @@
+// Title: Regasm or Regsvcs Loading an Assembly from a User-Writable Folder
+// ATT&CK: T1218.009 | Tactic: Stealth | Sigma id: cb726946-3b94-4ce3-91a4-45f54078d832
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Medium
+// False positives: Developers registering COM assemblies they built in a user folder; Installers registering assemblies from a temporary folder
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where (FolderPath endswith "\\RegAsm.exe" or FolderPath endswith "\\RegSvcs.exe") and (ProcessCommandLine contains "\\AppData\\Local\\Temp\\" or ProcessCommandLine contains "\\AppData\\Roaming\\" or ProcessCommandLine contains "\\Downloads\\" or ProcessCommandLine contains "\\Users\\Public\\")
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

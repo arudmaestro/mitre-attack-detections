@@ -1,0 +1,12 @@
+// Title: Shortcut Created or Changed from the Command Line
+// ATT&CK: T1547.009 | Tactic: Persistence, PrivilegeEscalation | Sigma id: 90e728f0-0918-4947-b9c7-dad084093097
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Low
+// False positives: Deployment and login scripts that create shortcuts
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where ProcessCommandLine contains "CreateShortcut"
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

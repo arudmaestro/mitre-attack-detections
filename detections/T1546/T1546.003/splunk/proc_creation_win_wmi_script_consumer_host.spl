@@ -1,0 +1,8 @@
+```Title: WMI Script Event Consumer Host Running (raw Sysmon events)```
+```ATT&CK: T1546.003 | Severity: high | Sigma id: e013dd4d-fa76-4387-b2b2-38f991fb8e54```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Rare: legacy management scripts using script consumers```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(Image="*\\scrcons.exe")
+| table _time host User ParentImage Image CommandLine

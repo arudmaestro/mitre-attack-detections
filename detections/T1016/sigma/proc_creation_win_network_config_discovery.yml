@@ -1,0 +1,33 @@
+title: 'Network Configuration Discovery Commands'
+id: 00f5040b-c751-46ff-95f6-1c8d6cc4479b
+status: experimental
+description: 'Detects common network configuration discovery commands: ipconfig /all, route print, arp -a and netsh interface show.'
+references:
+  - https://attack.mitre.org/techniques/T1016/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.discovery
+  - attack.t1016
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_ipconfig:
+    Image|endswith: '\ipconfig.exe'
+    CommandLine|contains: '/all'
+  selection_route:
+    Image|endswith: '\route.exe'
+    CommandLine|contains: 'print'
+  selection_arp:
+    Image|endswith: '\arp.exe'
+    CommandLine|contains: '-a'
+  selection_netsh:
+    Image|endswith: '\netsh.exe'
+    CommandLine|contains|all:
+      - 'interface'
+      - 'show'
+  condition: 1 of selection_*
+falsepositives:
+  - Users, help desk and administrators troubleshooting networks
+level: low

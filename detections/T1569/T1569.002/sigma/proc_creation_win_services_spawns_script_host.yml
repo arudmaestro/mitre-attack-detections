@@ -1,0 +1,30 @@
+title: 'Service Control Manager Started a Shell or Script Host'
+id: e55e1c9b-bcf9-479e-bc4d-9bdb660bbab4
+status: experimental
+description: 'Detects services.exe starting cmd, PowerShell, mshta, a script host, rundll32 or regsvr32 directly, i.e. a service whose binary path is a command; remote-execution tools (Impacket smbexec/psexec, Cobalt Strike jump psexec_psh, Metasploit) create such services.'
+references:
+  - https://attack.mitre.org/techniques/T1569/002/
+author: Detection Engineering Team
+date: 2026-11-25
+tags:
+  - attack.execution
+  - attack.t1569.002
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    ParentImage|endswith: '\services.exe'
+    Image|endswith:
+      - '\cmd.exe'
+      - '\powershell.exe'
+      - '\pwsh.exe'
+      - '\mshta.exe'
+      - '\wscript.exe'
+      - '\cscript.exe'
+      - '\rundll32.exe'
+      - '\regsvr32.exe'
+  condition: selection
+falsepositives:
+  - 'Services of backup and management products whose binary path is a script (review and allowlist)'
+level: high

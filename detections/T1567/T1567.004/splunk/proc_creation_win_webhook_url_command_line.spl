@@ -1,0 +1,8 @@
+```Title: Webhook or Bot API URL on the Command Line on Windows (raw Sysmon events)```
+```ATT&CK: T1567.004 | Severity: medium | Sigma id: e1d881bc-7908-41ae-a62a-087ff085d3ce```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Monitoring and build scripts that post notifications to chat webhooks (allowlist them)```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(CommandLine IN ("*discord.com/api/webhooks*", "*discordapp.com/api/webhooks*", "*hooks.slack.com/services*", "*.webhook.office.com*", "*webhook.site*", "*api.telegram.org/bot*"))
+| table _time host User ParentImage Image CommandLine

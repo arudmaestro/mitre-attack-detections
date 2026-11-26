@@ -1,0 +1,8 @@
+```Title: Group Policy Changed with PowerShell or GPO Abuse Tools (raw Sysmon events)```
+```ATT&CK: T1484.001 | Severity: medium | Sigma id: 9ac13a67-786a-4890-a83e-f972c4b95fe1```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Administrators managing Group Policy with PowerShell```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(CommandLine IN ("*Set-GPRegistryValue*", "*Set-GPPrefRegistryValue*", "*New-GPLink*", "*SharpGPOAbuse*", "*--AddComputerTask*", "*--AddUserTask*", "*--AddLocalAdmin*", "*--AddUserRights*", "*--AddComputerScript*", "*--AddUserScript*"))
+| table _time host User ParentImage Image CommandLine

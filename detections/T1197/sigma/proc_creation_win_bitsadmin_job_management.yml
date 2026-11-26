@@ -1,0 +1,28 @@
+title: 'BITS Job Created or Configured with bitsadmin'
+id: 61e0acb6-5746-4d8d-bb2b-0fb42dfceb64
+status: experimental
+description: 'Detects bitsadmin creating, populating or configuring BITS jobs (/create, /addfile, /SetNotifyCmdLine, /resume); /SetNotifyCmdLine runs a program when the job completes, a known persistence method.'
+references:
+  - https://attack.mitre.org/techniques/T1197/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.stealth
+  - attack.persistence
+  - attack.execution
+  - attack.t1197
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    Image|endswith: '\bitsadmin.exe'
+    CommandLine|contains:
+      - '/create'
+      - '/addfile'
+      - '/SetNotifyCmdLine'
+      - '/resume'
+  condition: selection
+falsepositives:
+  - 'Legacy software deployment scripts using bitsadmin'
+level: medium

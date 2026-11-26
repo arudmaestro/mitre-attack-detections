@@ -1,0 +1,13 @@
+// Title: Accessibility Program Overwritten with copy or move
+// ATT&CK: T1546.008 | Tactic: PrivilegeEscalation, Persistence | Sigma id: 713e076f-9f85-4e05-82ad-894059f09b1a
+// Data source: SecurityEvent 4688 (Windows Security Events connector; needs process creation and command-line auditing enabled)
+// Severity: High
+// False positives: None expected
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = Computer, Account = SubjectUserName
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+SecurityEvent
+| where TimeGenerated > ago(1d)
+| where EventID == 4688
+| where (NewProcessName endswith "\\cmd.exe" or NewProcessName endswith "\\powershell.exe" or NewProcessName endswith "\\pwsh.exe") and (CommandLine contains "copy " or CommandLine contains "move " or CommandLine contains "Copy-Item" or CommandLine contains "Move-Item") and (CommandLine contains "\\sethc.exe" or CommandLine contains "\\utilman.exe" or CommandLine contains "\\osk.exe" or CommandLine contains "\\Magnify.exe" or CommandLine contains "\\Narrator.exe" or CommandLine contains "\\DisplaySwitch.exe" or CommandLine contains "\\AtBroker.exe")
+| project TimeGenerated, Computer, SubjectUserName, ParentProcessName, NewProcessName, CommandLine

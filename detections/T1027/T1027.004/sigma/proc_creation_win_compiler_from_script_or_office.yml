@@ -1,0 +1,32 @@
+title: 'C# or VB.NET Compiler Launched by Script Host or Office'
+id: 67700421-f39c-4452-ba3a-73684da018b2
+status: experimental
+description: 'Detects csc.exe or vbc.exe started by Windows Script Host, mshta or an Office application, a sign of compiling a delivered payload.'
+references:
+  - https://attack.mitre.org/techniques/T1027/004/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.stealth
+  - attack.t1027.004
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_compiler:
+    Image|endswith:
+      - '\csc.exe'
+      - '\vbc.exe'
+  selection_parent:
+    ParentImage|endswith:
+      - '\wscript.exe'
+      - '\cscript.exe'
+      - '\mshta.exe'
+      - '\winword.exe'
+      - '\excel.exe'
+      - '\powerpnt.exe'
+      - '\outlook.exe'
+  condition: all of selection_*
+falsepositives:
+  - Office add-ins or legacy scripts that compile code at run time
+level: high

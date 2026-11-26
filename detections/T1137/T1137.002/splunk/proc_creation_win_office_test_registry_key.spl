@@ -1,0 +1,8 @@
+```Title: Office Test Registry Key Referenced (raw Sysmon events)```
+```ATT&CK: T1137.002 | Severity: high | Sigma id: 9a132f38-e847-4a40-8643-77307c5ebbd2```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: None expected```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(CommandLine="*Office test\\Special\\Perf*")
+| table _time host User ParentImage Image CommandLine

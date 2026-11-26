@@ -1,0 +1,12 @@
+// Title: Service Created or Changed to Run a Script Host or a File in a User Folder
+// ATT&CK: T1543.003 | Tactic: Persistence, PrivilegeEscalation | Sigma id: 913cef8b-9412-4d5b-b27f-5b8410e796cd
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: High
+// False positives: Software installers that wrap services in a script (rare)
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where ((FolderPath endswith "\\sc.exe" and (ProcessCommandLine contains "create" or ProcessCommandLine contains "config")) or ProcessCommandLine contains "New-Service") and (ProcessCommandLine contains "powershell" or ProcessCommandLine contains "pwsh" or ProcessCommandLine contains "mshta" or ProcessCommandLine contains "wscript" or ProcessCommandLine contains "cscript" or ProcessCommandLine contains "regsvr32" or ProcessCommandLine contains "cmd.exe /c" or ProcessCommandLine contains "cmd /c" or ProcessCommandLine contains "%COMSPEC%" or ProcessCommandLine contains "\\AppData\\Local\\Temp\\" or ProcessCommandLine contains "\\Users\\Public\\")
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

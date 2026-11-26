@@ -1,0 +1,8 @@
+```Title: Print Port Monitor DLL Registered from a User-Writable Folder (raw Sysmon events)```
+```ATT&CK: T1547.010 | Severity: high | Sigma id: 331cb31e-bd48-437d-97ea-32fe792a020e```
+```Data source: Sysmon EventCode 13 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: None expected```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=13
+(TargetObject="*\\Control\\Print\\Monitors\\*" TargetObject="*\\Driver" Details IN ("*\\AppData\\Local\\Temp\\*", "*\\AppData\\Roaming\\*", "*\\Users\\Public\\*", "*\\Downloads\\*"))
+| table _time host User Image EventType TargetObject Details

@@ -1,0 +1,12 @@
+// Title: Password Policy Discovery with pwpolicy
+// ATT&CK: T1201 | Tactic: Discovery | Sigma id: 23ca6d10-c94e-48be-8048-579b540b97d0
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Low
+// False positives: Administrators and MDM or compliance tools checking password settings
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where FolderPath endswith "/pwpolicy" and ProcessCommandLine contains "getaccountpolicies"
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

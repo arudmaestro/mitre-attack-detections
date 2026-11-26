@@ -1,0 +1,13 @@
+// Title: DLL Side-Loading Host Program Running Outside Its Normal Folder
+// ATT&CK: T1574.001 | Tactic: Stealth, Execution | Sigma id: deca6001-564e-4077-b703-2301e2480c4f
+// Data source: SecurityEvent 4688 (Windows Security Events connector; needs process creation and command-line auditing enabled)
+// Severity: High
+// False positives: Windows servicing copies of dism.exe in temporary folders during updates; Windows installed on another drive letter
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = Computer, Account = SubjectUserName
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+SecurityEvent
+| where TimeGenerated > ago(1d)
+| where EventID == 4688
+| where (NewProcessName endswith "\\dism.exe" or NewProcessName endswith "\\winsat.exe" or NewProcessName endswith "\\wermgr.exe" or NewProcessName endswith "\\MpCmdRun.exe" or NewProcessName endswith "\\NisSrv.exe" or NewProcessName endswith "\\msdtc.exe" or NewProcessName endswith "\\consent.exe" or NewProcessName endswith "\\colorcpl.exe") and (not((NewProcessName startswith "C:\\Windows\\System32\\" or NewProcessName startswith "C:\\Windows\\SysWOW64\\" or NewProcessName startswith "C:\\Windows\\WinSxS\\" or NewProcessName startswith "C:\\ProgramData\\Microsoft\\Windows Defender\\Platform\\" or NewProcessName startswith "C:\\Program Files\\Windows Defender\\")))
+| project TimeGenerated, Computer, SubjectUserName, ParentProcessName, NewProcessName, CommandLine

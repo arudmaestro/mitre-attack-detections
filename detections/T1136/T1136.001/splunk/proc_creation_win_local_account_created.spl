@@ -1,0 +1,8 @@
+```Title: Local Account Created from the Command Line (raw Sysmon events)```
+```ATT&CK: T1136.001 | Severity: medium | Sigma id: 7a996bc4-f01c-4d79-9f44-da75ad049fda```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Administrators and provisioning scripts```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+((Image IN ("*\\net.exe", "*\\net1.exe") CommandLine="*user*" CommandLine="*/add*" NOT CommandLine="*/domain*") OR CommandLine="*New-LocalUser*")
+| table _time host User ParentImage Image CommandLine

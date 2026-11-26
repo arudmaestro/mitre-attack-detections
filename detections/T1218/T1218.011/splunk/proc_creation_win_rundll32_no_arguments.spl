@@ -1,0 +1,8 @@
+```Title: Rundll32 Started without Arguments (raw Sysmon events)```
+```ATT&CK: T1218.011 | Severity: medium | Sigma id: b588c84c-920e-4b1d-b843-7a40d7615048```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Rare: broken shortcuts or scripts calling rundll32 without arguments```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(Image="*\\rundll32.exe" CommandLine="*rundll32.exe")
+| table _time host User ParentImage Image CommandLine

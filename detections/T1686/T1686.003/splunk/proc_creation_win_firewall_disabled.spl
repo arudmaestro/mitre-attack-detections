@@ -1,0 +1,8 @@
+```Title: Windows Firewall Disabled from the Command Line (raw Sysmon events)```
+```ATT&CK: T1686.003 | Severity: high | Sigma id: b7c8be69-d815-4821-9b12-9bf9b187d8b6```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Administrators troubleshooting connectivity```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+((Image="*\\netsh.exe" CommandLine IN ("*state off*", "*opmode disable*", "*opmode mode=disable*")) OR (CommandLine="*Set-NetFirewallProfile*" CommandLine IN ("*-Enabled False*", "*-Enabled 0*")))
+| table _time host User ParentImage Image CommandLine

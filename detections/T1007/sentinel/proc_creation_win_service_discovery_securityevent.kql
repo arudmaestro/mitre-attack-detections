@@ -1,0 +1,13 @@
+// Title: System Service Discovery via sc, tasklist or net
+// ATT&CK: T1007 | Tactic: Discovery | Sigma id: 539c94de-400b-4217-b5be-f9bd10f1606e
+// Data source: SecurityEvent 4688 (Windows Security Events connector; needs process creation and command-line auditing enabled)
+// Severity: Low
+// False positives: Administrators and IT management tools; Software installers checking service state
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = Computer, Account = SubjectUserName
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+SecurityEvent
+| where TimeGenerated > ago(1d)
+| where EventID == 4688
+| where (NewProcessName endswith "\\sc.exe" and (CommandLine contains " query" or CommandLine contains " qc ")) or (NewProcessName endswith "\\tasklist.exe" and CommandLine contains "/svc") or ((NewProcessName endswith "\\net.exe" or NewProcessName endswith "\\net1.exe") and CommandLine endswith " start")
+| project TimeGenerated, Computer, SubjectUserName, ParentProcessName, NewProcessName, CommandLine

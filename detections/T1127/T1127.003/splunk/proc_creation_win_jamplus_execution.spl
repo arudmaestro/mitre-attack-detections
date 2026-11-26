@@ -1,0 +1,8 @@
+```Title: JamPlus Build Tool Executed (raw Sysmon events)```
+```ATT&CK: T1127.003 | Severity: low | Sigma id: bda15fa1-2998-4215-a95f-cf03152de91f```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Developers using JamPlus builds```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity low.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(Image="*\\jam.exe")
+| table _time host User ParentImage Image CommandLine

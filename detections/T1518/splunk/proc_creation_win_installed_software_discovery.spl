@@ -1,0 +1,8 @@
+```Title: Installed Software Discovery on Windows (raw Sysmon events)```
+```ATT&CK: T1518 | Severity: low | Sigma id: 2b2c2687-ec62-45d9-b448-510683d060ef```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Inventory, patch-management and support tools```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity low.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(CommandLine IN ("*\\CurrentVersion\\Uninstall*", "*Win32_Product*") OR (Image="*\\wmic.exe" CommandLine="* product*"))
+| table _time host User ParentImage Image CommandLine

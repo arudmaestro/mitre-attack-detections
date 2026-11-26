@@ -1,0 +1,12 @@
+// Title: AD CS Certificate Abuse Tool Command Line on Windows
+// ATT&CK: T1649 | Tactic: CredentialAccess | Sigma id: 737a6f04-f1cc-41c7-9a61-3c6286fb59e5
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: High
+// False positives: Penetration tests and red-team exercises
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where ProcessCommandLine contains "Certify.exe" or ProcessCommandLine contains "ForgeCert" or ProcessCommandLine contains "certipy" or ProcessCommandLine contains " /certificate:"
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

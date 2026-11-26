@@ -1,0 +1,28 @@
+title: 'Process Discovery via tasklist or WMIC'
+id: 981705bb-b104-4b4e-900d-fdfb87d49cef
+status: experimental
+description: 'Detects process listing with tasklist.exe or wmic process list/get.'
+references:
+  - https://attack.mitre.org/techniques/T1057/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.discovery
+  - attack.t1057
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_tasklist:
+    Image|endswith: '\tasklist.exe'
+  selection_wmic:
+    Image|endswith: '\wmic.exe'
+    CommandLine|contains: 'process'
+  selection_wmic_action:
+    CommandLine|contains:
+      - 'list'
+      - ' get'
+  condition: selection_tasklist or (selection_wmic and selection_wmic_action)
+falsepositives:
+  - 'Administrators, support staff and monitoring scripts'
+level: low

@@ -1,0 +1,8 @@
+```Title: SAM Registry Hive Saved via reg.exe (raw Sysmon events)```
+```ATT&CK: T1003.002 | Severity: high | Sigma id: dc3d5d1a-6e00-4678-b117-00a34535d40d```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Backup or forensic tooling that exports hives```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(Image="*\\reg.exe" CommandLine IN ("* save *", "* export *") CommandLine IN ("*hklm\\sam*", "*hkey_local_machine\\sam*"))
+| table _time host User ParentImage Image CommandLine

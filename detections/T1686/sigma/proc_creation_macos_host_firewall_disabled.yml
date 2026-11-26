@@ -1,0 +1,25 @@
+title: 'Application Firewall or Packet Filter Disabled on macOS'
+id: fec7b9fc-5aa8-4be0-9732-151c693069b7
+status: experimental
+description: 'Detects socketfilterfw --setglobalstate off and pfctl -d, which turn off the macOS application firewall or the pf packet filter.'
+references:
+  - https://attack.mitre.org/techniques/T1686/
+author: Detection Engineering Team
+date: 2026-11-25
+tags:
+  - attack.defense-impairment
+  - attack.t1686
+logsource:
+  category: process_creation
+  product: macos
+detection:
+  selection_socketfilterfw:
+    Image|endswith: '/socketfilterfw'
+    CommandLine|contains: 'setglobalstate off'
+  selection_pfctl:
+    Image|endswith: '/pfctl'
+    CommandLine|contains: ' -d'
+  condition: 1 of selection_*
+falsepositives:
+  - 'Administrators troubleshooting network issues'
+level: medium

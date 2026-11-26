@@ -1,0 +1,12 @@
+// Title: SQL Command-Execution Procedure Used from the Command Line
+// ATT&CK: T1505.001 | Tactic: Persistence | Sigma id: 6dbc26be-5d70-459f-9a07-ec5369985e3d
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Medium
+// False positives: DBAs and deployment scripts that configure these procedures
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where ProcessCommandLine contains "xp_cmdshell" or ProcessCommandLine contains "sp_OACreate" or ProcessCommandLine contains "sp_addextendedproc"
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

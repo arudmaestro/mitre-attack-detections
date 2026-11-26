@@ -1,0 +1,8 @@
+```Title: Reflective .NET Assembly or PE Load from the Command Line (raw Sysmon events)```
+```ATT&CK: T1620 | Severity: high | Sigma id: c8e0debe-861a-4b7f-9625-16f54cc5f9fc```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Administration tools that load embedded assemblies from scripts (rare on a command line)```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(CommandLine IN ("*Reflection.Assembly]::Load(*", "*Assembly]::Load([Convert]::FromBase64String*", "*Invoke-ReflectivePEInjection*"))
+| table _time host User ParentImage Image CommandLine

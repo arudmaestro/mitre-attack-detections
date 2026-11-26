@@ -1,0 +1,13 @@
+// Title: RDP Connection History Cleared
+// ATT&CK: T1070.007 | Tactic: Stealth | Sigma id: 02d01e17-c139-4edd-a214-1e4ef3bdfd81
+// Data source: SecurityEvent 4688 (Windows Security Events connector; needs process creation and command-line auditing enabled)
+// Severity: Medium
+// False positives: Privacy cleanup tools and administrators
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = Computer, Account = SubjectUserName
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+SecurityEvent
+| where TimeGenerated > ago(1d)
+| where EventID == 4688
+| where (CommandLine contains "Terminal Server Client" or CommandLine contains "Default.rdp") and (CommandLine contains " delete " or CommandLine contains " del " or CommandLine contains "Remove-Item")
+| project TimeGenerated, Computer, SubjectUserName, ParentProcessName, NewProcessName, CommandLine

@@ -1,0 +1,12 @@
+// Title: Shadow Copies, Backups or Boot Recovery Deleted or Disabled
+// ATT&CK: T1490 | Tactic: Impact | Sigma id: deaf2c80-edd5-481a-9bd8-da0ace14640c
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: High
+// False positives: Backup software rotating its own shadow copies (check the parent process); Administrators freeing disk space
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where (FolderPath endswith "\\vssadmin.exe" and (ProcessCommandLine contains "delete shadows" or ProcessCommandLine contains "resize shadowstorage")) or (FolderPath endswith "\\wmic.exe" and (ProcessCommandLine contains "shadowcopy" and ProcessCommandLine contains "delete")) or (FolderPath endswith "\\wbadmin.exe" and (ProcessCommandLine contains "delete catalog" or ProcessCommandLine contains "delete systemstatebackup" or ProcessCommandLine contains "delete backup")) or (FolderPath endswith "\\bcdedit.exe" and (ProcessCommandLine contains "recoveryenabled" or ProcessCommandLine contains "ignoreallfailures")) or (ProcessCommandLine contains "Win32_Shadowcopy" and (ProcessCommandLine contains "Delete" or ProcessCommandLine contains "Remove-WmiObject" or ProcessCommandLine contains "Remove-CimInstance"))
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

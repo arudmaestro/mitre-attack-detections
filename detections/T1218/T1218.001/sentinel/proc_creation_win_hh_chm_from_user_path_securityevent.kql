@@ -1,0 +1,13 @@
+// Title: CHM File Opened from a Download, Temp or Remote Location
+// ATT&CK: T1218.001 | Tactic: Stealth | Sigma id: 44ffe5c1-4f8f-412c-8a8f-c5a50a326d5b
+// Data source: SecurityEvent 4688 (Windows Security Events connector; needs process creation and command-line auditing enabled)
+// Severity: Medium
+// False positives: Users opening help files shipped with downloaded software
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = Computer, Account = SubjectUserName
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+SecurityEvent
+| where TimeGenerated > ago(1d)
+| where EventID == 4688
+| where NewProcessName endswith "\\hh.exe" and (CommandLine contains "\\AppData\\Local\\Temp\\" or CommandLine contains "\\AppData\\Roaming\\" or CommandLine contains "\\Downloads\\" or CommandLine contains "\\Users\\Public\\" or CommandLine contains "http://" or CommandLine contains "https://")
+| project TimeGenerated, Computer, SubjectUserName, ParentProcessName, NewProcessName, CommandLine

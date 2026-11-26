@@ -1,0 +1,8 @@
+```Title: Network Provider DLL Registered (raw Sysmon events)```
+```ATT&CK: T1556.008 | Severity: high | Sigma id: 859391e9-b773-48be-973b-8d7580f26da4```
+```Data source: Sysmon EventCode 13 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: VPN, remote-access and storage clients that install a network provider (e.g. Citrix, VMware, Cisco)```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=13
+(TargetObject="*\\Services\\*" TargetObject="*\\NetworkProvider\\ProviderPath" NOT (Details IN ("*\\System32\\ntlanman.dll", "*\\System32\\drprov.dll", "*\\System32\\davclnt.dll", "*\\System32\\p9np.dll")))
+| table _time host User Image EventType TargetObject Details

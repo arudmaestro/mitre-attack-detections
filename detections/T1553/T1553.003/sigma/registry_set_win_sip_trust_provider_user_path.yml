@@ -1,0 +1,31 @@
+title: 'SIP or Trust Provider DLL Registered from a User-Writable Folder'
+id: f16fc65f-4f27-4591-be8d-bba8495adaf5
+status: experimental
+description: 'Detects a Subject Interface Package (CryptSIPDll...) or trust provider ($DLL) registration pointing to a DLL in Temp, AppData, Downloads or the public profile; a hijacked SIP or trust provider makes unsigned code pass signature checks.'
+references:
+  - https://attack.mitre.org/techniques/T1553/003/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.defense-impairment
+  - attack.t1553.003
+logsource:
+  category: registry_set
+  product: windows
+detection:
+  selection_sip:
+    TargetObject|contains: '\CryptSIPDll'
+    TargetObject|endswith: '\Dll'
+  selection_trust:
+    TargetObject|contains: '\Cryptography\Providers\Trust\'
+    TargetObject|endswith: '\$DLL'
+  selection_path:
+    Details|contains:
+      - '\AppData\Local\Temp\'
+      - '\AppData\Roaming\'
+      - '\Users\Public\'
+      - '\Downloads\'
+  condition: (selection_sip or selection_trust) and selection_path
+falsepositives:
+  - 'None expected'
+level: high

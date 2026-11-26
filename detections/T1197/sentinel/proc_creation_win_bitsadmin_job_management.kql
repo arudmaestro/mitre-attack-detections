@@ -1,0 +1,12 @@
+// Title: BITS Job Created or Configured with bitsadmin
+// ATT&CK: T1197 | Tactic: Stealth, Persistence, Execution | Sigma id: 61e0acb6-5746-4d8d-bb2b-0fb42dfceb64
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Medium
+// False positives: Legacy software deployment scripts using bitsadmin
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where FolderPath endswith "\\bitsadmin.exe" and (ProcessCommandLine contains "/create" or ProcessCommandLine contains "/addfile" or ProcessCommandLine contains "/SetNotifyCmdLine" or ProcessCommandLine contains "/resume")
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

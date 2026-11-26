@@ -1,0 +1,12 @@
+// Title: Login Item Added with osascript
+// ATT&CK: T1547.015 | Tactic: Persistence, PrivilegeEscalation | Sigma id: 90983b49-7354-460c-810a-bc7a5b56bb65
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Medium
+// False positives: Installers and setup scripts that add their application to login items
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where FolderPath endswith "/osascript" and (ProcessCommandLine contains "make login item" or ProcessCommandLine contains "make new login item")
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

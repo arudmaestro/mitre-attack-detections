@@ -1,0 +1,13 @@
+// Title: Shadow Copies, Backups or Boot Recovery Deleted or Disabled
+// ATT&CK: T1490 | Tactic: Impact | Sigma id: deaf2c80-edd5-481a-9bd8-da0ace14640c
+// Data source: SecurityEvent 4688 (Windows Security Events connector; needs process creation and command-line auditing enabled)
+// Severity: High
+// False positives: Backup software rotating its own shadow copies (check the parent process); Administrators freeing disk space
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = Computer, Account = SubjectUserName
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+SecurityEvent
+| where TimeGenerated > ago(1d)
+| where EventID == 4688
+| where (NewProcessName endswith "\\vssadmin.exe" and (CommandLine contains "delete shadows" or CommandLine contains "resize shadowstorage")) or (NewProcessName endswith "\\wmic.exe" and (CommandLine contains "shadowcopy" and CommandLine contains "delete")) or (NewProcessName endswith "\\wbadmin.exe" and (CommandLine contains "delete catalog" or CommandLine contains "delete systemstatebackup" or CommandLine contains "delete backup")) or (NewProcessName endswith "\\bcdedit.exe" and (CommandLine contains "recoveryenabled" or CommandLine contains "ignoreallfailures")) or (CommandLine contains "Win32_Shadowcopy" and (CommandLine contains "Delete" or CommandLine contains "Remove-WmiObject" or CommandLine contains "Remove-CimInstance"))
+| project TimeGenerated, Computer, SubjectUserName, ParentProcessName, NewProcessName, CommandLine

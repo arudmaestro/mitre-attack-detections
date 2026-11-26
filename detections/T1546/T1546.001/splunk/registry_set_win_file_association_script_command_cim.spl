@@ -1,0 +1,11 @@
+```Title: File Association Open Command Set to a Script Host (CIM Endpoint.Registry)```
+```ATT&CK: T1546.001 | Severity: medium | Sigma id: 3f32a1a5-2b8d-4d63-a426-e358a1bce6b8```
+```Data source: CIM Endpoint.Registry data model. summariesonly=false works without acceleration; set true once the data model is accelerated.```
+```False positives: Applications that register PowerShell or script files with a custom handler```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+| tstats summariesonly=false allow_old_summaries=true fillnull_value="null" count min(_time) as firstTime max(_time) as lastTime
+    from datamodel=Endpoint.Registry
+    where Registry.registry_path="*\\shell\\open\\command\\*" Registry.registry_value_data IN ("*powershell*", "*pwsh*", "*mshta*", "*wscript*", "*cscript*", "*regsvr32*", "*cmd.exe /c*", "*cmd /c*", "*%COMSPEC%*", "*\\AppData\\Local\\Temp\\*", "*\\Users\\Public\\*")
+    by Registry.dest Registry.user Registry.process_guid Registry.process_id Registry.registry_path Registry.registry_value_name Registry.registry_value_data Registry.action
+| rename Registry.* as *
+| convert timeformat="%Y-%m-%dT%H:%M:%S" ctime(firstTime) ctime(lastTime)

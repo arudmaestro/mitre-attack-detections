@@ -1,0 +1,12 @@
+// Title: Bash Reverse Shell via /dev/tcp
+// ATT&CK: T1059.004 | Tactic: Execution | Sigma id: 8ecf30c4-12dd-4c34-aff7-3469105c47d2
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: High
+// False positives: Administrator scripts that test TCP connectivity with /dev/tcp
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where (FolderPath endswith "/bash" or FolderPath endswith "/sh") and ProcessCommandLine contains "/dev/tcp/"
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

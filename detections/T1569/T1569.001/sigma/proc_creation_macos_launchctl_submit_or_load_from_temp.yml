@@ -1,0 +1,31 @@
+title: 'Program Run with launchctl submit or a Launch Job Loaded from a Temp Folder'
+id: fe59c1ab-4027-48c1-899e-e48544bf1a5f
+status: experimental
+description: 'Detects launchctl submit, which runs a command as a launchd job without a plist on disk, and launchctl load / bootstrap of a plist in /tmp, /private/tmp or /Users/Shared.'
+references:
+  - https://attack.mitre.org/techniques/T1569/001/
+author: Detection Engineering Team
+date: 2026-11-25
+tags:
+  - attack.execution
+  - attack.t1569.001
+logsource:
+  category: process_creation
+  product: macos
+detection:
+  selection_img:
+    Image|endswith: '/launchctl'
+  selection_submit:
+    CommandLine|contains: ' submit '
+  selection_load:
+    CommandLine|contains:
+      - ' load '
+      - ' bootstrap '
+  selection_temp:
+    CommandLine|contains:
+      - '/tmp/'
+      - '/Users/Shared/'
+  condition: selection_img and (selection_submit or (selection_load and selection_temp))
+falsepositives:
+  - 'Developer tools and installers using launchctl submit (rare)'
+level: medium

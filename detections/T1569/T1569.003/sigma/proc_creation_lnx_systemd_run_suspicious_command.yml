@@ -1,0 +1,31 @@
+title: 'Command Run as a Transient systemd Unit from a Temp Folder or Shell'
+id: 7f5701a2-e26c-4650-bd75-41b36c2b7176
+status: experimental
+description: 'Detects systemd-run starting a program from /tmp, /dev/shm or /var/tmp, a shell command (bash -c, sh -c) or a download tool; transient units run detached from the session, often as root, and leave no unit file.'
+references:
+  - https://attack.mitre.org/techniques/T1569/003/
+author: Detection Engineering Team
+date: 2026-11-25
+tags:
+  - attack.execution
+  - attack.t1569.003
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection_img:
+    Image|endswith: '/systemd-run'
+  selection_cmd:
+    CommandLine|contains:
+      - '/tmp/'
+      - '/dev/shm/'
+      - '/var/tmp/'
+      - 'bash -c'
+      - 'sh -c'
+      - 'curl '
+      - 'wget '
+      - 'base64'
+  condition: all of selection_*
+falsepositives:
+  - 'Administrators and automation running ad-hoc jobs with systemd-run'
+level: medium

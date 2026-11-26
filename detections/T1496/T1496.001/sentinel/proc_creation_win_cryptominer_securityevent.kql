@@ -1,0 +1,13 @@
+// Title: Cryptocurrency Miner Command Line on Windows
+// ATT&CK: T1496.001 | Tactic: Impact | Sigma id: fcb6d625-2448-4672-b224-fa12ddc79906
+// Data source: SecurityEvent 4688 (Windows Security Events connector; needs process creation and command-line auditing enabled)
+// Severity: High
+// False positives: Authorised mining or miner research systems
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = Computer, Account = SubjectUserName
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+SecurityEvent
+| where TimeGenerated > ago(1d)
+| where EventID == 4688
+| where CommandLine contains "stratum+tcp://" or CommandLine contains "stratum+ssl://" or CommandLine contains "stratum2+tcp://" or CommandLine contains "--donate-level" or CommandLine contains "xmrig"
+| project TimeGenerated, Computer, SubjectUserName, ParentProcessName, NewProcessName, CommandLine

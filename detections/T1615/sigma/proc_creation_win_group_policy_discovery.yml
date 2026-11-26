@@ -1,0 +1,34 @@
+title: 'Group Policy Settings Enumerated'
+id: 7330caa3-092c-4a5c-aa94-b8d4b8ed1a79
+status: experimental
+description: 'Detects gpresult reports (/r, /z, /v, /h, /x) and Group Policy enumeration cmdlets (Get-GPOReport, Get-GPResultantSetOfPolicy, PowerView Get-DomainGPO / Get-NetGPO), used to find security settings and privilege-escalation paths.'
+references:
+  - https://attack.mitre.org/techniques/T1615/
+author: Detection Engineering Team
+date: 2026-11-25
+tags:
+  - attack.discovery
+  - attack.t1615
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_gpresult_img:
+    Image|endswith: '\gpresult.exe'
+  selection_gpresult_report:
+    CommandLine|contains:
+      - '/r'
+      - '/z'
+      - '/v'
+      - '/h'
+      - '/x'
+  selection_ps:
+    CommandLine|contains:
+      - 'Get-GPOReport'
+      - 'Get-GPResultantSetOfPolicy'
+      - 'Get-DomainGPO'
+      - 'Get-NetGPO'
+  condition: (selection_gpresult_img and selection_gpresult_report) or selection_ps
+falsepositives:
+  - 'Helpdesk and administrators troubleshooting Group Policy'
+level: low

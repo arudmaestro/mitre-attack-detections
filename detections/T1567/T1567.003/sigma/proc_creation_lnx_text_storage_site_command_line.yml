@@ -1,0 +1,28 @@
+title: 'Text Storage Site Referenced on the Command Line on Linux'
+id: 78299f70-3dff-4f64-a594-98eb7d529ec7
+status: experimental
+description: 'Detects a command line that contains a paste-site domain (Pastebin, paste.ee, hastebin, rentry, dpaste, paste.rs, ghostbin), as used by scripts to upload stolen data or download payloads.'
+references:
+  - https://attack.mitre.org/techniques/T1567/003/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.exfiltration
+  - attack.t1567.003
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection:
+    CommandLine|contains:
+      - 'pastebin.com'
+      - 'paste.ee'
+      - 'hastebin.com'
+      - 'rentry.co'
+      - 'dpaste.com'
+      - 'paste.rs'
+      - 'ghostbin.'
+  condition: selection
+falsepositives:
+  - 'Developers using paste sites from the command line'
+level: medium

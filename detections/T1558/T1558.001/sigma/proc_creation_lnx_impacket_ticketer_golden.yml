@@ -1,0 +1,23 @@
+title: 'Golden Ticket Forged with Impacket ticketer'
+id: 3edd545e-4f6c-467d-a1ec-65a99f5d2d4d
+status: experimental
+description: 'Detects Impacket ticketer without -spn, i.e. forging a ticket-granting ticket with the KRBTGT key (with -spn it forges a silver ticket, see T1558.002).'
+references:
+  - https://attack.mitre.org/techniques/T1558/001/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.credential-access
+  - attack.t1558.001
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection:
+    CommandLine|contains: 'ticketer'
+  filter_silver:
+    CommandLine|contains: '-spn'
+  condition: selection and not filter_silver
+falsepositives:
+  - 'Penetration tests and red-team exercises'
+level: high

@@ -1,0 +1,12 @@
+// Title: Outlook Folder Home Page Configured
+// ATT&CK: T1137.004 | Tactic: Persistence | Sigma id: 0be36d2d-5f3f-449a-94a7-f606648a82c2
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: High
+// False positives: Rare legacy configurations that use Outlook folder home pages
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where ProcessCommandLine contains "\\Outlook\\WebView\\"
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

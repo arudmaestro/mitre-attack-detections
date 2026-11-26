@@ -1,0 +1,8 @@
+```Title: AWS Account Left, Removed or Moved in the Organization (AWS CloudTrail)```
+```ATT&CK: T1666 | Severity: high | Sigma id: 7d04dfbf-7907-4672-93ae-7a0dbd0f2ba9```
+```Data source: AWS CloudTrail (Splunk Add-on for AWS). Change index to where your CloudTrail data lives.```
+```False positives: Cloud platform teams reorganising accounts```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+index=aws sourcetype="aws:cloudtrail"
+(eventSource="organizations.amazonaws.com" eventName IN ("LeaveOrganization", "RemoveAccountFromOrganization", "MoveAccount"))
+| table _time eventSource eventName userIdentity.arn sourceIPAddress awsRegion errorCode

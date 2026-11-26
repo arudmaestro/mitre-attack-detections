@@ -1,0 +1,26 @@
+title: 'Device Drivers Enumerated on Windows'
+id: 5bee8e95-4eb4-46a6-bb80-e0d31a5018e1
+status: experimental
+description: 'Detects driverquery and WMI / PowerShell queries of installed drivers (Win32_PnPSignedDriver, Win32_SystemDriver, Get-WindowsDriver), used to find security drivers and vulnerable drivers to abuse.'
+references:
+  - https://attack.mitre.org/techniques/T1652/
+author: Detection Engineering Team
+date: 2026-11-25
+tags:
+  - attack.discovery
+  - attack.t1652
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_driverquery:
+    Image|endswith: '\driverquery.exe'
+  selection_query:
+    CommandLine|contains:
+      - 'Win32_PnPSignedDriver'
+      - 'Win32_SystemDriver'
+      - 'Get-WindowsDriver'
+  condition: 1 of selection_*
+falsepositives:
+  - 'Inventory, support and driver update tools'
+level: low

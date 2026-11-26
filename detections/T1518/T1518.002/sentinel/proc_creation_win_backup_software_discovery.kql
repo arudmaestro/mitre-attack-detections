@@ -1,0 +1,12 @@
+// Title: Backup Software Discovery on Windows
+// ATT&CK: T1518.002 | Tactic: Discovery | Sigma id: 51f34752-ecb7-4808-a74d-8877e907fda5
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Low
+// False positives: Backup product installers and health checks; Administrators troubleshooting backup services
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where (FolderPath endswith "\\findstr.exe" or FolderPath endswith "\\sc.exe" or FolderPath endswith "\\tasklist.exe" or FolderPath endswith "\\wmic.exe" or FolderPath endswith "\\reg.exe") and (ProcessCommandLine contains "veeam" or ProcessCommandLine contains "backupexec" or ProcessCommandLine contains "acronis" or ProcessCommandLine contains "commvault" or ProcessCommandLine contains "veritas" or ProcessCommandLine contains "arcserve" or ProcessCommandLine contains "cohesity" or ProcessCommandLine contains "rubrik")
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

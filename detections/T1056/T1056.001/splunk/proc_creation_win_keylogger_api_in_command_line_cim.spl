@@ -1,0 +1,12 @@
+```Title: Keylogging API or Module Referenced in Command Line (CIM Endpoint.Processes)```
+```ATT&CK: T1056.001 | Severity: medium | Sigma id: df15f795-96ad-4a1f-8867-c42cb1595d78```
+```Data source: CIM Endpoint.Processes data model. summariesonly=false works without acceleration; set true once the data model is accelerated.```
+```False positives: Accessibility or automation scripts that read keyboard state```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+| tstats summariesonly=false allow_old_summaries=true fillnull_value="null" count min(_time) as firstTime max(_time) as lastTime
+    from datamodel=Endpoint.Processes
+    where Processes.process IN ("*GetAsyncKeyState*", "*SetWindowsHookEx*", "*GetKeyboardState*", "*Get-Keystrokes*")
+    by Processes.process Processes.dest Processes.process_current_directory Processes.process_path Processes.process_integrity_level Processes.original_file_name Processes.parent_process Processes.parent_process_path Processes.parent_process_guid Processes.parent_process_id Processes.process_guid Processes.process_id Processes.user
+| rename Processes.* as *
+| convert timeformat="%Y-%m-%dT%H:%M:%S" ctime(firstTime)
+| convert timeformat="%Y-%m-%dT%H:%M:%S" ctime(lastTime)

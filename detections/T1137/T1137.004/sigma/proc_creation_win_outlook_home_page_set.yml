@@ -1,0 +1,21 @@
+title: 'Outlook Folder Home Page Configured'
+id: 0be36d2d-5f3f-449a-94a7-f606648a82c2
+status: experimental
+description: 'Detects command lines referencing the Outlook WebView registry key, used to set a folder home page that loads attacker HTML/script.'
+references:
+  - https://attack.mitre.org/techniques/T1137/004/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.persistence
+  - attack.t1137.004
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains: '\Outlook\WebView\'
+  condition: selection
+falsepositives:
+  - 'Rare legacy configurations that use Outlook folder home pages'
+level: high

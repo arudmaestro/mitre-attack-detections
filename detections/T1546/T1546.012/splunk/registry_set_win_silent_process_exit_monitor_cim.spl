@@ -1,0 +1,11 @@
+```Title: Silent Process Exit Monitor Program Set (CIM Endpoint.Registry)```
+```ATT&CK: T1546.012 | Severity: high | Sigma id: 8b9876f1-356d-46e9-904e-c43d54dc33aa```
+```Data source: CIM Endpoint.Registry data model. summariesonly=false works without acceleration; set true once the data model is accelerated.```
+```False positives: Debugging configurations set by developers (rare)```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+| tstats summariesonly=false allow_old_summaries=true fillnull_value="null" count min(_time) as firstTime max(_time) as lastTime
+    from datamodel=Endpoint.Registry
+    where Registry.registry_path="*\\SilentProcessExit\\*" Registry.registry_path="*\\MonitorProcess"
+    by Registry.dest Registry.user Registry.process_guid Registry.process_id Registry.registry_path Registry.registry_value_name Registry.registry_value_data Registry.action
+| rename Registry.* as *
+| convert timeformat="%Y-%m-%dT%H:%M:%S" ctime(firstTime) ctime(lastTime)

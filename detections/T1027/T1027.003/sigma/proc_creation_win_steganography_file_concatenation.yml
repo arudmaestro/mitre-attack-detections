@@ -1,0 +1,39 @@
+title: 'Payload Hidden in Image via copy /b or Steganography Tool'
+id: 9209a3bc-a2cd-401a-afeb-dedd303fd229
+status: experimental
+description: 'Detects copy /b concatenating an image with an archive or executable, or use of Invoke-PSImage or steghide.'
+references:
+  - https://attack.mitre.org/techniques/T1027/003/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.stealth
+  - attack.t1027.003
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_copy:
+    CommandLine|contains: 'copy /b'
+  selection_image:
+    CommandLine|contains:
+      - '.jpg'
+      - '.jpeg'
+      - '.png'
+      - '.gif'
+      - '.bmp'
+  selection_payload:
+    CommandLine|contains:
+      - '.zip'
+      - '.rar'
+      - '.7z'
+      - '.exe'
+      - '.ps1'
+  selection_tools:
+    CommandLine|contains:
+      - 'Invoke-PSImage'
+      - 'steghide'
+  condition: (selection_copy and selection_image and selection_payload) or selection_tools
+falsepositives:
+  - Rare legitimate use of copy /b to join files
+level: medium

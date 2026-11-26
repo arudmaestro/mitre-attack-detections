@@ -1,0 +1,36 @@
+title: 'Linux Audit Disabled or Rules Deleted'
+id: 1f2b5bda-7f67-43ac-8224-3af8f42fe1a3
+status: experimental
+description: 'Detects auditctl -e 0 (disable auditing), auditctl -D (delete all rules), and systemctl / service stopping, disabling or masking auditd.'
+references:
+  - https://attack.mitre.org/techniques/T1685/004/
+author: Detection Engineering Team
+date: 2026-11-25
+tags:
+  - attack.defense-impairment
+  - attack.t1685.004
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection_auditctl_img:
+    Image|endswith: '/auditctl'
+  selection_auditctl_cmd:
+    CommandLine|contains:
+      - ' -e 0'
+      - ' -D'
+  selection_service_img:
+    Image|endswith:
+      - '/systemctl'
+      - '/service'
+  selection_service_name:
+    CommandLine|contains: 'auditd'
+  selection_service_action:
+    CommandLine|contains:
+      - ' stop'
+      - ' disable'
+      - ' mask'
+  condition: (selection_auditctl_img and selection_auditctl_cmd) or (selection_service_img and selection_service_name and selection_service_action)
+falsepositives:
+  - 'Administrators reloading audit rules (auditctl -D is followed by loading rules; augenrules does this)'
+level: high

@@ -1,0 +1,12 @@
+// Title: File Shredding or Disk Overwrite on Linux
+// ATT&CK: T1485 | Tactic: Impact | Sigma id: e543d478-dcd0-4fe0-922c-f8f1a3777b4c
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Medium
+// False positives: Administrators wiping disks before reuse; Scripts that shred temporary secrets
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where (FolderPath endswith "/shred" or FolderPath endswith "/wipe" or FolderPath endswith "/srm") or ((FolderPath endswith "/dd" and (ProcessCommandLine contains "if=/dev/zero" or ProcessCommandLine contains "if=/dev/urandom" or ProcessCommandLine contains "if=/dev/random")) and (ProcessCommandLine contains "of=/dev/sd" or ProcessCommandLine contains "of=/dev/nvme" or ProcessCommandLine contains "of=/dev/vd" or ProcessCommandLine contains "of=/dev/xvd" or ProcessCommandLine contains "of=/dev/hd" or ProcessCommandLine contains "of=/dev/mapper/"))
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

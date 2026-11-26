@@ -1,0 +1,8 @@
+```Title: Member Added to a Privileged Windows Group (raw Windows Security events)```
+```ATT&CK: T1098.007 | Severity: high | Sigma id: b914089c-0210-4304-84fd-2e508cf245f2```
+```Data source: Windows Security EventCode 4728, 4732, 4756 (Splunk Add-on for Microsoft Windows). Change index to where your Security logs live.```
+```False positives: Administrators granting rights through change control```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+index=wineventlog source IN ("XmlWinEventLog:Security", "WinEventLog:Security")
+(EventCode IN (4728, 4732, 4756) TargetUserName IN ("Administrators", "Domain Admins", "Enterprise Admins", "Schema Admins", "Remote Desktop Users", "Backup Operators", "Account Operators"))
+| table _time host EventCode SubjectUserName SubjectDomainName TargetUserName TargetDomainName MemberName

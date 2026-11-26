@@ -1,0 +1,12 @@
+// Title: System Logs Deleted or Erased on macOS
+// ATT&CK: T1685.006 | Tactic: DefenseImpairment | Sigma id: d6fd043a-7484-4fa4-a5be-e0e3a26a2e83
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Medium
+// False positives: Administrators removing old logs
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where ((FolderPath endswith "/rm" or FolderPath endswith "/shred" or FolderPath endswith "/truncate" or FolderPath endswith "/unlink") and ProcessCommandLine contains "/var/log/") or (FolderPath endswith "/log" and ProcessCommandLine contains " erase")
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

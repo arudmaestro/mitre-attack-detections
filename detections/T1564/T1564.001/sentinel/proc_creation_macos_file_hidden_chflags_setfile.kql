@@ -1,0 +1,12 @@
+// Title: File Hidden with chflags or SetFile on macOS
+// ATT&CK: T1564.001 | Tactic: Stealth | Sigma id: a5494d0c-52df-4ba1-a18a-e77c6b9a342d
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Low
+// False positives: Installers hiding helper files
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where (FolderPath endswith "/chflags" and ProcessCommandLine contains "hidden") or (FolderPath endswith "/SetFile" and ProcessCommandLine contains "-a V")
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

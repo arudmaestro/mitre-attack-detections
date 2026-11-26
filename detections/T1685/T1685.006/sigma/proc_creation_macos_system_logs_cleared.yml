@@ -1,0 +1,31 @@
+title: 'System Logs Deleted or Erased on macOS'
+id: d6fd043a-7484-4fa4-a5be-e0e3a26a2e83
+status: experimental
+description: 'Detects rm, shred, truncate or unlink on files under /var/log or /private/var/log, and log erase (unified log), used to erase evidence.'
+references:
+  - https://attack.mitre.org/techniques/T1685/006/
+author: Detection Engineering Team
+date: 2026-11-25
+tags:
+  - attack.defense-impairment
+  - attack.t1685.006
+logsource:
+  category: process_creation
+  product: macos
+detection:
+  selection_tool:
+    Image|endswith:
+      - '/rm'
+      - '/shred'
+      - '/truncate'
+      - '/unlink'
+  selection_path:
+    CommandLine|contains: '/var/log/'
+  selection_log_img:
+    Image|endswith: '/log'
+  selection_log_erase:
+    CommandLine|contains: ' erase'
+  condition: (selection_tool and selection_path) or (selection_log_img and selection_log_erase)
+falsepositives:
+  - 'Administrators removing old logs'
+level: medium

@@ -1,0 +1,21 @@
+title: 'Keystrokes Sent with SendKeys from the Command Line'
+id: 5ad69823-cfa2-44b3-937c-39751ce37c82
+status: experimental
+description: 'Detects SendKeys (WScript.Shell or System.Windows.Forms) in a command line, used to type commands into other windows, accept prompts or drive GUI programs.'
+references:
+  - https://attack.mitre.org/techniques/T1674/
+author: Detection Engineering Team
+date: 2026-11-25
+tags:
+  - attack.execution
+  - attack.t1674
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains: 'SendKeys'
+  condition: selection
+falsepositives:
+  - 'UI automation and test scripts'
+level: medium

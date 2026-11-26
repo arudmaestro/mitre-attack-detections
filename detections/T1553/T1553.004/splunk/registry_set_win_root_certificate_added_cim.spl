@@ -1,0 +1,11 @@
+```Title: Root Certificate Added to the Registry Store (CIM Endpoint.Registry)```
+```ATT&CK: T1553.004 | Severity: low | Sigma id: 14fab96f-a5ec-42a0-8de1-b42149f0d670```
+```Data source: CIM Endpoint.Registry data model. summariesonly=false works without acceleration; set true once the data model is accelerated.```
+```False positives: Enterprise PKI, Group Policy certificate deployment, TLS inspection and VPN software```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity low.```
+| tstats summariesonly=false allow_old_summaries=true fillnull_value="null" count min(_time) as firstTime max(_time) as lastTime
+    from datamodel=Endpoint.Registry
+    where Registry.registry_path="*\\SystemCertificates\\Root\\Certificates\\*" Registry.registry_path="*\\Blob"
+    by Registry.dest Registry.user Registry.process_guid Registry.process_id Registry.registry_path Registry.registry_value_name Registry.registry_value_data Registry.action
+| rename Registry.* as *
+| convert timeformat="%Y-%m-%dT%H:%M:%S" ctime(firstTime) ctime(lastTime)

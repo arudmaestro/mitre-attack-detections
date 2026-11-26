@@ -1,0 +1,8 @@
+```Title: Keylogging API or Module Referenced in Command Line (raw Sysmon events)```
+```ATT&CK: T1056.001 | Severity: medium | Sigma id: df15f795-96ad-4a1f-8867-c42cb1595d78```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Accessibility or automation scripts that read keyboard state```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(CommandLine IN ("*GetAsyncKeyState*", "*SetWindowsHookEx*", "*GetKeyboardState*", "*Get-Keystrokes*"))
+| table _time host User ParentImage Image CommandLine

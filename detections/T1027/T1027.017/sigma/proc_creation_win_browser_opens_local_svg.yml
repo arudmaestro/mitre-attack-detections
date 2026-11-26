@@ -1,0 +1,35 @@
+title: 'Browser Opening a Local SVG File from Mail or Download Folders'
+id: 8233c4e4-b3c2-4e40-b0df-db5310f16012
+status: experimental
+description: 'Detects a web browser launched to open a local .svg file from Outlook attachment cache, Downloads or Temp, the delivery step of SVG smuggling.'
+references:
+  - https://attack.mitre.org/techniques/T1027/017/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.stealth
+  - attack.t1027.017
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_browser:
+    Image|endswith:
+      - '\msedge.exe'
+      - '\chrome.exe'
+      - '\firefox.exe'
+      - '\brave.exe'
+      - '\opera.exe'
+  selection_svg:
+    CommandLine|contains: '.svg'
+  selection_path:
+    CommandLine|contains:
+      - '\Content.Outlook\'
+      - '\Olk\'
+      - '\INetCache\'
+      - '\Downloads\'
+      - '\Temp\'
+  condition: all of selection_*
+falsepositives:
+  - 'Users opening legitimate SVG images received by email'
+level: medium

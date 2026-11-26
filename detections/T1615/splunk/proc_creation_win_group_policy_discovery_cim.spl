@@ -1,0 +1,12 @@
+```Title: Group Policy Settings Enumerated (CIM Endpoint.Processes)```
+```ATT&CK: T1615 | Severity: low | Sigma id: 7330caa3-092c-4a5c-aa94-b8d4b8ed1a79```
+```Data source: CIM Endpoint.Processes data model. summariesonly=false works without acceleration; set true once the data model is accelerated.```
+```False positives: Helpdesk and administrators troubleshooting Group Policy```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity low.```
+| tstats summariesonly=false allow_old_summaries=true fillnull_value="null" count min(_time) as firstTime max(_time) as lastTime
+    from datamodel=Endpoint.Processes
+    where (Processes.process_name="gpresult.exe" Processes.process IN ("*/r*", "*/z*", "*/v*", "*/h*", "*/x*")) OR Processes.process IN ("*Get-GPOReport*", "*Get-GPResultantSetOfPolicy*", "*Get-DomainGPO*", "*Get-NetGPO*")
+    by Processes.process Processes.dest Processes.process_current_directory Processes.process_path Processes.process_integrity_level Processes.original_file_name Processes.parent_process Processes.parent_process_path Processes.parent_process_guid Processes.parent_process_id Processes.process_guid Processes.process_id Processes.user
+| rename Processes.* as *
+| convert timeformat="%Y-%m-%dT%H:%M:%S" ctime(firstTime)
+| convert timeformat="%Y-%m-%dT%H:%M:%S" ctime(lastTime)

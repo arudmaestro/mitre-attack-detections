@@ -1,0 +1,12 @@
+// Title: Script File Opened from Downloads, Temp or Outlook Attachments
+// ATT&CK: T1204.002 | Tactic: Execution | Sigma id: 5e7dd240-866c-4ae0-a151-a3796bc5e746
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Medium
+// False positives: Installers and login scripts that run VBScript from a temporary folder
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where (FolderPath endswith "\\wscript.exe" or FolderPath endswith "\\cscript.exe" or FolderPath endswith "\\mshta.exe") and (ProcessCommandLine contains "\\Downloads\\" or ProcessCommandLine contains "\\AppData\\Local\\Temp\\" or ProcessCommandLine contains "\\Content.Outlook\\" or ProcessCommandLine contains "\\INetCache\\")
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

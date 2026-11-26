@@ -1,0 +1,8 @@
+```Title: Webcam Capture with ffmpeg on Windows (raw Sysmon events)```
+```ATT&CK: T1125 | Severity: medium | Sigma id: 15971128-c737-48f8-b0fd-4db3a1912f18```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Users or developers recording video with ffmpeg```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(Image="*\\ffmpeg.exe" CommandLine="*dshow*" CommandLine="*video=*")
+| table _time host User ParentImage Image CommandLine

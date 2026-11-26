@@ -1,0 +1,12 @@
+// Title: Driver Signature Enforcement Weakened with bcdedit
+// ATT&CK: T1553.006 | Tactic: DefenseImpairment | Sigma id: e11ebf1a-7a9f-4ba4-8088-aeea7b29a0a7
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: High
+// False positives: Driver developers on test machines
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where FolderPath endswith "\\bcdedit.exe" and (ProcessCommandLine contains "testsigning" or ProcessCommandLine contains "nointegritychecks")
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

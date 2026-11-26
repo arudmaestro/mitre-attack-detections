@@ -1,0 +1,33 @@
+title: 'PowerShell Profile Written from the Command Line'
+id: e4660922-ef5b-4a43-8c58-c34810b1809e
+status: experimental
+description: 'Detects command lines that write to a PowerShell profile ($PROFILE, profile.ps1, Microsoft.PowerShell_profile.ps1) with Add-Content, Set-Content, Out-File, Copy-Item or >>; profiles run every time PowerShell starts.'
+references:
+  - https://attack.mitre.org/techniques/T1546/013/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.privilege-escalation
+  - attack.persistence
+  - attack.t1546.013
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_target:
+    CommandLine|contains:
+      - '$PROFILE'
+      - 'Microsoft.PowerShell_profile.ps1'
+      - '\WindowsPowerShell\profile.ps1'
+      - '\PowerShell\profile.ps1'
+  selection_write:
+    CommandLine|contains:
+      - 'Add-Content'
+      - 'Set-Content'
+      - 'Out-File'
+      - 'Copy-Item'
+      - '>>'
+  condition: all of selection_*
+falsepositives:
+  - 'Users and setup scripts customising their PowerShell profile'
+level: medium

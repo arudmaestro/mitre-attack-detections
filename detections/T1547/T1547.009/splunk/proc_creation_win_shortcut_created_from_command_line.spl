@@ -1,0 +1,8 @@
+```Title: Shortcut Created or Changed from the Command Line (raw Sysmon events)```
+```ATT&CK: T1547.009 | Severity: low | Sigma id: 90e728f0-0918-4947-b9c7-dad084093097```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Deployment and login scripts that create shortcuts```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity low.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(CommandLine="*CreateShortcut*")
+| table _time host User ParentImage Image CommandLine

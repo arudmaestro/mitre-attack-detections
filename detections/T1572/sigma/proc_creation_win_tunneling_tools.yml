@@ -1,0 +1,34 @@
+title: 'Tunneling Tool Executed on Windows'
+id: 20be19cd-6e99-49e0-b30c-2194fe850b91
+status: experimental
+description: 'Detects ngrok, chisel, frp client, cloudflared tunnel and plink with reverse or dynamic port forwarding, tools that tunnel connections through outbound HTTPS or SSH to reach internal hosts.'
+references:
+  - https://attack.mitre.org/techniques/T1572/
+author: Detection Engineering Team
+date: 2026-11-25
+tags:
+  - attack.command-and-control
+  - attack.t1572
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_tools:
+    Image|endswith:
+      - '\ngrok.exe'
+      - '\chisel.exe'
+      - '\frpc.exe'
+  selection_cloudflared_img:
+    Image|endswith: '\cloudflared.exe'
+  selection_cloudflared_cmd:
+    CommandLine|contains: 'tunnel'
+  selection_plink_img:
+    Image|endswith: '\plink.exe'
+  selection_plink_cmd:
+    CommandLine|contains:
+      - ' -R '
+      - ' -D '
+  condition: selection_tools or (selection_cloudflared_img and selection_cloudflared_cmd) or (selection_plink_img and selection_plink_cmd)
+falsepositives:
+  - 'Developers using ngrok or Cloudflare Tunnel for testing; IT using sanctioned tunnels'
+level: high

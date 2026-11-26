@@ -1,0 +1,8 @@
+```Title: Service FailureCommand Set or ServiceDll Pointed to a User-Writable Folder (raw Sysmon events)```
+```ATT&CK: T1574.011 | Severity: medium | Sigma id: 679f857c-a727-431d-94fe-48372b2ae398```
+```Data source: Sysmon EventCode 13 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Monitoring software that configures recovery commands for services```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=13
+((TargetObject="*\\Services\\*" TargetObject="*\\FailureCommand") OR (TargetObject="*\\Services\\*" TargetObject="*\\Parameters\\ServiceDll" Details IN ("*\\AppData\\Local\\Temp\\*", "*\\AppData\\Roaming\\*", "*\\Users\\Public\\*", "*\\Downloads\\*")))
+| table _time host User Image EventType TargetObject Details

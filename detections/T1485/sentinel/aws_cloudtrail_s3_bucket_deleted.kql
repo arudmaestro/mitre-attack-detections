@@ -1,0 +1,13 @@
+// Title: AWS S3 Bucket Deleted
+// ATT&CK: T1485 | Tactic: Impact | Sigma id: f4ebc3f3-8eff-4a66-be35-4203a10ae50e
+// Data source: AWSCloudTrail (Amazon Web Services connector)
+// Severity: Medium
+// False positives: Infrastructure-as-code pipelines tearing down environments
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Account = UserIdentityArn, IP = SourceIpAddress
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+AWSCloudTrail
+| where TimeGenerated > ago(1d)
+| where EventSource == "s3.amazonaws.com"
+| where EventName == "DeleteBucket"
+| project TimeGenerated, EventSource, EventName, UserIdentityArn, SourceIpAddress, AWSRegion, ErrorCode, RequestParameters

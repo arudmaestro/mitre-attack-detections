@@ -1,0 +1,32 @@
+title: 'AutoHotkey or AutoIt Script Execution'
+id: 8d807637-9353-45c1-a691-8eaa67619e86
+status: experimental
+description: 'Detects AutoHotkey or AutoIt interpreters, or command lines running .ahk / .au3 scripts.'
+references:
+  - https://attack.mitre.org/techniques/T1059/010/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.execution
+  - attack.t1059.010
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_img:
+    Image|endswith:
+      - '\AutoHotkey.exe'
+      - '\AutoHotkey64.exe'
+      - '\AutoHotkeyU64.exe'
+      - '\AutoHotkeyU32.exe'
+      - '\AutoHotkeyA32.exe'
+      - '\AutoIt3.exe'
+      - '\AutoIt3_x64.exe'
+  selection_script:
+    CommandLine|contains:
+      - '.ahk'
+      - '.au3'
+  condition: 1 of selection_*
+falsepositives:
+  - 'Users and IT staff using AutoHotkey or AutoIt for automation'
+level: medium

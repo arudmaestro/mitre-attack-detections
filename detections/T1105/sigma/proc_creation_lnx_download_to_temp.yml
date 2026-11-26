@@ -1,0 +1,28 @@
+title: 'File Downloaded to a Temporary Directory with curl or wget'
+id: 43c10f7b-83b4-483c-b6a5-1cb041a21e6d
+status: experimental
+description: 'Detects curl or wget writing a download into /tmp, /var/tmp or /dev/shm, a common staging step for tools.'
+references:
+  - https://attack.mitre.org/techniques/T1105/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.command-and-control
+  - attack.t1105
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection_img:
+    Image|endswith:
+      - '/curl'
+      - '/wget'
+  selection_path:
+    CommandLine|contains:
+      - '/tmp/'
+      - '/var/tmp/'
+      - '/dev/shm/'
+  condition: all of selection_*
+falsepositives:
+  - 'Installers and scripts that download into /tmp'
+level: low

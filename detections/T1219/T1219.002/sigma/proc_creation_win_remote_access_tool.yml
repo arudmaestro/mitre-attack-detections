@@ -1,0 +1,34 @@
+title: 'Remote Access Tool Executed on Windows'
+id: 3dc648fb-8e5f-453e-b0e7-d68cb7a9fde9
+status: experimental
+description: 'Detects execution of common remote access / RMM tools (AnyDesk, TeamViewer, ScreenConnect, RustDesk, Atera, Splashtop, NetSupport, Remote Utilities, MeshAgent, Supremo, Ammyy).'
+references:
+  - https://attack.mitre.org/techniques/T1219/002/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.command-and-control
+  - attack.t1219.002
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    Image|endswith:
+      - '\AnyDesk.exe'
+      - '\TeamViewer.exe'
+      - '\TeamViewer_Service.exe'
+      - '\ScreenConnect.ClientService.exe'
+      - '\ScreenConnect.WindowsClient.exe'
+      - '\rustdesk.exe'
+      - '\AteraAgent.exe'
+      - '\SRService.exe'
+      - '\client32.exe'
+      - '\rutserv.exe'
+      - '\MeshAgent.exe'
+      - '\Supremo.exe'
+      - '\AA_v3.exe'
+  condition: selection
+falsepositives:
+  - 'Approved remote support and RMM tools (allowlist the tools and hosts you use)'
+level: medium

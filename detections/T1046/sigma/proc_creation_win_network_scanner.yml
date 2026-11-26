@@ -1,0 +1,27 @@
+title: 'Network Scanner Executed on Windows'
+id: 9d6fa05c-c416-4aa4-a6e2-a69b32dfcaa7
+status: experimental
+description: 'Detects execution of common network scanners: Nmap, Masscan, Advanced IP Scanner, SoftPerfect NetScan and Angry IP Scanner.'
+references:
+  - https://attack.mitre.org/techniques/T1046/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.discovery
+  - attack.t1046
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    Image|endswith:
+      - '\nmap.exe'
+      - '\masscan.exe'
+      - '\advanced_ip_scanner.exe'
+      - '\advanced_ip_scanner_console.exe'
+      - '\netscan.exe'
+      - '\ipscan.exe'
+  condition: selection
+falsepositives:
+  - 'Authorised network administrators and vulnerability scanning'
+level: medium

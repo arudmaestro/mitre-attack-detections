@@ -1,0 +1,12 @@
+// Title: Quarantine Attribute Removed or Gatekeeper Disabled
+// ATT&CK: T1553.001 | Tactic: DefenseImpairment | Sigma id: 2676faf7-af05-4156-a616-d03ed635a788
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Medium
+// False positives: Developers removing quarantine from their own builds; installers
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where (FolderPath endswith "/xattr" and ProcessCommandLine contains "com.apple.quarantine" and (ProcessCommandLine contains " -d" or ProcessCommandLine contains " -rd")) or (FolderPath endswith "/spctl" and (ProcessCommandLine contains "--master-disable" or ProcessCommandLine contains "--global-disable" or ProcessCommandLine contains "--disable"))
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

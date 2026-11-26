@@ -1,0 +1,23 @@
+title: 'Service Registered to Start in Safe Mode'
+id: c4f7a840-f32b-45aa-9801-daac904c902a
+status: experimental
+description: 'Detects a key or value written under Control\SafeBoot\Minimal or SafeBoot\Network, which makes a service start in safe mode; ransomware adds itself there before forcing a safe-mode reboot.'
+references:
+  - https://attack.mitre.org/techniques/T1688/
+author: Detection Engineering Team
+date: 2026-11-25
+tags:
+  - attack.defense-impairment
+  - attack.t1688
+logsource:
+  category: registry_set
+  product: windows
+detection:
+  selection:
+    TargetObject|contains:
+      - '\Control\SafeBoot\Minimal\'
+      - '\Control\SafeBoot\Network\'
+  condition: selection
+falsepositives:
+  - 'Security products and drivers that register themselves for safe mode'
+level: medium

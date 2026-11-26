@@ -1,0 +1,31 @@
+title: 'System Logs Deleted or Truncated on Linux'
+id: 57d8f7e9-6e3c-419e-aef4-d0d56e9ed110
+status: experimental
+description: 'Detects rm, shred, truncate or unlink on files under /var/log, and journalctl --vacuum, used to erase evidence.'
+references:
+  - https://attack.mitre.org/techniques/T1685/006/
+author: Detection Engineering Team
+date: 2026-11-25
+tags:
+  - attack.defense-impairment
+  - attack.t1685.006
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection_tool:
+    Image|endswith:
+      - '/rm'
+      - '/shred'
+      - '/truncate'
+      - '/unlink'
+  selection_path:
+    CommandLine|contains: '/var/log/'
+  selection_journal_img:
+    Image|endswith: '/journalctl'
+  selection_journal_vacuum:
+    CommandLine|contains: '--vacuum'
+  condition: (selection_tool and selection_path) or (selection_journal_img and selection_journal_vacuum)
+falsepositives:
+  - 'Administrators and cleanup scripts removing old rotated logs'
+level: medium

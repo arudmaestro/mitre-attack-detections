@@ -1,0 +1,12 @@
+// Title: Shell History File Accessed on macOS
+// ATT&CK: T1552.003 | Tactic: CredentialAccess | Sigma id: f0e3b4b1-f072-457a-b617-5646954380f1
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Low
+// False positives: Administrators reviewing history files; backup tools
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where ProcessCommandLine contains ".bash_history" or ProcessCommandLine contains ".zsh_history" or ProcessCommandLine contains ".sh_history"
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

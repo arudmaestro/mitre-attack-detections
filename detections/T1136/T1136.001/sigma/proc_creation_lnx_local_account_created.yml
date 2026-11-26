@@ -1,0 +1,23 @@
+title: 'Local Account Created on Linux'
+id: b8aecc2d-79a9-4fd6-8a74-71d1602ecfed
+status: experimental
+description: 'Detects useradd or adduser creating a local account.'
+references:
+  - https://attack.mitre.org/techniques/T1136/001/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.persistence
+  - attack.t1136.001
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection:
+    Image|endswith:
+      - '/useradd'
+      - '/adduser'
+  condition: selection
+falsepositives:
+  - 'Administrators, package installs creating service accounts, configuration management'
+level: low

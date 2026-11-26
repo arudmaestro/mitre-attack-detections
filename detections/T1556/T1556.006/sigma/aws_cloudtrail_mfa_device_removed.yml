@@ -1,0 +1,26 @@
+title: 'AWS IAM MFA Device Deactivated or Deleted'
+id: 9895673e-0462-4369-9b91-78237a70dcf1
+status: experimental
+description: 'Detects DeactivateMFADevice and DeleteVirtualMFADevice, which remove multi-factor authentication from an IAM user.'
+references:
+  - https://attack.mitre.org/techniques/T1556/006/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.defense-impairment
+  - attack.persistence
+  - attack.credential-access
+  - attack.t1556.006
+logsource:
+  product: aws
+  service: cloudtrail
+detection:
+  selection:
+    eventSource: 'iam.amazonaws.com'
+    eventName:
+      - 'DeactivateMFADevice'
+      - 'DeleteVirtualMFADevice'
+  condition: selection
+falsepositives:
+  - 'Users replacing a lost or new MFA device (followed by EnableMFADevice)'
+level: medium

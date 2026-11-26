@@ -1,0 +1,12 @@
+// Title: Privileged Group Membership Added from the Command Line
+// ATT&CK: T1098.007 | Tactic: Persistence, PrivilegeEscalation | Sigma id: 5056aec4-2cf9-43ae-b397-dc8e24974463
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Medium
+// False positives: Administrators and provisioning scripts
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where (((FolderPath endswith "\\net.exe" or FolderPath endswith "\\net1.exe") and (ProcessCommandLine contains "group" and ProcessCommandLine contains "/add")) or (ProcessCommandLine contains "Add-LocalGroupMember" or ProcessCommandLine contains "Add-ADGroupMember")) and (ProcessCommandLine contains "administrators" or ProcessCommandLine contains "domain admins" or ProcessCommandLine contains "enterprise admins" or ProcessCommandLine contains "schema admins" or ProcessCommandLine contains "remote desktop users" or ProcessCommandLine contains "backup operators" or ProcessCommandLine contains "account operators")
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

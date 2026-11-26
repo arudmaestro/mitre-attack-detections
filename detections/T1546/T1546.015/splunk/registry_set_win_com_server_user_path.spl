@@ -1,0 +1,8 @@
+```Title: COM Server Registered to a DLL or EXE in a User-Writable Folder (raw Sysmon events)```
+```ATT&CK: T1546.015 | Severity: medium | Sigma id: 39316757-cdbd-4e6d-a23a-25c86ecb5974```
+```Data source: Sysmon EventCode 13 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Per-user applications that register COM servers in AppData (Dropbox, Zoom, Slack and similar - add them to the filter)```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=13
+(TargetObject="*\\CLSID\\*" TargetObject IN ("*\\InprocServer32\\*", "*\\LocalServer32\\*") Details IN ("*\\AppData\\Local\\Temp\\*", "*\\AppData\\Roaming\\*", "*\\Users\\Public\\*", "*\\Downloads\\*") NOT (Details IN ("*\\AppData\\Local\\Microsoft\\OneDrive\\*", "*\\AppData\\Local\\Microsoft\\Teams\\*", "*\\AppData\\Local\\Microsoft\\TeamsMeetingAdd*")))
+| table _time host User Image EventType TargetObject Details

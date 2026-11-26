@@ -1,0 +1,12 @@
+// Title: Permanent WMI Event Subscription Created from the Command Line
+// ATT&CK: T1546.003 | Tactic: PrivilegeEscalation, Persistence | Sigma id: 3c9eed57-ad3c-4116-8872-baf2c60d4d92
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: High
+// False positives: Management agents that register WMI subscriptions (SCCM, some monitoring tools)
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where ProcessCommandLine contains "__EventFilter" or ProcessCommandLine contains "CommandLineEventConsumer" or ProcessCommandLine contains "ActiveScriptEventConsumer" or ProcessCommandLine contains "__FilterToConsumerBinding"
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

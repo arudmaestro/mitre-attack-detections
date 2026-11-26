@@ -1,0 +1,25 @@
+title: 'Kernel Extension Loaded on macOS'
+id: fe80d3f5-d967-464a-b591-e24f0524d375
+status: experimental
+description: 'Detects kextload, or kmutil load, loading a kernel extension.'
+references:
+  - https://attack.mitre.org/techniques/T1547/006/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.persistence
+  - attack.privilege-escalation
+  - attack.t1547.006
+logsource:
+  category: process_creation
+  product: macos
+detection:
+  selection_kextload:
+    Image|endswith: '/kextload'
+  selection_kmutil:
+    Image|endswith: '/kmutil'
+    CommandLine|contains: 'load'
+  condition: 1 of selection_*
+falsepositives:
+  - 'Hardware and security vendors installing kernel extensions'
+level: medium

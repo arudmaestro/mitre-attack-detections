@@ -1,0 +1,12 @@
+// Title: PubPrn.vbs Used to Run a Remote Script
+// ATT&CK: T1216.001 | Tactic: Stealth | Sigma id: 44fd4bff-cfcc-461d-b7bb-114a35d3fa36
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: High
+// False positives: None expected: printer publishing does not use script: monikers
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where ProcessCommandLine contains "pubprn.vbs" and ProcessCommandLine contains "script:"
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

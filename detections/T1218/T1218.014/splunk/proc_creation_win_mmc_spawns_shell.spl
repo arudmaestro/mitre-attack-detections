@@ -1,0 +1,8 @@
+```Title: MMC Spawning a Shell or Script Host (raw Sysmon events)```
+```ATT&CK: T1218.014 | Severity: medium | Sigma id: a003f5df-89bd-4807-8c7f-51cddc451244```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Custom consoles with task items that start command-line tools```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(ParentImage="*\\mmc.exe" Image IN ("*\\cmd.exe", "*\\powershell.exe", "*\\pwsh.exe", "*\\wscript.exe", "*\\cscript.exe", "*\\mshta.exe", "*\\rundll32.exe", "*\\regsvr32.exe"))
+| table _time host User ParentImage Image CommandLine

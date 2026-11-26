@@ -1,0 +1,8 @@
+```Title: Sleep or Hibernation Settings Changed with powercfg (raw Sysmon events)```
+```ATT&CK: T1653 | Severity: low | Sigma id: 92a9f185-0872-401f-a90c-12fe10059395```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Power-management GPOs and scripts on kiosks, servers and lab machines```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity low.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(Image="*\\powercfg.exe" CommandLine IN ("*/change*", "*-change*", "*/x *", "*-x *", "*/hibernate off*", "*-h off*"))
+| table _time host User ParentImage Image CommandLine

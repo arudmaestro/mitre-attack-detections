@@ -1,0 +1,24 @@
+title: 'Command Line Referencing rc.local or rc.common'
+id: 321e7601-7d4c-4aa5-b619-9d102a81c562
+status: experimental
+description: 'Detects command lines referencing /etc/rc.local or /etc/rc.common, the RC scripts executed at boot.'
+references:
+  - https://attack.mitre.org/techniques/T1037/004/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.persistence
+  - attack.privilege-escalation
+  - attack.t1037.004
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection:
+    CommandLine|contains:
+      - '/etc/rc.local'
+      - '/etc/rc.common'
+  condition: selection
+falsepositives:
+  - 'Administrators editing or checking boot scripts'
+level: medium

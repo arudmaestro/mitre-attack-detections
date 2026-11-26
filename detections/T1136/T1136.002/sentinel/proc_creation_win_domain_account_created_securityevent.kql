@@ -1,0 +1,13 @@
+// Title: Domain Account Created from the Command Line
+// ATT&CK: T1136.002 | Tactic: Persistence | Sigma id: 6e2a1268-4158-41b3-ba91-1b6da1e1e6fa
+// Data source: SecurityEvent 4688 (Windows Security Events connector; needs process creation and command-line auditing enabled)
+// Severity: Medium
+// False positives: Administrators and identity provisioning scripts
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = Computer, Account = SubjectUserName
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+SecurityEvent
+| where TimeGenerated > ago(1d)
+| where EventID == 4688
+| where ((NewProcessName endswith "\\net.exe" or NewProcessName endswith "\\net1.exe") and (CommandLine contains "user" and CommandLine contains "/add" and CommandLine contains "/domain")) or (CommandLine contains "New-ADUser" or CommandLine contains "dsadd user")
+| project TimeGenerated, Computer, SubjectUserName, ParentProcessName, NewProcessName, CommandLine

@@ -1,0 +1,8 @@
+```Title: Lua Interpreter Executed on Windows (raw Sysmon events)```
+```ATT&CK: T1059.011 | Severity: low | Sigma id: 36808368-08aa-4941-bf7e-24461b373a6e```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Developers and applications that bundle a Lua interpreter```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity low.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(Image IN ("*\\lua.exe", "*\\luajit.exe", "*\\lua51.exe", "*\\lua52.exe", "*\\lua53.exe", "*\\lua54.exe", "*\\wlua.exe"))
+| table _time host User ParentImage Image CommandLine

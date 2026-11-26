@@ -1,0 +1,40 @@
+title: 'Privileged Group Membership Added from the Command Line'
+id: 5056aec4-2cf9-43ae-b397-dc8e24974463
+status: experimental
+description: 'Detects net localgroup/group /add or Add-LocalGroupMember/Add-ADGroupMember targeting privileged groups.'
+references:
+  - https://attack.mitre.org/techniques/T1098/007/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.persistence
+  - attack.privilege-escalation
+  - attack.t1098.007
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_net:
+    Image|endswith:
+      - '\net.exe'
+      - '\net1.exe'
+    CommandLine|contains|all:
+      - 'group'
+      - '/add'
+  selection_ps:
+    CommandLine|contains:
+      - 'Add-LocalGroupMember'
+      - 'Add-ADGroupMember'
+  selection_group:
+    CommandLine|contains:
+      - 'administrators'
+      - 'domain admins'
+      - 'enterprise admins'
+      - 'schema admins'
+      - 'remote desktop users'
+      - 'backup operators'
+      - 'account operators'
+  condition: (selection_net or selection_ps) and selection_group
+falsepositives:
+  - 'Administrators and provisioning scripts'
+level: medium

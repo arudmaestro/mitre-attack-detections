@@ -1,0 +1,24 @@
+title: 'DLL Injection via mavinject.exe'
+id: c9953c08-a42f-4557-8952-82a56aa6d372
+status: experimental
+description: 'Detects mavinject.exe or its /INJECTRUNNING switch, a signed Microsoft binary that injects a DLL into a running process.'
+references:
+  - https://attack.mitre.org/techniques/T1055/001/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.stealth
+  - attack.privilege-escalation
+  - attack.t1055.001
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_img:
+    Image|endswith: '\mavinject.exe'
+  selection_cli:
+    CommandLine|contains: '/INJECTRUNNING'
+  condition: 1 of selection_*
+falsepositives:
+  - 'Microsoft App-V clients, which use mavinject legitimately'
+level: high

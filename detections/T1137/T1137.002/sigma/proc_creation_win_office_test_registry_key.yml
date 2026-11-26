@@ -1,0 +1,21 @@
+title: 'Office Test Registry Key Referenced'
+id: 9a132f38-e847-4a40-8643-77307c5ebbd2
+status: experimental
+description: 'Detects command lines referencing the ''Office test\Special\Perf'' registry key, which makes Office load a DLL at startup.'
+references:
+  - https://attack.mitre.org/techniques/T1137/002/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.persistence
+  - attack.t1137.002
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains: 'Office test\Special\Perf'
+  condition: selection
+falsepositives:
+  - 'None expected'
+level: high

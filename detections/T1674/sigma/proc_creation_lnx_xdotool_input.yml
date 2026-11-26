@@ -1,0 +1,25 @@
+title: 'Keystrokes or Mouse Input Simulated with xdotool'
+id: df1fdd1e-0893-4871-82fd-d1afdc243dd8
+status: experimental
+description: 'Detects xdotool type / key, which sends keystrokes to X11 windows (e.g. typing commands into a terminal).'
+references:
+  - https://attack.mitre.org/techniques/T1674/
+author: Detection Engineering Team
+date: 2026-11-25
+tags:
+  - attack.execution
+  - attack.t1674
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection_img:
+    Image|endswith: '/xdotool'
+  selection_action:
+    CommandLine|contains:
+      - ' type '
+      - ' key '
+  condition: all of selection_*
+falsepositives:
+  - 'Desktop automation scripts'
+level: low

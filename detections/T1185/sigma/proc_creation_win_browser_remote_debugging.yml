@@ -1,0 +1,28 @@
+title: 'Browser Started with Remote Debugging Enabled'
+id: e04f102a-056b-4c33-ad7a-9979ee96f893
+status: experimental
+description: 'Detects Chromium-based browsers started with --remote-debugging-port or --remote-debugging-pipe, used to steal session cookies and control the browser.'
+references:
+  - https://attack.mitre.org/techniques/T1185/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.collection
+  - attack.t1185
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_img:
+    Image|endswith:
+      - '\msedge.exe'
+      - '\chrome.exe'
+      - '\brave.exe'
+  selection_cli:
+    CommandLine|contains:
+      - '--remote-debugging-port'
+      - '--remote-debugging-pipe'
+  condition: all of selection_*
+falsepositives:
+  - 'Developers and test automation (Puppeteer, Playwright, Selenium)'
+level: high

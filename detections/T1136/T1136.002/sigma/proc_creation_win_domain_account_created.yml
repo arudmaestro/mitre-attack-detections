@@ -1,0 +1,31 @@
+title: 'Domain Account Created from the Command Line'
+id: 6e2a1268-4158-41b3-ba91-1b6da1e1e6fa
+status: experimental
+description: 'Detects domain account creation with net user /add /domain, New-ADUser or dsadd user.'
+references:
+  - https://attack.mitre.org/techniques/T1136/002/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.persistence
+  - attack.t1136.002
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_net:
+    Image|endswith:
+      - '\net.exe'
+      - '\net1.exe'
+    CommandLine|contains|all:
+      - 'user'
+      - '/add'
+      - '/domain'
+  selection_tools:
+    CommandLine|contains:
+      - 'New-ADUser'
+      - 'dsadd user'
+  condition: 1 of selection_*
+falsepositives:
+  - 'Administrators and identity provisioning scripts'
+level: medium

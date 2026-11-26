@@ -1,0 +1,12 @@
+// Title: Group Policy Settings Enumerated
+// ATT&CK: T1615 | Tactic: Discovery | Sigma id: 7330caa3-092c-4a5c-aa94-b8d4b8ed1a79
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Low
+// False positives: Helpdesk and administrators troubleshooting Group Policy
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where (FolderPath endswith "\\gpresult.exe" and (ProcessCommandLine contains "/r" or ProcessCommandLine contains "/z" or ProcessCommandLine contains "/v" or ProcessCommandLine contains "/h" or ProcessCommandLine contains "/x")) or (ProcessCommandLine contains "Get-GPOReport" or ProcessCommandLine contains "Get-GPResultantSetOfPolicy" or ProcessCommandLine contains "Get-DomainGPO" or ProcessCommandLine contains "Get-NetGPO")
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

@@ -1,0 +1,12 @@
+// Title: User Account Created with a Name Ending in $
+// ATT&CK: T1036.010 | Tactic: Stealth | Sigma id: c8ac9e48-1988-41d5-a9d0-92cbdaea2c93
+// Data source: SecurityEvent 4720 (Windows Security Events connector)
+// Severity: High
+// False positives: Rare legacy tooling that creates service accounts ending in $
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = Computer, Account = SubjectUserName
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+SecurityEvent
+| where TimeGenerated > ago(1d)
+| where EventID == 4720 and TargetUserName endswith "$"
+| project TimeGenerated, Computer, SubjectUserName, SubjectDomainName, TargetUserName, TargetDomainName

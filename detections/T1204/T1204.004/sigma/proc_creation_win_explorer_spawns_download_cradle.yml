@@ -1,0 +1,37 @@
+title: 'Download Command Started Directly by Explorer'
+id: 8c28d2bd-381f-42f2-91e4-85902c0c0a99
+status: experimental
+description: 'Detects explorer.exe starting mshta with a URL, or PowerShell with a download command, which is what happens when a user pastes a ClickFix command into the Run dialog.'
+references:
+  - https://attack.mitre.org/techniques/T1204/004/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.execution
+  - attack.t1204.004
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_parent:
+    ParentImage|endswith: '\explorer.exe'
+  selection_mshta:
+    Image|endswith: '\mshta.exe'
+    CommandLine|contains: 'http'
+  selection_ps_img:
+    Image|endswith:
+      - '\powershell.exe'
+      - '\pwsh.exe'
+  selection_ps_download:
+    CommandLine|contains:
+      - 'iwr '
+      - 'irm '
+      - 'Invoke-WebRequest'
+      - 'Invoke-RestMethod'
+      - 'DownloadString'
+      - 'Net.WebClient'
+      - 'Start-BitsTransfer'
+  condition: selection_parent and (selection_mshta or (selection_ps_img and selection_ps_download))
+falsepositives:
+  - 'Administrators running install one-liners (e.g. irm ... | iex) from the Run dialog'
+level: high

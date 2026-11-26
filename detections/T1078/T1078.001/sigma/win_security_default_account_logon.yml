@@ -1,0 +1,29 @@
+title: 'Logon by a Built-in Default Account (Guest, DefaultAccount, WDAGUtilityAccount)'
+id: 4450bab8-3af5-4dfc-b09b-d1ac39b1a3c7
+status: experimental
+description: 'Detects successful logons by Windows built-in accounts that should never be used interactively or over the network.'
+references:
+  - https://attack.mitre.org/techniques/T1078/001/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.stealth
+  - attack.persistence
+  - attack.privilege-escalation
+  - attack.initial-access
+  - attack.t1078.001
+logsource:
+  product: windows
+  service: security
+detection:
+  selection:
+    EventID: 4624
+    TargetUserName:
+      - 'Guest'
+      - 'DefaultAccount'
+      - 'WDAGUtilityAccount'
+  condition: selection
+falsepositives:
+  - 'Kiosk or legacy systems that deliberately use the Guest account'
+  - 'Microsoft Defender Application Guard, which uses WDAGUtilityAccount on hosts where it is enabled'
+level: high

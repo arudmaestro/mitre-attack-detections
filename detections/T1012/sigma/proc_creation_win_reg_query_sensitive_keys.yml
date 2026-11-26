@@ -1,0 +1,31 @@
+title: 'Registry Query of Sensitive Keys via reg.exe'
+id: 33f9cd73-adcf-4ca7-b1be-17c696a20a6a
+status: experimental
+description: 'Detects reg.exe query against keys commonly checked during discovery (Run, Winlogon, Services, Policies, RDP history) or password searches.'
+references:
+  - https://attack.mitre.org/techniques/T1012/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.discovery
+  - attack.t1012
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_img:
+    Image|endswith: '\reg.exe'
+  selection_query:
+    CommandLine|contains: ' query '
+  selection_keys:
+    CommandLine|contains:
+      - 'currentversion\run'
+      - 'currentversion\winlogon'
+      - 'currentversion\policies'
+      - 'currentcontrolset\services'
+      - 'terminal server client'
+      - '/f password'
+  condition: all of selection_*
+falsepositives:
+  - Administrators, installers and inventory scripts
+level: low

@@ -1,0 +1,12 @@
+// Title: Sudo Run with User ID -1 (CVE-2019-14287)
+// ATT&CK: T1548.003 | Tactic: PrivilegeEscalation | Sigma id: 6949e6e5-7a6d-4140-b31a-d0ff5d3804a4
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: High
+// False positives: None expected
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where FolderPath endswith "/sudo" and (ProcessCommandLine contains "-u#-1" or ProcessCommandLine contains "-u#4294967295")
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

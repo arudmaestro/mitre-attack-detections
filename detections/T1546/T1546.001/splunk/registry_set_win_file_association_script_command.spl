@@ -1,0 +1,8 @@
+```Title: File Association Open Command Set to a Script Host (raw Sysmon events)```
+```ATT&CK: T1546.001 | Severity: medium | Sigma id: 3f32a1a5-2b8d-4d63-a426-e358a1bce6b8```
+```Data source: Sysmon EventCode 13 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Applications that register PowerShell or script files with a custom handler```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=13
+(TargetObject="*\\shell\\open\\command\\*" Details IN ("*powershell*", "*pwsh*", "*mshta*", "*wscript*", "*cscript*", "*regsvr32*", "*cmd.exe /c*", "*cmd /c*", "*%COMSPEC%*", "*\\AppData\\Local\\Temp\\*", "*\\Users\\Public\\*"))
+| table _time host User Image EventType TargetObject Details

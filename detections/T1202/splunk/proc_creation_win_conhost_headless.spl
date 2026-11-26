@@ -1,0 +1,8 @@
+```Title: Command Started through a Headless conhost (raw Sysmon events)```
+```ATT&CK: T1202 | Severity: medium | Sigma id: 0581d916-e0be-42bf-8b3a-40e063290de3```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Rare: tools that start background consoles this way```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(Image="*\\conhost.exe" CommandLine="*--headless*" NOT CommandLine="*--server*")
+| table _time host User ParentImage Image CommandLine

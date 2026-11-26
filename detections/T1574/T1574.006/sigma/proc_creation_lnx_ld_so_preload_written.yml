@@ -1,0 +1,30 @@
+title: 'Dynamic Linker Preload File Written from the Command Line'
+id: 4bc0e4f4-535b-4a59-891c-833fed242755
+status: experimental
+description: 'Detects cp, mv, tee, ln, install or sed writing to /etc/ld.so.preload, which makes every dynamically linked program load the listed libraries (used by userland rootkits such as Azazel and many cryptominers).'
+references:
+  - https://attack.mitre.org/techniques/T1574/006/
+author: Detection Engineering Team
+date: 2026-11-25
+tags:
+  - attack.stealth
+  - attack.execution
+  - attack.t1574.006
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection_img:
+    Image|endswith:
+      - '/cp'
+      - '/mv'
+      - '/tee'
+      - '/ln'
+      - '/install'
+      - '/sed'
+  selection_path:
+    CommandLine|contains: '/etc/ld.so.preload'
+  condition: all of selection_*
+falsepositives:
+  - 'Rare: performance and debugging tools installed system-wide'
+level: high

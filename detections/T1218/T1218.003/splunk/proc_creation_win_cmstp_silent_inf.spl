@@ -1,0 +1,8 @@
+```Title: CMSTP Installing a Profile Silently (raw Sysmon events)```
+```ATT&CK: T1218.003 | Severity: medium | Sigma id: 654668d8-be20-438a-9637-a4a244f3286d```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: VPN client deployments that install Connection Manager profiles```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(Image="*\\cmstp.exe" CommandLine="*.inf*" CommandLine IN ("*/s*", "*/au*", "*/ni*"))
+| table _time host User ParentImage Image CommandLine

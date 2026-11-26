@@ -1,0 +1,32 @@
+title: 'Service FailureCommand Set or ServiceDll Pointed to a User-Writable Folder'
+id: 679f857c-a727-431d-94fe-48372b2ae398
+status: experimental
+description: 'Detects a service FailureCommand value (a command run when the service fails) and a ServiceDll pointing to Temp, AppData, Downloads or the public profile; both let a weak service registry ACL become code execution as SYSTEM.'
+references:
+  - https://attack.mitre.org/techniques/T1574/011/
+author: Detection Engineering Team
+date: 2026-11-25
+tags:
+  - attack.stealth
+  - attack.execution
+  - attack.t1574.011
+logsource:
+  category: registry_set
+  product: windows
+detection:
+  selection_failure:
+    TargetObject|contains: '\Services\'
+    TargetObject|endswith: '\FailureCommand'
+  selection_servicedll:
+    TargetObject|contains: '\Services\'
+    TargetObject|endswith: '\Parameters\ServiceDll'
+  selection_user_path:
+    Details|contains:
+      - '\AppData\Local\Temp\'
+      - '\AppData\Roaming\'
+      - '\Users\Public\'
+      - '\Downloads\'
+  condition: selection_failure or (selection_servicedll and selection_user_path)
+falsepositives:
+  - 'Monitoring software that configures recovery commands for services'
+level: medium

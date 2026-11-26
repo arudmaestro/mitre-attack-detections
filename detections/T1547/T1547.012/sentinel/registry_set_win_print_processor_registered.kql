@@ -1,0 +1,14 @@
+// Title: Print Processor Registered
+// ATT&CK: T1547.012 | Tactic: Persistence, PrivilegeEscalation | Sigma id: 2c596d37-4285-4b78-a1f4-a85952b26d99
+// Data source: DeviceRegistryEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Medium
+// False positives: Printer drivers that install vendor print processors
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = InitiatingProcessAccountName, RegistryKey = RegistryKey, RegistryValue = RegistryValueName
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceRegistryEvents
+| where TimeGenerated > ago(1d)
+| where ActionType == "RegistryValueSet"
+| extend TargetObject = strcat(RegistryKey, "\\", RegistryValueName)
+| where TargetObject contains "\\Control\\Print\\Environments\\" and (TargetObject contains "\\Print Processors\\" and TargetObject endswith "\\Driver") and (not(RegistryValueData =~ "winprint.dll"))
+| project TimeGenerated, DeviceName, ActionType, InitiatingProcessAccountName, InitiatingProcessFolderPath, InitiatingProcessCommandLine, RegistryKey, RegistryValueName, RegistryValueType, RegistryValueData

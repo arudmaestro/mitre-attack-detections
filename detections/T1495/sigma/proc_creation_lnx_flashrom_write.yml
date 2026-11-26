@@ -1,0 +1,26 @@
+title: 'Firmware Written or Erased with flashrom'
+id: 5bd9b79a-6763-4f47-944c-37fa7735eb32
+status: experimental
+description: 'Detects flashrom writing or erasing a flash chip (BIOS/UEFI or other firmware).'
+references:
+  - https://attack.mitre.org/techniques/T1495/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.impact
+  - attack.t1495
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection:
+    Image|endswith: '/flashrom'
+    CommandLine|contains:
+      - ' -w'
+      - '--write'
+      - ' -E'
+      - '--erase'
+  condition: selection
+falsepositives:
+  - 'Planned firmware updates by hardware administrators'
+level: high

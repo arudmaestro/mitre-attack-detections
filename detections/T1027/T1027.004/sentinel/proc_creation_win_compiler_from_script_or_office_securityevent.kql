@@ -1,0 +1,13 @@
+// Title: C# or VB.NET Compiler Launched by Script Host or Office
+// ATT&CK: T1027.004 | Tactic: Stealth | Sigma id: 67700421-f39c-4452-ba3a-73684da018b2
+// Data source: SecurityEvent 4688 (Windows Security Events connector; needs process creation and command-line auditing enabled)
+// Severity: High
+// False positives: Office add-ins or legacy scripts that compile code at run time
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = Computer, Account = SubjectUserName
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+SecurityEvent
+| where TimeGenerated > ago(1d)
+| where EventID == 4688
+| where (NewProcessName endswith "\\csc.exe" or NewProcessName endswith "\\vbc.exe") and (ParentProcessName endswith "\\wscript.exe" or ParentProcessName endswith "\\cscript.exe" or ParentProcessName endswith "\\mshta.exe" or ParentProcessName endswith "\\winword.exe" or ParentProcessName endswith "\\excel.exe" or ParentProcessName endswith "\\powerpnt.exe" or ParentProcessName endswith "\\outlook.exe")
+| project TimeGenerated, Computer, SubjectUserName, ParentProcessName, NewProcessName, CommandLine

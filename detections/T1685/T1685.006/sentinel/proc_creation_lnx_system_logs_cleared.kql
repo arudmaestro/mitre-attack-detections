@@ -1,0 +1,12 @@
+// Title: System Logs Deleted or Truncated on Linux
+// ATT&CK: T1685.006 | Tactic: DefenseImpairment | Sigma id: 57d8f7e9-6e3c-419e-aef4-d0d56e9ed110
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint / Defender XDR connector)
+// Severity: Medium
+// False positives: Administrators and cleanup scripts removing old rotated logs
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Host = DeviceName, Account = AccountName, Process = ProcessCommandLine
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where ((FolderPath endswith "/rm" or FolderPath endswith "/shred" or FolderPath endswith "/truncate" or FolderPath endswith "/unlink") and ProcessCommandLine contains "/var/log/") or (FolderPath endswith "/journalctl" and ProcessCommandLine contains "--vacuum")
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine

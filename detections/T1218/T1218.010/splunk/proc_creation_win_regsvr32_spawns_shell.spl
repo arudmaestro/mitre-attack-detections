@@ -1,0 +1,8 @@
+```Title: Regsvr32 Spawning a Shell or Script Host (raw Sysmon events)```
+```ATT&CK: T1218.010 | Severity: high | Sigma id: 2084a3da-6891-4f66-bf85-f339cccd5276```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Installers whose COM registration runs setup commands```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(ParentImage="*\\regsvr32.exe" Image IN ("*\\cmd.exe", "*\\powershell.exe", "*\\pwsh.exe", "*\\wscript.exe", "*\\cscript.exe", "*\\mshta.exe", "*\\rundll32.exe"))
+| table _time host User ParentImage Image CommandLine

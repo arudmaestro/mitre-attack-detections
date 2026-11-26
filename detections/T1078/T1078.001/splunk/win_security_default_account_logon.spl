@@ -1,0 +1,8 @@
+```Title: Logon by a Built-in Default Account (Guest, DefaultAccount, WDAGUtilityAccount) (raw Windows Security events)```
+```ATT&CK: T1078.001 | Severity: high | Sigma id: 4450bab8-3af5-4dfc-b09b-d1ac39b1a3c7```
+```Data source: Windows Security EventCode 4624 (Splunk Add-on for Microsoft Windows). Change index to where your Security logs live.```
+```False positives: Kiosk or legacy systems that deliberately use the Guest account; Microsoft Defender Application Guard, which uses WDAGUtilityAccount on hosts where it is enabled```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+index=wineventlog source IN ("XmlWinEventLog:Security", "WinEventLog:Security")
+(EventCode=4624 TargetUserName IN ("Guest", "DefaultAccount", "WDAGUtilityAccount"))
+| table _time host TargetUserName TargetDomainName LogonType IpAddress WorkstationName

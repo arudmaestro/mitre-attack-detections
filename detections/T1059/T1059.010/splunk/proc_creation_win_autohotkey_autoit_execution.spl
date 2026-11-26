@@ -1,0 +1,8 @@
+```Title: AutoHotkey or AutoIt Script Execution (raw Sysmon events)```
+```ATT&CK: T1059.010 | Severity: medium | Sigma id: 8d807637-9353-45c1-a691-8eaa67619e86```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Users and IT staff using AutoHotkey or AutoIt for automation```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(Image IN ("*\\AutoHotkey.exe", "*\\AutoHotkey64.exe", "*\\AutoHotkeyU64.exe", "*\\AutoHotkeyU32.exe", "*\\AutoHotkeyA32.exe", "*\\AutoIt3.exe", "*\\AutoIt3_x64.exe") OR CommandLine IN ("*.ahk*", "*.au3*"))
+| table _time host User ParentImage Image CommandLine

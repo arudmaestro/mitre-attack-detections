@@ -1,0 +1,22 @@
+title: 'Logon Script Set via UserInitMprLogonScript'
+id: 2f381da3-9265-4c90-b709-dfa2f2d3b627
+status: experimental
+description: 'Detects command lines referencing the UserInitMprLogonScript value, which runs a script at every user logon.'
+references:
+  - https://attack.mitre.org/techniques/T1037/001/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.persistence
+  - attack.privilege-escalation
+  - attack.t1037.001
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains: 'UserInitMprLogonScript'
+  condition: selection
+falsepositives:
+  - 'Rare: legacy logon script deployment'
+level: high

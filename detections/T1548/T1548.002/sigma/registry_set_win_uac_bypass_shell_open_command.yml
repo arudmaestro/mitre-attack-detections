@@ -1,0 +1,26 @@
+title: 'UAC Bypass Handler Registered (ms-settings, mscfile, exefile, Folder)'
+id: 8312ef15-078b-44d1-96b1-fa35e0c8c0a2
+status: experimental
+description: 'Detects a value written under the shell\open\command key of ms-settings, mscfile, exefile, Folder or Launcher.SystemSettings. Auto-elevating programs such as fodhelper, computerdefaults, eventvwr and sdclt read these per-user handlers, so writing one runs a command with high integrity without a UAC prompt.'
+references:
+  - https://attack.mitre.org/techniques/T1548/002/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.privilege-escalation
+  - attack.t1548.002
+logsource:
+  category: registry_set
+  product: windows
+detection:
+  selection:
+    TargetObject|contains:
+      - '\ms-settings\shell\open\command\'
+      - '\mscfile\shell\open\command\'
+      - '\exefile\shell\open\command\'
+      - '\Folder\shell\open\command\'
+      - '\Launcher.SystemSettings\shell\open\command\'
+  condition: selection
+falsepositives:
+  - 'Rare: software that re-registers system file handlers (review the writing process)'
+level: high

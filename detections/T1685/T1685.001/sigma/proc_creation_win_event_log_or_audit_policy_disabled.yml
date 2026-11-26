@@ -1,0 +1,43 @@
+title: 'Event Log Channel or Audit Policy Disabled from the Command Line'
+id: 201af407-0223-4f6f-a4ce-b304dafbbc7c
+status: experimental
+description: 'Detects wevtutil sl ... /e:false (disable a log channel), auditpol /clear, /remove or /set with disable, and the EventLog service being stopped or disabled.'
+references:
+  - https://attack.mitre.org/techniques/T1685/001/
+author: Detection Engineering Team
+date: 2026-11-25
+tags:
+  - attack.defense-impairment
+  - attack.t1685.001
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_wevtutil_img:
+    Image|endswith: '\wevtutil.exe'
+  selection_wevtutil_disable:
+    CommandLine|contains:
+      - '/e:false'
+      - '/enabled:false'
+  selection_auditpol_img:
+    Image|endswith: '\auditpol.exe'
+  selection_auditpol_disable:
+    CommandLine|contains:
+      - '/clear'
+      - '/remove'
+      - 'disable'
+  selection_eventlog_tool:
+    Image|endswith:
+      - '\sc.exe'
+      - '\net.exe'
+      - '\net1.exe'
+  selection_eventlog_name:
+    CommandLine|contains: 'eventlog'
+  selection_eventlog_action:
+    CommandLine|contains:
+      - ' stop'
+      - 'disabled'
+  condition: (selection_wevtutil_img and selection_wevtutil_disable) or (selection_auditpol_img and selection_auditpol_disable) or (selection_eventlog_tool and selection_eventlog_name and selection_eventlog_action)
+falsepositives:
+  - 'Administrators tuning audit policy (should go through GPO)'
+level: high

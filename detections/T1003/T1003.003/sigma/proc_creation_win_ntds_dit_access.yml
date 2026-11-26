@@ -1,0 +1,28 @@
+title: 'NTDS.dit Access via ntdsutil or Command Line'
+id: 377519b9-a636-4ae1-b19d-39b7392e7e26
+status: experimental
+description: 'Detects ntdsutil creating an IFM copy of the AD database, or any command line referencing ntds.dit.'
+references:
+  - https://attack.mitre.org/techniques/T1003/003/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.credential-access
+  - attack.t1003.003
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_ntdsutil:
+    Image|endswith: '\ntdsutil.exe'
+    CommandLine|contains:
+      - 'ifm'
+      - 'ac i ntds'
+      - 'activate instance ntds'
+  selection_dit:
+    CommandLine|contains: 'ntds.dit'
+  condition: 1 of selection_*
+falsepositives:
+  - AD backup or disaster recovery procedures (IFM media creation)
+  - Backup software referencing ntds.dit
+level: high

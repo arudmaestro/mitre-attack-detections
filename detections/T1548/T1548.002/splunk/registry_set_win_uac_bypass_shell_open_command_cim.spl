@@ -1,0 +1,11 @@
+```Title: UAC Bypass Handler Registered (ms-settings, mscfile, exefile, Folder) (CIM Endpoint.Registry)```
+```ATT&CK: T1548.002 | Severity: high | Sigma id: 8312ef15-078b-44d1-96b1-fa35e0c8c0a2```
+```Data source: CIM Endpoint.Registry data model. summariesonly=false works without acceleration; set true once the data model is accelerated.```
+```False positives: Rare: software that re-registers system file handlers (review the writing process)```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity high.```
+| tstats summariesonly=false allow_old_summaries=true fillnull_value="null" count min(_time) as firstTime max(_time) as lastTime
+    from datamodel=Endpoint.Registry
+    where Registry.registry_path IN ("*\\ms-settings\\shell\\open\\command\\*", "*\\mscfile\\shell\\open\\command\\*", "*\\exefile\\shell\\open\\command\\*", "*\\Folder\\shell\\open\\command\\*", "*\\Launcher.SystemSettings\\shell\\open\\command\\*")
+    by Registry.dest Registry.user Registry.process_guid Registry.process_id Registry.registry_path Registry.registry_value_name Registry.registry_value_data Registry.action
+| rename Registry.* as *
+| convert timeformat="%Y-%m-%dT%H:%M:%S" ctime(firstTime) ctime(lastTime)

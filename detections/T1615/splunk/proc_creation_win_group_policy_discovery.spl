@@ -1,0 +1,8 @@
+```Title: Group Policy Settings Enumerated (raw Sysmon events)```
+```ATT&CK: T1615 | Severity: low | Sigma id: 7330caa3-092c-4a5c-aa94-b8d4b8ed1a79```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Helpdesk and administrators troubleshooting Group Policy```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity low.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+((Image="*\\gpresult.exe" CommandLine IN ("*/r*", "*/z*", "*/v*", "*/h*", "*/x*")) OR CommandLine IN ("*Get-GPOReport*", "*Get-GPResultantSetOfPolicy*", "*Get-DomainGPO*", "*Get-NetGPO*"))
+| table _time host User ParentImage Image CommandLine

@@ -1,0 +1,8 @@
+```Title: Ping to Localhost Used as a Delay (raw Sysmon events)```
+```ATT&CK: T1678 | Severity: low | Sigma id: 00bec094-f846-4040-b5ed-aa61a89cc3b6```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Batch scripts that use ping as a sleep```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity low.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(Image="*\\ping.exe" CommandLine="* -n *" CommandLine IN ("*127.0.0.1*", "*localhost*"))
+| table _time host User ParentImage Image CommandLine

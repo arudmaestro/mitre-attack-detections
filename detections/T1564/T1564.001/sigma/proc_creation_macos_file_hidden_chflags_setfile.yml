@@ -1,0 +1,25 @@
+title: 'File Hidden with chflags or SetFile on macOS'
+id: a5494d0c-52df-4ba1-a18a-e77c6b9a342d
+status: experimental
+description: 'Detects chflags hidden and SetFile -a V, which hide a file or folder from Finder.'
+references:
+  - https://attack.mitre.org/techniques/T1564/001/
+author: Detection Engineering Team
+date: 2026-11-24
+tags:
+  - attack.stealth
+  - attack.t1564.001
+logsource:
+  category: process_creation
+  product: macos
+detection:
+  selection_chflags:
+    Image|endswith: '/chflags'
+    CommandLine|contains: 'hidden'
+  selection_setfile:
+    Image|endswith: '/SetFile'
+    CommandLine|contains: '-a V'
+  condition: 1 of selection_*
+falsepositives:
+  - 'Installers hiding helper files'
+level: low

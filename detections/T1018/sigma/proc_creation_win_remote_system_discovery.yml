@@ -1,0 +1,36 @@
+title: 'Remote System Discovery via net or nltest'
+id: e788846d-91a4-4a1c-98a3-1580575d0af0
+status: experimental
+description: 'Detects remote system discovery with net view, net group "domain computers", or nltest /dclist and /dsgetdc.'
+references:
+  - https://attack.mitre.org/techniques/T1018/
+author: Detection Engineering Team
+date: 2026-11-23
+tags:
+  - attack.discovery
+  - attack.t1018
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_netview:
+    Image|endswith:
+      - '\net.exe'
+      - '\net1.exe'
+    CommandLine|contains: ' view'
+  selection_netgroup:
+    Image|endswith:
+      - '\net.exe'
+      - '\net1.exe'
+    CommandLine|contains|all:
+      - 'group'
+      - 'domain computers'
+  selection_nltest:
+    Image|endswith: '\nltest.exe'
+    CommandLine|contains:
+      - '/dclist'
+      - '/dsgetdc'
+  condition: 1 of selection_*
+falsepositives:
+  - Administrators and IT inventory scripts
+level: low

@@ -1,0 +1,13 @@
+// Title: AWS Service Quota Increase Requested
+// ATT&CK: T1578.005 | Tactic: DefenseImpairment | Sigma id: 46d64d2f-d30d-4b44-87f3-b9c067003d46
+// Data source: AWSCloudTrail (Amazon Web Services connector)
+// Severity: Medium
+// False positives: Planned capacity increases by cloud operations teams
+// Suggested analytics rule: run every 15m, look back 30m, alert when results > 0.
+// Entity mapping: Account = UserIdentityArn, IP = SourceIpAddress
+// The time filter below is for ad-hoc hunting; the analytics rule's lookback applies when scheduled.
+AWSCloudTrail
+| where TimeGenerated > ago(1d)
+| where EventSource == "servicequotas.amazonaws.com"
+| where EventName == "RequestServiceQuotaIncrease"
+| project TimeGenerated, EventSource, EventName, UserIdentityArn, SourceIpAddress, AWSRegion, ErrorCode, RequestParameters

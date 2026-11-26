@@ -1,0 +1,8 @@
+```Title: Indirect Command Execution through pcalua or forfiles (raw Sysmon events)```
+```ATT&CK: T1202 | Severity: medium | Sigma id: 67f6c58f-d169-4a9a-8247-06fcee862ece```
+```Data source: Sysmon EventCode 1 (Splunk Add-on for Sysmon). Change index to where your Sysmon data lives.```
+```False positives: Windows program compatibility prompts started by pcalua; Maintenance scripts that use forfiles to run a program per file```
+```Suggested ES correlation search: cron */15 * * * *, earliest=-20m@m latest=-5m@m, throttle on the table fields, notable severity medium.```
+index=sysmon source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(ParentImage="*\\pcalua.exe" OR (ParentImage="*\\forfiles.exe" NOT Image="*\\cmd.exe"))
+| table _time host User ParentImage Image CommandLine
